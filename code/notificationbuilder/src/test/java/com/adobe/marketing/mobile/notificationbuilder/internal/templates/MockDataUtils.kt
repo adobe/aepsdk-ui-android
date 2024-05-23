@@ -9,7 +9,7 @@
   governing permissions and limitations under the License.
 */
 
-package com.adobe.marketing.mobile.notificationbuilder.internal.templates.testutils
+package com.adobe.marketing.mobile.notificationbuilder.internal.templates
 
 const val MOCKED_TITLE = "Mocked Title"
 const val MOCKED_BODY = "Mocked Body"

@@ -9,7 +9,7 @@
   governing permissions and limitations under the License.
 */
 
-package com.adobe.marketing.mobile.notificationbuilder.internal.templates.testutils
+package com.adobe.marketing.mobile.notificationbuilder.internal.templates
 
 import android.os.Bundle
 import com.adobe.marketing.mobile.notificationbuilder.PushTemplateIntentConstants
