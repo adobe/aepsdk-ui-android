@@ -24,6 +24,8 @@ import com.adobe.marketing.mobile.notificationbuilder.NotificationConstructionFa
 import com.adobe.marketing.mobile.notificationbuilder.PushTemplateIntentConstants
 import com.adobe.marketing.mobile.notificationbuilder.R
 import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateConstants
+import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateConstants.LOG_TAG
+import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateConstants.PushPayloadKeys
 import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateImageUtils
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.createNotificationChannelIfRequired
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setRemoteViewClickAction
@@ -45,11 +47,7 @@ internal object ManualCarouselNotificationBuilder {
         trackerActivityClass: Class<out Activity>?,
         broadcastReceiverClass: Class<out BroadcastReceiver>?
     ): NotificationCompat.Builder {
-        Log.trace(
-            PushTemplateConstants.LOG_TAG,
-            SELF_TAG,
-            "Building a manual carousel template push notification."
-        )
+        Log.trace(LOG_TAG, SELF_TAG, "Building a manual carousel template push notification.")
 
         // download carousel images
         val downloadedImagesCount = PushTemplateImageUtils.cacheImages(
@@ -62,8 +60,7 @@ internal object ManualCarouselNotificationBuilder {
         // to be downloaded
         if (downloadedImagesCount < PushTemplateConstants.DefaultValues.CAROUSEL_MINIMUM_IMAGE_COUNT) {
             Log.trace(
-                PushTemplateConstants.LOG_TAG,
-                SELF_TAG,
+                LOG_TAG, SELF_TAG,
                 "Less than 3 images are available for the manual carousel push template, falling back to a basic push template."
             )
             if (downloadedImagesCount > 0) {
@@ -83,7 +80,7 @@ internal object ManualCarouselNotificationBuilder {
         val packageName = context.packageName
         val smallLayout = RemoteViews(packageName, R.layout.push_template_collapsed)
         val expandedLayout =
-            if (pushTemplate.carouselLayoutType == PushTemplateConstants.DefaultValues.FILMSTRIP_CAROUSEL_MODE)
+            if (pushTemplate.carouselLayout == PushTemplateConstants.DefaultValues.FILMSTRIP_CAROUSEL_MODE)
                 RemoteViews(
                     packageName,
                     R.layout.push_template_filmstrip_carousel
@@ -119,13 +116,7 @@ internal object ManualCarouselNotificationBuilder {
             context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
         // create the notification channel if needed
-        val channelIdToUse = notificationManager.createNotificationChannelIfRequired(
-            context,
-            pushTemplate.channelId,
-            pushTemplate.sound,
-            pushTemplate.getNotificationImportance(),
-            pushTemplate.isFromIntent
-        )
+        val channelIdToUse = notificationManager.createNotificationChannelIfRequired(context, pushTemplate)
 
         // create the notification builder with the common settings applied
         val notificationBuilder = AEPPushNotificationBuilder.construct(
@@ -167,11 +158,7 @@ internal object ManualCarouselNotificationBuilder {
             val imageUri: String = item.imageUri
             val pushImage: Bitmap? = PushTemplateImageUtils.getCachedImage(imageUri)
             if (pushImage == null) {
-                Log.trace(
-                    PushTemplateConstants.LOG_TAG,
-                    SELF_TAG,
-                    "Failed to retrieve an image from $imageUri, will not create a new carousel item."
-                )
+                Log.trace(LOG_TAG, SELF_TAG, "Failed to retrieve an image from $imageUri, will not create a new carousel item.")
                 continue
             }
             validCarouselItems.add(item)
@@ -193,7 +180,7 @@ internal object ManualCarouselNotificationBuilder {
                 }
         } else { // setup default indices if not building the notification from an intent
             carouselIndices =
-                if (pushTemplate.carouselLayoutType == PushTemplateConstants.DefaultValues.FILMSTRIP_CAROUSEL_MODE) {
+                if (pushTemplate.carouselLayout == PushTemplateConstants.DefaultValues.FILMSTRIP_CAROUSEL_MODE) {
                     Triple(
                         PushTemplateConstants.DefaultValues.FILMSTRIP_CAROUSEL_CENTER_INDEX - 1,
                         PushTemplateConstants.DefaultValues.FILMSTRIP_CAROUSEL_CENTER_INDEX,
@@ -223,7 +210,7 @@ internal object ManualCarouselNotificationBuilder {
         packageName: String?,
         fallbackActionUri: String?
     ) {
-        if (pushTemplate.carouselLayoutType == PushTemplateConstants.DefaultValues.FILMSTRIP_CAROUSEL_MODE) {
+        if (pushTemplate.carouselLayout == PushTemplateConstants.DefaultValues.FILMSTRIP_CAROUSEL_MODE) {
             populateFilmstripCarouselImages(
                 context,
                 captions,
@@ -259,7 +246,7 @@ internal object ManualCarouselNotificationBuilder {
         channelId: String
     ) {
         val clickPair =
-            if (pushTemplate.carouselLayoutType == PushTemplateConstants.DefaultValues.DEFAULT_MANUAL_CAROUSEL_MODE) {
+            if (pushTemplate.carouselLayout == PushTemplateConstants.DefaultValues.DEFAULT_MANUAL_CAROUSEL_MODE) {
                 Pair(
                     PushTemplateIntentConstants.IntentActions.MANUAL_CAROUSEL_LEFT_CLICKED,
                     PushTemplateIntentConstants.IntentActions.MANUAL_CAROUSEL_RIGHT_CLICKED
@@ -450,8 +437,7 @@ internal object ManualCarouselNotificationBuilder {
         val newCenterIndex = (centerIndex - 1 + listSize) % listSize
         val newLeftIndex = (newCenterIndex - 1 + listSize) % listSize
         Log.trace(
-            PushTemplateConstants.LOG_TAG,
-            SELF_TAG,
+            LOG_TAG, SELF_TAG,
             "Calculated new indices. New center index is $newCenterIndex, new left index is $newLeftIndex, and new right index is $centerIndex."
         )
         return Triple(newLeftIndex, newCenterIndex, centerIndex)
@@ -502,98 +488,19 @@ internal object ManualCarouselNotificationBuilder {
         imageClickActions: List<String?>,
         channelId: String
     ): PendingIntent {
-        val clickIntent = Intent(intentAction).apply {
-            broadcastReceiverClass?.let {
-                setClass(context, broadcastReceiverClass)
-            }
 
-            flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
-            putExtra(
-                PushTemplateIntentConstants.IntentKeys.TEMPLATE_TYPE,
-                pushTemplate.templateType?.value
-            )
-            putExtra(
-                PushTemplateIntentConstants.IntentKeys.CHANNEL_ID,
-                channelId
-            )
-            putExtra(
-                PushTemplateIntentConstants.IntentKeys.CUSTOM_SOUND, pushTemplate.sound
-            )
-            putExtra(
-                PushTemplateIntentConstants.IntentKeys.CENTER_IMAGE_INDEX,
-                pushTemplate.centerImageIndex
-            )
-            putExtra(
-                PushTemplateIntentConstants.IntentKeys.IMAGE_URLS,
-                downloadedImageUris.toTypedArray()
-            )
-            putExtra(
-                PushTemplateIntentConstants.IntentKeys.IMAGE_CAPTIONS,
-                imageCaptions.toTypedArray()
-            )
-            putExtra(
-                PushTemplateIntentConstants.IntentKeys.IMAGE_CLICK_ACTIONS,
-                imageClickActions.toTypedArray()
-            )
-            putExtra(PushTemplateIntentConstants.IntentKeys.TITLE_TEXT, pushTemplate.title)
-            putExtra(PushTemplateIntentConstants.IntentKeys.BODY_TEXT, pushTemplate.body)
-            putExtra(
-                PushTemplateIntentConstants.IntentKeys.EXPANDED_BODY_TEXT,
-                pushTemplate.expandedBodyText
-            )
-            putExtra(
-                PushTemplateIntentConstants.IntentKeys.NOTIFICATION_BACKGROUND_COLOR,
-                pushTemplate.notificationBackgroundColor
-            )
-            putExtra(
-                PushTemplateIntentConstants.IntentKeys.TITLE_TEXT_COLOR,
-                pushTemplate.titleTextColor
-            )
-            putExtra(
-                PushTemplateIntentConstants.IntentKeys.EXPANDED_BODY_TEXT_COLOR,
-                pushTemplate.expandedBodyTextColor
-            )
-            putExtra(
-                PushTemplateIntentConstants.IntentKeys.SMALL_ICON, pushTemplate.smallIcon
-            )
-            putExtra(
-                PushTemplateIntentConstants.IntentKeys.LARGE_ICON, pushTemplate.largeIcon
-            )
-            putExtra(
-                PushTemplateIntentConstants.IntentKeys.SMALL_ICON_COLOR,
-                pushTemplate.smallIconColor
-            )
-            putExtra(
-                PushTemplateIntentConstants.IntentKeys.VISIBILITY,
-                pushTemplate.getNotificationVisibility()
-            )
-            putExtra(
-                PushTemplateIntentConstants.IntentKeys.IMPORTANCE,
-                pushTemplate.getNotificationImportance()
-            )
-            putExtra(
-                PushTemplateIntentConstants.IntentKeys.TICKER, pushTemplate.ticker
-            )
-            putExtra(
-                PushTemplateIntentConstants.IntentKeys.TAG, pushTemplate.tag
-            )
-            putExtra(
-                PushTemplateIntentConstants.IntentKeys.STICKY, pushTemplate.isNotificationSticky
-            )
-            putExtra(PushTemplateIntentConstants.IntentKeys.ACTION_URI, pushTemplate.actionUri)
-            putExtra(
-                PushTemplateIntentConstants.IntentKeys.PAYLOAD_VERSION, pushTemplate.payloadVersion
-            )
-            putExtra(
-                PushTemplateIntentConstants.IntentKeys.CAROUSEL_ITEMS,
-                pushTemplate.rawCarouselItems
-            )
-            putExtra(
-                PushTemplateIntentConstants.IntentKeys.CAROUSEL_LAYOUT_TYPE,
-                pushTemplate.carouselLayoutType
-            )
+        val clickIntent = AEPPushNotificationBuilder.createIntent(intentAction, pushTemplate)
+        clickIntent.putExtra(PushPayloadKeys.CHANNEL_ID, channelId)
+        clickIntent.putExtra(PushPayloadKeys.CAROUSEL_LAYOUT, pushTemplate.carouselLayout)
+        clickIntent.putExtra(PushPayloadKeys.CAROUSEL_ITEMS, pushTemplate.rawCarouselItems)
+        clickIntent.putExtra(PushPayloadKeys.CAROUSEL_OPERATION_MODE, pushTemplate.carouselMode)
+        clickIntent.putExtra(PushTemplateIntentConstants.IntentKeys.CENTER_IMAGE_INDEX, pushTemplate.centerImageIndex.toString())
+        clickIntent.putExtra(PushTemplateIntentConstants.IntentKeys.IMAGE_URLS, downloadedImageUris.toTypedArray())
+        clickIntent.putExtra(PushTemplateIntentConstants.IntentKeys.IMAGE_CAPTIONS, imageCaptions.toTypedArray())
+        clickIntent.putExtra(PushTemplateIntentConstants.IntentKeys.IMAGE_CLICK_ACTIONS, imageClickActions.toTypedArray())
+        broadcastReceiverClass?.let {
+            clickIntent.setClass(context, broadcastReceiverClass)
         }
-
         return PendingIntent.getBroadcast(
             context,
             0,

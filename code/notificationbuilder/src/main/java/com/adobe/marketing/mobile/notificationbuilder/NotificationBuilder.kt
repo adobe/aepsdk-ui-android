@@ -16,6 +16,7 @@ import android.content.BroadcastReceiver
 import android.content.Intent
 import androidx.core.app.NotificationCompat
 import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateConstants
+import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateConstants.LOG_TAG
 import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateType
 import com.adobe.marketing.mobile.notificationbuilder.internal.builders.AutoCarouselNotificationBuilder
 import com.adobe.marketing.mobile.notificationbuilder.internal.builders.BasicNotificationBuilder
@@ -30,6 +31,8 @@ import com.adobe.marketing.mobile.notificationbuilder.internal.templates.Carouse
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.InputBoxPushTemplate
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.ManualCarouselPushTemplate
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.ZeroBezelPushTemplate
+import com.adobe.marketing.mobile.notificationbuilder.internal.util.IntentData
+import com.adobe.marketing.mobile.notificationbuilder.internal.util.MapData
 import com.adobe.marketing.mobile.services.Log
 import com.adobe.marketing.mobile.services.ServiceProvider
 
@@ -56,12 +59,15 @@ object NotificationBuilder {
     ): NotificationCompat.Builder {
         val context = ServiceProvider.getInstance().appContextService.applicationContext
             ?: throw NotificationConstructionFailedException("Application context is null, cannot build a notification.")
+        if (messageData.isEmpty()) {
+            throw NotificationConstructionFailedException("Message data is empty, cannot build a notification.")
+        }
         val pushTemplateType =
             PushTemplateType.fromString(messageData[PushTemplateConstants.PushPayloadKeys.TEMPLATE_TYPE])
-
+        val notificationData = MapData(messageData)
         when (pushTemplateType) {
             PushTemplateType.BASIC -> {
-                val basicPushTemplate = BasicPushTemplate(messageData)
+                val basicPushTemplate = BasicPushTemplate(notificationData)
                 return BasicNotificationBuilder.construct(
                     context,
                     basicPushTemplate,
@@ -72,7 +78,7 @@ object NotificationBuilder {
 
             PushTemplateType.CAROUSEL -> {
                 val carouselPushTemplate =
-                    CarouselPushTemplate.createCarouselPushTemplate(messageData)
+                    CarouselPushTemplate.createCarouselPushTemplate(notificationData)
 
                 when (carouselPushTemplate) {
                     is AutoCarouselPushTemplate -> {
@@ -94,14 +100,10 @@ object NotificationBuilder {
                     }
 
                     else -> {
-                        Log.trace(
-                            PushTemplateConstants.LOG_TAG,
-                            SELF_TAG,
-                            "Unknown carousel push template type, creating a legacy style notification."
-                        )
+                        Log.trace(LOG_TAG, SELF_TAG, "Unknown carousel push template type, creating a legacy style notification.")
                         return LegacyNotificationBuilder.construct(
                             context,
-                            BasicPushTemplate(messageData),
+                            BasicPushTemplate(notificationData),
                             trackerActivityClass
                         )
                     }
@@ -109,7 +111,7 @@ object NotificationBuilder {
             }
 
             PushTemplateType.ZERO_BEZEL -> {
-                val zeroBezelPushTemplate = ZeroBezelPushTemplate(messageData)
+                val zeroBezelPushTemplate = ZeroBezelPushTemplate(notificationData)
                 return ZeroBezelNotificationBuilder.construct(
                     context,
                     zeroBezelPushTemplate,
@@ -120,7 +122,7 @@ object NotificationBuilder {
             PushTemplateType.INPUT_BOX -> {
                 return InputBoxNotificationBuilder.construct(
                     context,
-                    InputBoxPushTemplate(messageData),
+                    InputBoxPushTemplate(notificationData),
                     trackerActivityClass,
                     broadcastReceiverClass
                 )
@@ -129,7 +131,7 @@ object NotificationBuilder {
             PushTemplateType.UNKNOWN -> {
                 return LegacyNotificationBuilder.construct(
                     context,
-                    BasicPushTemplate(messageData),
+                    BasicPushTemplate(notificationData),
                     trackerActivityClass
                 )
             }
@@ -145,19 +147,17 @@ object NotificationBuilder {
     ): NotificationCompat.Builder {
         val context = ServiceProvider.getInstance().appContextService.applicationContext
             ?: throw NotificationConstructionFailedException("Application context is null, cannot build a notification.")
+        val extras = intent.extras ?: throw NotificationConstructionFailedException("Intent extras are null, cannot re-build the notification.")
         val pushTemplateType =
-            PushTemplateType.fromString(intent.getStringExtra(PushTemplateIntentConstants.IntentKeys.TEMPLATE_TYPE))
+            PushTemplateType.fromString(intent.getStringExtra(PushTemplateConstants.PushPayloadKeys.TEMPLATE_TYPE))
+        val intentData = IntentData(extras, intent.action)
 
         when (pushTemplateType) {
             PushTemplateType.BASIC -> {
-                Log.trace(
-                    PushTemplateConstants.LOG_TAG,
-                    SELF_TAG,
-                    "Building a basic style push notification."
-                )
+                Log.trace(LOG_TAG, SELF_TAG, "Building a basic style push notification.")
                 return BasicNotificationBuilder.construct(
                     context,
-                    BasicPushTemplate(intent),
+                    BasicPushTemplate(intentData),
                     trackerActivityClass,
                     broadcastReceiverClass
                 )
@@ -166,7 +166,7 @@ object NotificationBuilder {
             PushTemplateType.CAROUSEL -> {
                 return ManualCarouselNotificationBuilder.construct(
                     context,
-                    ManualCarouselPushTemplate(intent),
+                    ManualCarouselPushTemplate(intentData),
                     trackerActivityClass,
                     broadcastReceiverClass
                 )
@@ -175,7 +175,7 @@ object NotificationBuilder {
             PushTemplateType.INPUT_BOX -> {
                 return InputBoxNotificationBuilder.construct(
                     context,
-                    InputBoxPushTemplate(intent),
+                    InputBoxPushTemplate(intentData),
                     trackerActivityClass,
                     broadcastReceiverClass
                 )
@@ -184,7 +184,7 @@ object NotificationBuilder {
             PushTemplateType.UNKNOWN -> {
                 return LegacyNotificationBuilder.construct(
                     context,
-                    BasicPushTemplate(intent),
+                    BasicPushTemplate(intentData),
                     trackerActivityClass
                 )
             }
@@ -193,7 +193,7 @@ object NotificationBuilder {
                 // default to legacy notification
                 return LegacyNotificationBuilder.construct(
                     context,
-                    BasicPushTemplate(intent),
+                    BasicPushTemplate(intentData),
                     trackerActivityClass
                 )
             }

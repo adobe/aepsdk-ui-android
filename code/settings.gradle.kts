@@ -29,7 +29,7 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "aepsdk-notificationbuilder-android"
+rootProject.name = "aepsdk-ui-android"
 include (
         ":notificationbuilder",
         ":testapp"

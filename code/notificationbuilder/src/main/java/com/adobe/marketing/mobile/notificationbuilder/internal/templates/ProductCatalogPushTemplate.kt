@@ -11,42 +11,37 @@
 
 package com.adobe.marketing.mobile.notificationbuilder.internal.templates
 
-import android.content.Intent
-import com.adobe.marketing.mobile.notificationbuilder.PushTemplateIntentConstants
-import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateConstants
+import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateConstants.CatalogItemKeys
+import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateConstants.DefaultValues
+import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateConstants.LOG_TAG
+import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateConstants.PushPayloadKeys
+import com.adobe.marketing.mobile.notificationbuilder.internal.util.NotificationData
 import com.adobe.marketing.mobile.services.Log
-import com.adobe.marketing.mobile.util.DataReader
 import org.json.JSONArray
 import org.json.JSONException
 
-internal class ProductCatalogPushTemplate : AEPPushTemplate {
+internal class ProductCatalogPushTemplate(data: NotificationData) : AEPPushTemplate(data) {
     // Required, Text to be shown on the CTA button
-    internal var ctaButtonText: String
-        private set
+    internal val ctaButtonText: String
 
     // Required, Color for the CTA button. Represented as six character hex, e.g. 00FF00
-    internal var ctaButtonColor: String
-        private set
+    internal val ctaButtonColor: String
 
     // Required, URI to be handled when the user clicks the CTA button
-    internal var ctaButtonUri: String
-        private set
+    internal val ctaButtonUri: String
 
     // Required, Determines if the layout of the catalog goes left-to-right or top-to-bottom.
     // Value will either be "horizontal" (left-to-right) or "vertical" (top-to-bottom).
-    internal var displayLayout: String
-        private set
+    internal val displayLayout: String
 
     // Required, Three entries describing the items in the product catalog.
     // The value is an encoded JSON string.
-    internal var rawCatalogItems: String
-        private set
+    internal val rawCatalogItems: String
 
     // Required, One or more items in the product catalog defined by the CatalogItem class
-    internal var catalogItems = mutableListOf<CatalogItem>()
-        private set
+    internal val catalogItems: MutableList<CatalogItem>
 
-    internal var currentIndex: Int = PushTemplateConstants.DefaultValues.PRODUCT_CATALOG_START_INDEX
+    internal var currentIndex: Int = DefaultValues.PRODUCT_CATALOG_START_INDEX
 
     data class CatalogItem(
         // Required, Text to use in the title if this product is selected
@@ -65,54 +60,19 @@ internal class ProductCatalogPushTemplate : AEPPushTemplate {
         val uri: String
     )
 
-    constructor(data: Map<String, String>) : super(data) {
-        ctaButtonText = DataReader.optString(
-            data, PushTemplateConstants.PushPayloadKeys.CATALOG_CTA_BUTTON_TEXT, null
-        )
-            ?: throw IllegalArgumentException("Required field \"${PushTemplateConstants.PushPayloadKeys.CATALOG_CTA_BUTTON_TEXT}\" not found.")
-        ctaButtonColor = DataReader.optString(
-            data, PushTemplateConstants.PushPayloadKeys.CATALOG_CTA_BUTTON_COLOR, null
-        )
-            ?: throw IllegalArgumentException("Required field \"${PushTemplateConstants.PushPayloadKeys.CATALOG_CTA_BUTTON_COLOR}\" not found.")
-        ctaButtonUri = DataReader.optString(
-            data, PushTemplateConstants.PushPayloadKeys.CATALOG_CTA_BUTTON_URI, null
-        )
-            ?: throw IllegalArgumentException("Required field \"${PushTemplateConstants.PushPayloadKeys.CATALOG_CTA_BUTTON_URI}\" not found.")
-        displayLayout = DataReader.optString(
-            data, PushTemplateConstants.PushPayloadKeys.CATALOG_LAYOUT, null
-        )
-            ?: throw IllegalArgumentException("Required field \"${PushTemplateConstants.PushPayloadKeys.CATALOG_LAYOUT}\" not found.")
-        rawCatalogItems = DataReader.optString(
-            data, PushTemplateConstants.PushPayloadKeys.CATALOG_ITEMS, null
-        )
-            ?: throw IllegalArgumentException("Required field \"${PushTemplateConstants.PushPayloadKeys.CATALOG_ITEMS}\" not found.")
+    /**
+     * Constructs a Product Catalog push template with the given NotificationData.
+     *
+     * @param data the data to initialize the push template with
+     * @throws IllegalArgumentException if any required fields for building the Product Catalog push template are missing
+     */
+    init {
+        ctaButtonText = data.getRequiredString(PushPayloadKeys.CATALOG_CTA_BUTTON_TEXT)
+        ctaButtonColor = data.getRequiredString(PushPayloadKeys.CATALOG_CTA_BUTTON_COLOR)
+        ctaButtonUri = data.getRequiredString(PushPayloadKeys.CATALOG_CTA_BUTTON_URI)
+        displayLayout = data.getRequiredString(PushPayloadKeys.CATALOG_LAYOUT)
+        rawCatalogItems = data.getRequiredString(PushPayloadKeys.CATALOG_ITEMS)
         catalogItems = parseCatalogItemsFromString(rawCatalogItems)
-    }
-
-    constructor(intent: Intent) : super(intent) {
-        val buttonText =
-            intent.getStringExtra(PushTemplateIntentConstants.IntentKeys.CATALOG_CTA_BUTTON_TEXT)
-        ctaButtonText = buttonText
-            ?: throw IllegalArgumentException("Required field \"${PushTemplateIntentConstants.IntentKeys.CATALOG_CTA_BUTTON_TEXT}\" not found.")
-        val buttonColor =
-            intent.getStringExtra(PushTemplateIntentConstants.IntentKeys.CATALOG_CTA_BUTTON_COLOR)
-        ctaButtonColor = buttonColor
-            ?: throw IllegalArgumentException("Required field \"${PushTemplateIntentConstants.IntentKeys.CATALOG_CTA_BUTTON_COLOR}\" not found.")
-        val buttonUri =
-            intent.getStringExtra(PushTemplateIntentConstants.IntentKeys.CATALOG_CTA_BUTTON_URI)
-        ctaButtonUri = buttonUri
-            ?: throw IllegalArgumentException("Required field \"${PushTemplateIntentConstants.IntentKeys.CATALOG_CTA_BUTTON_URI}\" not found.")
-        val layout = intent.getStringExtra(PushTemplateIntentConstants.IntentKeys.CATALOG_LAYOUT)
-        displayLayout = layout
-            ?: throw IllegalArgumentException("Required field \"${PushTemplateIntentConstants.IntentKeys.CATALOG_LAYOUT}\" not found.")
-        val items = intent.getStringExtra(PushTemplateIntentConstants.IntentKeys.CATALOG_ITEMS)
-        rawCatalogItems = items
-            ?: throw IllegalArgumentException("Required field \"${PushTemplateIntentConstants.IntentKeys.CATALOG_ITEMS}\" not found.")
-        catalogItems = parseCatalogItemsFromString(rawCatalogItems)
-        currentIndex = intent.getIntExtra(
-            PushTemplateIntentConstants.IntentKeys.CATALOG_ITEM_INDEX,
-            PushTemplateConstants.DefaultValues.PRODUCT_CATALOG_START_INDEX
-        )
     }
 
     companion object {
@@ -125,8 +85,7 @@ internal class ProductCatalogPushTemplate : AEPPushTemplate {
                 jsonArray = JSONArray(catalogItemsString)
             } catch (e: JSONException) {
                 Log.error(
-                    PushTemplateConstants.LOG_TAG,
-                    SELF_TAG,
+                    LOG_TAG, SELF_TAG,
                     "Exception occurred when creating json array from the catalog items string: ${e.localizedMessage}"
                 )
                 throw IllegalArgumentException("Catalog items string containing a valid json array was not found.")
@@ -142,14 +101,11 @@ internal class ProductCatalogPushTemplate : AEPPushTemplate {
                     val item = jsonArray.getJSONObject(i)
                     // all values are required for a catalog item. if any are missing we have an invalid catalog item and we know the notification as a whole is invalid
                     // as three catalog items are required.
-                    val title = item.getString(PushTemplateConstants.CatalogItemKeys.TITLE)
-                    val body =
-                        item.getString(PushTemplateConstants.CatalogItemKeys.BODY)
-                    val image =
-                        item.getString(PushTemplateConstants.CatalogItemKeys.IMAGE)
-                    val price =
-                        item.getString(PushTemplateConstants.CatalogItemKeys.PRICE)
-                    val uri = item.getString(PushTemplateConstants.CatalogItemKeys.URI)
+                    val title = item.getString(CatalogItemKeys.TITLE)
+                    val body = item.getString(CatalogItemKeys.BODY)
+                    val image = item.getString(CatalogItemKeys.IMAGE)
+                    val price = item.getString(CatalogItemKeys.PRICE)
+                    val uri = item.getString(CatalogItemKeys.URI)
 
                     catalogItems.add(
                         CatalogItem(
@@ -162,7 +118,7 @@ internal class ProductCatalogPushTemplate : AEPPushTemplate {
                     )
                 } catch (e: JSONException) {
                     Log.error(
-                        PushTemplateConstants.LOG_TAG,
+                        LOG_TAG,
                         SELF_TAG,
                         "Failed to parse catalog item at index $i: ${e.localizedMessage}"
                     )

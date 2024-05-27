@@ -17,6 +17,8 @@ import android.content.Context
 import android.media.RingtoneManager
 import android.os.Build
 import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateConstants
+import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateConstants.LOG_TAG
+import com.adobe.marketing.mobile.notificationbuilder.internal.templates.AEPPushTemplate
 import com.adobe.marketing.mobile.services.Log
 
 private const val SELF_TAG = "NotificationManagerExtensions"
@@ -27,24 +29,18 @@ private const val SELF_TAG = "NotificationManagerExtensions"
  * is received from the payload.
  *
  * @param context the application [Context]
- * @param channelId [String] containing the notification channel id
- * @param customSound `String` containing the custom sound to apply on the notification channel
- * @param importance [Int] containing the notification importance
- * @param isFromIntent `Boolean` flag indicating if the push is from an intent
+ * @param template the push template object
  * @return A [String] containing the created or existing channel ID
  */
 internal fun NotificationManager.createNotificationChannelIfRequired(
     context: Context,
-    channelId: String?,
-    customSound: String?,
-    importance: Int,
-    isFromIntent: Boolean
+    template: AEPPushTemplate
 ): String {
     // create a silent notification channel if push is from intent
     // if not from intent and channel id is not provided, use the default channel id
     val channelIdToUse =
-        if (isFromIntent) PushTemplateConstants.DefaultValues.SILENT_NOTIFICATION_CHANNEL_ID
-        else channelId ?: PushTemplateConstants.DefaultValues.DEFAULT_CHANNEL_ID
+        if (template.isFromIntent) PushTemplateConstants.DefaultValues.SILENT_NOTIFICATION_CHANNEL_ID
+        else template.channelId ?: PushTemplateConstants.DefaultValues.DEFAULT_CHANNEL_ID
 
     // No channel creation required.
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
@@ -53,35 +49,29 @@ internal fun NotificationManager.createNotificationChannelIfRequired(
 
     // Don't create a channel if it already exists
     if (getNotificationChannel(channelIdToUse) != null) {
-        Log.trace(
-            PushTemplateConstants.LOG_TAG,
-            SELF_TAG,
-            "Using previously created notification channel: $channelIdToUse."
-        )
+        Log.trace(LOG_TAG, SELF_TAG, "Using previously created notification channel: $channelIdToUse.")
         return channelIdToUse
     }
 
     // Create a channel
     val channel = NotificationChannel(
         channelIdToUse,
-        if (isFromIntent) PushTemplateConstants.DefaultValues.SILENT_CHANNEL_NAME else PushTemplateConstants.DefaultValues.DEFAULT_CHANNEL_NAME,
-        importance
+        if (template.isFromIntent) PushTemplateConstants.DefaultValues.SILENT_CHANNEL_NAME else PushTemplateConstants.DefaultValues.DEFAULT_CHANNEL_NAME,
+        template.getNotificationImportance()
     )
 
     // Add a sound if required.
-    if (isFromIntent) {
+    if (template.isFromIntent) {
         channel.setSound(null, null)
     } else {
-        val sound = if (customSound.isNullOrEmpty()) {
+        val sound = if (template.sound.isNullOrEmpty()) {
             RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
-        } else context.getSoundUriForResourceName(customSound)
+        } else context.getSoundUriForResourceName(template.sound)
         channel.setSound(sound, null)
     }
 
     Log.trace(
-        PushTemplateConstants.LOG_TAG,
-        SELF_TAG,
-        "Creating a new notification channel with ID: $channelId. ${if (customSound.isNullOrEmpty()) "and default sound." else "and custom sound: $customSound."}"
+        LOG_TAG, SELF_TAG, "Creating a new notification channel with ID: ${template.channelId}. ${if (template.sound.isNullOrEmpty()) "and default sound." else "and custom sound: ${template.sound}."}"
     )
     createNotificationChannel(channel)
     return channelIdToUse

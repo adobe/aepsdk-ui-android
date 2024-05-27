@@ -12,23 +12,21 @@
 package com.adobe.marketing.mobile.notificationbuilder.internal.templates
 
 import android.app.NotificationManager
-import android.content.Intent
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.core.app.NotificationCompat
-import com.adobe.marketing.mobile.notificationbuilder.PushTemplateIntentConstants
 import com.adobe.marketing.mobile.notificationbuilder.internal.NotificationPriority
 import com.adobe.marketing.mobile.notificationbuilder.internal.NotificationVisibility
-import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateConstants
+import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateConstants.ActionType
+import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateConstants.PushPayloadKeys
 import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateType
-import com.adobe.marketing.mobile.services.Log
-import com.adobe.marketing.mobile.util.DataReader
+import com.adobe.marketing.mobile.notificationbuilder.internal.util.IntentData
+import com.adobe.marketing.mobile.notificationbuilder.internal.util.NotificationData
 
 /**
  * This class is used to parse the push template data payload or an intent and provide the necessary information
  * to build a notification.
  */
-internal sealed class AEPPushTemplate {
+internal sealed class AEPPushTemplate(data: NotificationData) {
 
     // Message data payload for the push template
     internal lateinit var messageData: MutableMap<String, String>
@@ -41,282 +39,137 @@ internal sealed class AEPPushTemplate {
     internal val body: String
 
     // Required, Version of the payload assigned by the authoring UI.
-    internal var payloadVersion: Int?
-        private set
+    internal val payloadVersion: String
 
     // begin optional values
     // Optional, sound to play when the notification is shown
-    internal var sound: String?
-        private set
+    internal val sound: String?
 
     // Optional, number to show on the badge of the app
-    internal var badgeCount: Int = 0
-        private set
+    internal val badgeCount: Int
 
     // Optional, priority of the notification
-    internal var notificationPriority: Int?
-        private set
-
-    // Optional, importance of the notification. Only used on Android N and above.
-    private var notificationImportance: Int?
+    internal val priorityString: String?
 
     // Optional, visibility of the notification
-    private var notificationVisibility: Int?
+    internal val visibilityString: String?
 
     // Optional, notification channel to use when displaying the notification. Only used on Android O and above.
-    internal var channelId: String?
-        private set
+    internal val channelId: String?
 
     // Optional, small icon for the notification
-    internal var smallIcon: String?
-        private set
+    internal val smallIcon: String?
 
     // Optional, large icon for the notification
-    internal var largeIcon: String?
-        private set
+    internal val largeIcon: String?
 
     // Optional, image to show in the notification
-    internal var imageUrl: String?
-        private set
+    internal val imageUrl: String?
 
     // Optional, action type for the notification
-    private var actionType: PushTemplateConstants.ActionType?
+    internal val actionType: ActionType?
 
     // Optional, action uri for the notification
-    internal var actionUri: String?
-        private set
+    internal val actionUri: String?
 
     // Optional, Body of the message shown in the expanded message layout (setCustomBigContentView)
-    internal var expandedBodyText: String?
-        private set
+    internal val expandedBodyText: String?
 
     // Optional, Text color for adb_body and adb_body_ex. Represented as six character hex, e.g. 00FF00
-    internal var expandedBodyTextColor: String?
-        private set
+    internal val bodyTextColor: String?
 
     // Optional, Text color for adb_title. Represented as six character hex, e.g. 00FF00
-    internal var titleTextColor: String?
-        private set
+    internal val titleTextColor: String?
 
     // Optional, Color for the notification's small icon. Represented as six character hex, e.g.
     // 00FF00
-    internal var smallIconColor: String?
-        private set
+    internal val smallIconColor: String?
 
     // Optional, Color for the notification's background. Represented as six character hex, e.g.
     // 00FF00
-    internal var notificationBackgroundColor: String?
-        private set
+    internal val backgroundColor: String?
 
     // Optional, If present and a notification with the same tag is already being shown, the new
     // notification replaces the existing one in the notification drawer.
-    internal var tag: String?
-        private set
+    internal val tag: String?
 
     // Optional, If present sets the "ticker" text, which is sent to accessibility services.
-    internal var ticker: String?
-        private set
+    internal val ticker: String?
 
     // Optional, the type of push template this payload contains
-    internal var templateType: PushTemplateType?
-        private set
+    internal val templateType: PushTemplateType?
 
     // Optional, when set to false or unset, the notification is automatically dismissed when the
     // user clicks it in the panel. When set to true, the notification persists even when the user
     // clicks it.
-    internal var isNotificationSticky: Boolean?
-        private set
+    internal val isNotificationSticky: Boolean?
 
     // flag to denote if the PushTemplate was built from an intent
-    internal var isFromIntent: Boolean
-        private set
+    internal val isFromIntent: Boolean
 
     /**
-     * Constructor to create a push template object from the data payload.
+     * Initializes the push template with the given NotificationData.
      *
-     * @param data [Map] of key-value pairs representing the push template data payload
+     * @param data the data to initialize the push template with
      */
-    constructor(data: Map<String, String>?) {
-        // fast fail (via IllegalArgumentException) if required data is not present
-        if (data.isNullOrEmpty()) throw IllegalArgumentException("Push template data is null.")
-        this.messageData = data.toMutableMap()
-        val title = DataReader.optString(data, PushTemplateConstants.PushPayloadKeys.TITLE, null)
-        if (title.isNullOrEmpty()) throw IllegalArgumentException("Required field \"${PushTemplateConstants.PushPayloadKeys.TITLE}\" not found.")
-        this.title = title
+    init {
+        // extract the notification payload version
+        payloadVersion = data.getRequiredString(PushPayloadKeys.VERSION)
 
-        val bodyText = DataReader.optString(data, PushTemplateConstants.PushPayloadKeys.BODY, null)
-        if (bodyText.isNullOrEmpty()) throw IllegalArgumentException("Required field \"${PushTemplateConstants.PushPayloadKeys.BODY}\" or \"${PushTemplateConstants.PushPayloadKeys.ACC_PAYLOAD_BODY}\" not found.")
-        this.body = bodyText
+        // extract the text information
+        title = data.getRequiredString(PushPayloadKeys.TITLE)
+        body = data.getRequiredString(PushPayloadKeys.BODY)
+        expandedBodyText = data.getString(PushPayloadKeys.EXPANDED_BODY_TEXT)
+        ticker = data.getString(PushPayloadKeys.TICKER)
 
-        val payloadVersion =
-            DataReader.optString(data, PushTemplateConstants.PushPayloadKeys.VERSION, null)
-        if (payloadVersion.isNullOrEmpty()) throw IllegalArgumentException("Required field \"${PushTemplateConstants.PushPayloadKeys.VERSION}\" not found.")
-        this.payloadVersion = payloadVersion.toInt()
+        // extract the template type
+        templateType = PushTemplateType.fromString(data.getString(PushPayloadKeys.TEMPLATE_TYPE))
+        isFromIntent = data is IntentData
 
-        // optional push template data
-        sound = DataReader.optString(data, PushTemplateConstants.PushPayloadKeys.SOUND, null)
-        imageUrl = DataReader.optString(data, PushTemplateConstants.PushPayloadKeys.IMAGE_URL, null)
-        actionUri =
-            DataReader.optString(data, PushTemplateConstants.PushPayloadKeys.ACTION_URI, null)
-        actionType = PushTemplateConstants.ActionType.valueOf(
-            DataReader.optString(data, PushTemplateConstants.PushPayloadKeys.ACTION_TYPE, null)
-                ?: PushTemplateConstants.ActionType.NONE.name
-        )
-        var smallIcon =
-            DataReader.optString(data, PushTemplateConstants.PushPayloadKeys.SMALL_ICON, null)
-        if (smallIcon.isNullOrEmpty()) {
-            Log.debug(
-                PushTemplateConstants.LOG_TAG,
-                SELF_TAG,
-                "The \"${PushTemplateConstants.PushPayloadKeys.SMALL_ICON}\" key is not present in the message data payload, attempting to use \"${PushTemplateConstants.PushPayloadKeys.SMALL_ICON}\" key instead."
-            )
-            smallIcon = DataReader.optString(
-                data,
-                PushTemplateConstants.PushPayloadKeys.LEGACY_SMALL_ICON,
-                null
-            )
-        }
-        this.smallIcon = smallIcon
-        largeIcon =
-            DataReader.optString(data, PushTemplateConstants.PushPayloadKeys.LARGE_ICON, null)
-        try {
-            val count =
-                DataReader.optString(data, PushTemplateConstants.PushPayloadKeys.BADGE_NUMBER, null)
-            count?.let {
-                badgeCount = count.toInt()
-            }
-        } catch (e: NumberFormatException) {
-            Log.debug(
-                PushTemplateConstants.LOG_TAG,
-                SELF_TAG,
-                "Exception in converting notification badge count to int - ${e.localizedMessage}."
-            )
-        }
-        notificationPriority = NotificationPriority.getNotificationCompatPriorityFromString(
-            DataReader.optString(
-                data,
-                PushTemplateConstants.PushPayloadKeys.NOTIFICATION_PRIORITY,
-                null
-            )
-        )
-        notificationImportance =
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) getNotificationImportanceFromString(
-                DataReader.optString(
-                    data,
-                    PushTemplateConstants.PushPayloadKeys.NOTIFICATION_PRIORITY,
-                    null
-                )
-            ) else null
+        // extract the basic media information
+        imageUrl = data.getString(PushPayloadKeys.IMAGE_URL)
 
-        notificationVisibility = NotificationVisibility.getNotificationCompatVisibilityFromString(
-            DataReader.optString(
-                data,
-                PushTemplateConstants.PushPayloadKeys.NOTIFICATION_VISIBILITY,
-                null
-            )
-        )
-        channelId =
-            DataReader.optString(data, PushTemplateConstants.PushPayloadKeys.CHANNEL_ID, null)
-        templateType =
-            DataReader.optString(data, PushTemplateConstants.PushPayloadKeys.TEMPLATE_TYPE, null)
-                ?.let { PushTemplateType.fromString(it) }
-        tag = DataReader.optString(data, PushTemplateConstants.PushPayloadKeys.TAG, null)
-        val stickyValue =
-            DataReader.optString(data, PushTemplateConstants.PushPayloadKeys.STICKY, null)
-        isNotificationSticky =
-            if (stickyValue.isNullOrEmpty()) false else java.lang.Boolean.parseBoolean(
-                stickyValue
-            )
-        ticker = DataReader.optString(data, PushTemplateConstants.PushPayloadKeys.TICKER, null)
-        expandedBodyText = DataReader.optString(
-            data, PushTemplateConstants.PushPayloadKeys.EXPANDED_BODY_TEXT, null
-        )
-        expandedBodyTextColor = DataReader.optString(
-            data, PushTemplateConstants.PushPayloadKeys.EXPANDED_BODY_TEXT_COLOR, null
-        )
-        titleTextColor = DataReader.optString(
-            data, PushTemplateConstants.PushPayloadKeys.TITLE_TEXT_COLOR, null
-        )
-        smallIconColor = DataReader.optString(
-            data, PushTemplateConstants.PushPayloadKeys.SMALL_ICON_COLOR, null
-        )
-        notificationBackgroundColor = DataReader.optString(
-            data,
-            PushTemplateConstants.PushPayloadKeys.NOTIFICATION_BACKGROUND_COLOR,
-            null
-        )
-        isFromIntent = false
-    }
+        // extract the action information
+        actionUri = data.getString(PushPayloadKeys.ACTION_URI)
+        actionType = ActionType.valueOf(data.getString(PushPayloadKeys.ACTION_TYPE) ?: ActionType.NONE.name)
 
-    /**
-     * Constructor to create a push template object from an [Intent].
-     *
-     * @param intent [Intent] containing key value pairs extracted from a push template data payload
-     */
-    constructor(intent: Intent) {
-        val intentExtras =
-            intent.extras ?: throw IllegalArgumentException("Intent extras are null.")
-        // required values
-        title = intentExtras.getString(PushTemplateIntentConstants.IntentKeys.TITLE_TEXT)
-            ?: throw IllegalArgumentException("Required field \"${PushTemplateIntentConstants.IntentKeys.TITLE_TEXT}\" not found.")
-        body = intentExtras.getString(PushTemplateIntentConstants.IntentKeys.BODY_TEXT)
-            ?: throw IllegalArgumentException("Required field \"${PushTemplateIntentConstants.IntentKeys.BODY_TEXT}\" not found.")
-        payloadVersion = intentExtras.getInt(PushTemplateIntentConstants.IntentKeys.PAYLOAD_VERSION)
-        payloadVersion?.let {
-            if (it < 1) throw IllegalArgumentException("Invalid \"${PushTemplateIntentConstants.IntentKeys.PAYLOAD_VERSION}\" found.")
-        }
+        // extract the icon information
+        smallIcon = data.getString(PushPayloadKeys.SMALL_ICON) ?: data.getString(PushPayloadKeys.LEGACY_SMALL_ICON)
+        largeIcon = data.getString(PushPayloadKeys.LARGE_ICON)
 
-        // optional values
-        sound = intentExtras.getString(PushTemplateIntentConstants.IntentKeys.CUSTOM_SOUND)
-        imageUrl = intentExtras.getString(PushTemplateIntentConstants.IntentKeys.IMAGE_URI)
-        actionUri = intentExtras.getString(PushTemplateIntentConstants.IntentKeys.ACTION_URI)
-        actionType = PushTemplateConstants.ActionType.valueOf(
-            intentExtras.getString(PushTemplateIntentConstants.IntentKeys.ACTION_TYPE)
-                ?: PushTemplateConstants.ActionType.NONE.name
-        )
-        smallIcon = intentExtras.getString(PushTemplateIntentConstants.IntentKeys.SMALL_ICON)
-        largeIcon = intentExtras.getString(PushTemplateIntentConstants.IntentKeys.LARGE_ICON)
-        badgeCount = intentExtras.getInt(PushTemplateIntentConstants.IntentKeys.BADGE_COUNT)
-        notificationPriority = intentExtras.getInt(PushTemplateIntentConstants.IntentKeys.PRIORITY)
-        notificationImportance =
-            intentExtras.getInt(PushTemplateIntentConstants.IntentKeys.IMPORTANCE)
-        notificationVisibility =
-            intentExtras.getInt(PushTemplateIntentConstants.IntentKeys.VISIBILITY)
-        channelId = intentExtras.getString(PushTemplateIntentConstants.IntentKeys.CHANNEL_ID)
-        templateType =
-            PushTemplateType.fromString(intentExtras.getString(PushTemplateIntentConstants.IntentKeys.TEMPLATE_TYPE))
-        tag = intentExtras.getString(PushTemplateIntentConstants.IntentKeys.TAG)
-        isNotificationSticky =
-            intentExtras.getBoolean(PushTemplateIntentConstants.IntentKeys.STICKY)
-        ticker = intentExtras.getString(PushTemplateIntentConstants.IntentKeys.TICKER)
-        expandedBodyText =
-            intentExtras.getString(PushTemplateIntentConstants.IntentKeys.EXPANDED_BODY_TEXT)
-        expandedBodyTextColor =
-            intentExtras.getString(PushTemplateIntentConstants.IntentKeys.EXPANDED_BODY_TEXT_COLOR)
-        titleTextColor =
-            intentExtras.getString(PushTemplateIntentConstants.IntentKeys.TITLE_TEXT_COLOR)
-        smallIconColor =
-            intentExtras.getString(PushTemplateIntentConstants.IntentKeys.SMALL_ICON_COLOR)
-        notificationBackgroundColor =
-            intentExtras.getString(PushTemplateIntentConstants.IntentKeys.NOTIFICATION_BACKGROUND_COLOR)
-        isFromIntent = true
-    }
+        // extract the color components
+        titleTextColor = data.getString(PushPayloadKeys.TITLE_TEXT_COLOR)
+        bodyTextColor = data.getString(PushPayloadKeys.BODY_TEXT_COLOR)
+        backgroundColor = data.getString(PushPayloadKeys.BACKGROUND_COLOR)
+        smallIconColor = data.getString(PushPayloadKeys.SMALL_ICON_COLOR)
 
-    fun getNotificationImportance(): Int {
-        notificationImportance?.let {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) return notificationImportance as Int
-        }
-        return NotificationManager.IMPORTANCE_DEFAULT
+        // extract the other notification properties
+        tag = data.getString(PushPayloadKeys.TAG)
+        sound = data.getString(PushPayloadKeys.SOUND)
+        channelId = data.getString(PushPayloadKeys.CHANNEL_ID)
+        badgeCount = data.getInteger(PushPayloadKeys.BADGE_COUNT) ?: 0
+        isNotificationSticky = data.getBoolean(PushPayloadKeys.STICKY)
+
+        // extract notification priority and visibility
+        priorityString = data.getString(PushPayloadKeys.PRIORITY)
+        visibilityString = data.getString(PushPayloadKeys.VISIBILITY)
     }
 
     fun getNotificationVisibility(): Int {
-        return notificationVisibility ?: NotificationCompat.VISIBILITY_PRIVATE
+        return NotificationVisibility.getNotificationCompatVisibilityFromString(visibilityString)
+    }
+
+    fun getNotificationPriority(): Int {
+        return NotificationPriority.getNotificationCompatPriorityFromString(priorityString)
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
-    private fun getNotificationImportanceFromString(priority: String?): Int {
-        return if (priority.isNullOrEmpty()) NotificationManager.IMPORTANCE_DEFAULT else notificationImportanceMap[priority]
-            ?: return NotificationManager.IMPORTANCE_DEFAULT
+    fun getNotificationImportance(): Int {
+        return if (priorityString.isNullOrEmpty()) {
+            NotificationManager.IMPORTANCE_DEFAULT
+        } else {
+            notificationImportanceMap[priorityString] ?: NotificationManager.IMPORTANCE_DEFAULT
+        }
     }
 
     companion object {
