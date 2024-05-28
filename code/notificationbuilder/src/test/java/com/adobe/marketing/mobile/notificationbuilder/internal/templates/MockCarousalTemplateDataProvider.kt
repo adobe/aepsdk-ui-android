@@ -12,115 +12,92 @@
 package com.adobe.marketing.mobile.notificationbuilder.internal.templates
 
 import android.os.Bundle
-import com.adobe.marketing.mobile.notificationbuilder.PushTemplateIntentConstants
+import com.adobe.marketing.mobile.notificationbuilder.internal.NotificationPriority
 import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateConstants
+import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateType
 import org.mockito.Mockito
 import org.mockito.kotlin.mock
 
 object MockCarousalTemplateDataProvider {
-    fun getMockedMapWithAutoCarouselData(): Map<String, String> {
-        return mapOf(
-            PushTemplateConstants.PushPayloadKeys.TITLE to MOCKED_TITLE,
-            PushTemplateConstants.PushPayloadKeys.BODY to MOCKED_BODY,
-            PushTemplateConstants.PushPayloadKeys.VERSION to MOCKED_PAYLOAD_VERSION.toString(),
-            PushTemplateConstants.PushPayloadKeys.CAROUSEL_LAYOUT to "auto",
-            PushTemplateConstants.PushPayloadKeys.EXPANDED_BODY_TEXT_COLOR to "#FFFFFF",
-            PushTemplateConstants.PushPayloadKeys.SMALL_ICON to "small_icon",
-            PushTemplateConstants.PushPayloadKeys.LARGE_ICON to "large_icon",
-            PushTemplateConstants.PushPayloadKeys.SMALL_ICON_COLOR to "#000000",
-            PushTemplateConstants.PushPayloadKeys.TICKER to "ticker",
-            PushTemplateConstants.PushPayloadKeys.TAG to "tag",
-            PushTemplateConstants.PushPayloadKeys.STICKY to "true",
-            PushTemplateConstants.PushPayloadKeys.ACTION_URI to "action_uri",
-            PushTemplateConstants.PushPayloadKeys.CAROUSEL_ITEMS to MOCKED_CAROUSEL_LAYOUT_DATA
-        )
+    fun getMockedMapWithAutoCarouselData(): MutableMap<String, String> {
+        val dataMap = getMockedMapWithCarousalData()
+        dataMap[PushTemplateConstants.PushPayloadKeys.CAROUSEL_OPERATION_MODE] = "auto"
+        return dataMap
     }
 
-    fun getMockedMapWithManualCarouselData(): Map<String, String> {
-        return mapOf(
+    fun getMockedMapWithManualCarouselData(): MutableMap<String, String> {
+        val dataMap = getMockedMapWithCarousalData()
+        dataMap[PushTemplateConstants.PushPayloadKeys.CAROUSEL_OPERATION_MODE] = "manual"
+        return dataMap
+    }
+
+    private fun getMockedMapWithCarousalData(): MutableMap<String, String> {
+        return mutableMapOf(
             PushTemplateConstants.PushPayloadKeys.TITLE to MOCKED_TITLE,
             PushTemplateConstants.PushPayloadKeys.BODY to MOCKED_BODY,
-            PushTemplateConstants.PushPayloadKeys.VERSION to MOCKED_PAYLOAD_VERSION.toString(),
-            PushTemplateConstants.PushPayloadKeys.CAROUSEL_LAYOUT to "manual",
-            PushTemplateConstants.PushPayloadKeys.EXPANDED_BODY_TEXT_COLOR to "#FFFFFF",
-            PushTemplateConstants.PushPayloadKeys.SMALL_ICON to "small_icon",
-            PushTemplateConstants.PushPayloadKeys.LARGE_ICON to "large_icon",
-            PushTemplateConstants.PushPayloadKeys.SMALL_ICON_COLOR to "#000000",
-            PushTemplateConstants.PushPayloadKeys.TICKER to "ticker",
-            PushTemplateConstants.PushPayloadKeys.TAG to "tag",
+            PushTemplateConstants.PushPayloadKeys.VERSION to MOCKED_PAYLOAD_VERSION,
+            PushTemplateConstants.PushPayloadKeys.TEMPLATE_TYPE to PushTemplateType.CAROUSEL.value,
+            PushTemplateConstants.PushPayloadKeys.CAROUSEL_LAYOUT to MOCKED_CAROUSEL_LAYOUT,
+            PushTemplateConstants.PushPayloadKeys.BODY_TEXT_COLOR to MOCKED_BODY_TEXT_COLOR,
+            PushTemplateConstants.PushPayloadKeys.SMALL_ICON to MOCKED_SMALL_ICON,
+            PushTemplateConstants.PushPayloadKeys.LARGE_ICON to MOCKED_LARGE_ICON,
+            PushTemplateConstants.PushPayloadKeys.SMALL_ICON_COLOR to MOCKED_SMALL_ICON_COLOR,
+            PushTemplateConstants.PushPayloadKeys.VISIBILITY to MOCKED_VISIBILITY,
+            PushTemplateConstants.PushPayloadKeys.PRIORITY to NotificationPriority.getNotificationPriority(MOCKED_PRIORITY),
+            PushTemplateConstants.PushPayloadKeys.TICKER to MOCKED_TICKER,
             PushTemplateConstants.PushPayloadKeys.STICKY to "true",
-            PushTemplateConstants.PushPayloadKeys.ACTION_URI to "action_uri",
+            PushTemplateConstants.PushPayloadKeys.TAG to MOCKED_TAG,
+            PushTemplateConstants.PushPayloadKeys.ACTION_URI to MOCKED_URI,
             PushTemplateConstants.PushPayloadKeys.CAROUSEL_ITEMS to MOCKED_CAROUSEL_LAYOUT_DATA
         )
     }
     fun getMockedBundleWithManualCarouselData(): Bundle {
-        val mockBundle = mock<Bundle>()
-        Mockito.`when`(mockBundle.getString(PushTemplateIntentConstants.IntentKeys.TITLE_TEXT))
-            .thenReturn(MOCKED_TITLE)
-        Mockito.`when`(mockBundle.getString(PushTemplateIntentConstants.IntentKeys.BODY_TEXT))
-            .thenReturn(MOCKED_BODY)
-        Mockito.`when`(mockBundle.getInt(PushTemplateIntentConstants.IntentKeys.PAYLOAD_VERSION))
-            .thenReturn(MOCKED_PAYLOAD_VERSION)
-        Mockito.`when`(mockBundle.getString(PushTemplateIntentConstants.IntentKeys.CAROUSEL_LAYOUT_TYPE))
-            .thenReturn("manual")
-        Mockito.`when`(mockBundle.getString(PushTemplateIntentConstants.IntentKeys.EXPANDED_BODY_TEXT_COLOR))
-            .thenReturn("#FFFFFF")
-        Mockito.`when`(mockBundle.getString(PushTemplateIntentConstants.IntentKeys.SMALL_ICON))
-            .thenReturn("small_icon")
-        Mockito.`when`(mockBundle.getString(PushTemplateIntentConstants.IntentKeys.LARGE_ICON))
-            .thenReturn("large_icon")
-        Mockito.`when`(mockBundle.getString(PushTemplateIntentConstants.IntentKeys.SMALL_ICON_COLOR))
-            .thenReturn("#000000")
-        Mockito.`when`(mockBundle.getInt(PushTemplateIntentConstants.IntentKeys.VISIBILITY))
-            .thenReturn(1)
-        Mockito.`when`(mockBundle.getInt(PushTemplateIntentConstants.IntentKeys.IMPORTANCE))
-            .thenReturn(1)
-        Mockito.`when`(mockBundle.getString(PushTemplateIntentConstants.IntentKeys.TICKER))
-            .thenReturn("ticker")
-        Mockito.`when`(mockBundle.getString(PushTemplateIntentConstants.IntentKeys.TAG))
-            .thenReturn("tag")
-        Mockito.`when`(mockBundle.getBoolean(PushTemplateIntentConstants.IntentKeys.STICKY))
-            .thenReturn(true)
-        Mockito.`when`(mockBundle.getString(PushTemplateIntentConstants.IntentKeys.ACTION_URI))
-            .thenReturn("action_uri")
-        Mockito.`when`(mockBundle.getString(PushTemplateIntentConstants.IntentKeys.CAROUSEL_ITEMS))
-            .thenReturn(MOCKED_CAROUSEL_LAYOUT_DATA)
-        Mockito.`when`(mockBundle.getString(PushTemplateIntentConstants.IntentKeys.CAROUSEL_OPERATION_MODE))
+        val mockBundle = getMockedBundleWithCarousalData()
+        Mockito.`when`(mockBundle.getString(PushTemplateConstants.PushPayloadKeys.CAROUSEL_OPERATION_MODE))
             .thenReturn("manual")
         return mockBundle
     }
 
     fun getMockedBundleWithAutoCarouselData(): Bundle {
-        val mockBundle = mock<Bundle>()
-        Mockito.`when`(mockBundle.getString(PushTemplateIntentConstants.IntentKeys.TITLE_TEXT))
-            .thenReturn(MOCKED_TITLE)
-        Mockito.`when`(mockBundle.getString(PushTemplateIntentConstants.IntentKeys.BODY_TEXT))
-            .thenReturn(MOCKED_BODY)
-        Mockito.`when`(mockBundle.getInt(PushTemplateIntentConstants.IntentKeys.PAYLOAD_VERSION))
-            .thenReturn(MOCKED_PAYLOAD_VERSION)
-        Mockito.`when`(mockBundle.getString(PushTemplateIntentConstants.IntentKeys.CAROUSEL_LAYOUT_TYPE))
+        val mockBundle = getMockedBundleWithCarousalData()
+        Mockito.`when`(mockBundle.getString(PushTemplateConstants.PushPayloadKeys.CAROUSEL_OPERATION_MODE))
             .thenReturn("auto")
-        Mockito.`when`(mockBundle.getString(PushTemplateIntentConstants.IntentKeys.EXPANDED_BODY_TEXT_COLOR))
-            .thenReturn("#FFFFFF")
-        Mockito.`when`(mockBundle.getString(PushTemplateIntentConstants.IntentKeys.SMALL_ICON))
-            .thenReturn("small_icon")
-        Mockito.`when`(mockBundle.getString(PushTemplateIntentConstants.IntentKeys.LARGE_ICON))
-            .thenReturn("large_icon")
-        Mockito.`when`(mockBundle.getString(PushTemplateIntentConstants.IntentKeys.SMALL_ICON_COLOR))
-            .thenReturn("#000000")
-        Mockito.`when`(mockBundle.getInt(PushTemplateIntentConstants.IntentKeys.VISIBILITY))
-            .thenReturn(1)
-        Mockito.`when`(mockBundle.getInt(PushTemplateIntentConstants.IntentKeys.IMPORTANCE))
-            .thenReturn(1)
-        Mockito.`when`(mockBundle.getString(PushTemplateIntentConstants.IntentKeys.TICKER))
-            .thenReturn("ticker")
-        Mockito.`when`(mockBundle.getString(PushTemplateIntentConstants.IntentKeys.TAG))
-            .thenReturn("tag")
-        Mockito.`when`(mockBundle.getBoolean(PushTemplateIntentConstants.IntentKeys.STICKY))
-            .thenReturn(true)
-        Mockito.`when`(mockBundle.getString(PushTemplateIntentConstants.IntentKeys.ACTION_URI))
-            .thenReturn("action_uri")
-        Mockito.`when`(mockBundle.getString(PushTemplateIntentConstants.IntentKeys.CAROUSEL_ITEMS))
+        return mockBundle
+    }
+
+    private fun getMockedBundleWithCarousalData(): Bundle {
+        val mockBundle = mock<Bundle>()
+        Mockito.`when`(mockBundle.getString(PushTemplateConstants.PushPayloadKeys.TITLE))
+            .thenReturn(MOCKED_TITLE)
+        Mockito.`when`(mockBundle.getString(PushTemplateConstants.PushPayloadKeys.BODY))
+            .thenReturn(MOCKED_BODY)
+        Mockito.`when`(mockBundle.getString(PushTemplateConstants.PushPayloadKeys.VERSION))
+            .thenReturn(MOCKED_PAYLOAD_VERSION)
+        Mockito.`when`(mockBundle.getString(PushTemplateConstants.PushPayloadKeys.TEMPLATE_TYPE))
+            .thenReturn(PushTemplateType.CAROUSEL.value)
+        Mockito.`when`(mockBundle.getString(PushTemplateConstants.PushPayloadKeys.CAROUSEL_LAYOUT))
+            .thenReturn(MOCKED_CAROUSEL_LAYOUT)
+        Mockito.`when`(mockBundle.getString(PushTemplateConstants.PushPayloadKeys.BODY_TEXT_COLOR))
+            .thenReturn(MOCKED_BODY_TEXT_COLOR)
+        Mockito.`when`(mockBundle.getString(PushTemplateConstants.PushPayloadKeys.SMALL_ICON))
+            .thenReturn(MOCKED_SMALL_ICON)
+        Mockito.`when`(mockBundle.getString(PushTemplateConstants.PushPayloadKeys.LARGE_ICON))
+            .thenReturn(MOCKED_LARGE_ICON)
+        Mockito.`when`(mockBundle.getString(PushTemplateConstants.PushPayloadKeys.SMALL_ICON_COLOR))
+            .thenReturn(MOCKED_SMALL_ICON_COLOR)
+        Mockito.`when`(mockBundle.getString(PushTemplateConstants.PushPayloadKeys.VISIBILITY))
+            .thenReturn(MOCKED_VISIBILITY)
+        Mockito.`when`(mockBundle.getString(PushTemplateConstants.PushPayloadKeys.PRIORITY))
+            .thenReturn(NotificationPriority.getNotificationPriority(MOCKED_PRIORITY))
+        Mockito.`when`(mockBundle.getString(PushTemplateConstants.PushPayloadKeys.TICKER))
+            .thenReturn(MOCKED_TICKER)
+        Mockito.`when`(mockBundle.getString(PushTemplateConstants.PushPayloadKeys.TAG))
+            .thenReturn(MOCKED_TAG)
+        Mockito.`when`(mockBundle.getString(PushTemplateConstants.PushPayloadKeys.STICKY))
+            .thenReturn("true")
+        Mockito.`when`(mockBundle.getString(PushTemplateConstants.PushPayloadKeys.ACTION_URI))
+            .thenReturn(MOCKED_URI)
+        Mockito.`when`(mockBundle.getString(PushTemplateConstants.PushPayloadKeys.CAROUSEL_ITEMS))
             .thenReturn(MOCKED_CAROUSEL_LAYOUT_DATA)
         return mockBundle
     }
