@@ -1,3 +1,5 @@
+import com.adobe.marketing.mobile.gradle.BuildConstants
+
 /*
  * Copyright 2024 Adobe. All rights reserved.
  * This file is licensed to you under the Apache License, Version 2.0 (the "License");
@@ -38,4 +40,5 @@ aepLibrary {
 
 dependencies {
     implementation("com.adobe.marketing.mobile:core:$mavenCoreVersion")
+    testImplementation("org.robolectric:robolectric:4.7")
 }
