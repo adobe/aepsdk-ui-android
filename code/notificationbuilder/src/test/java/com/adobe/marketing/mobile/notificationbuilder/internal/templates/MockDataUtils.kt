@@ -14,7 +14,6 @@ package com.adobe.marketing.mobile.notificationbuilder.internal.templates
 import com.adobe.marketing.mobile.notificationbuilder.internal.util.IntentData
 import com.adobe.marketing.mobile.notificationbuilder.internal.util.MapData
 import com.adobe.marketing.mobile.notificationbuilder.internal.util.NotificationData
-import org.mockito.Mockito
 
 const val MOCKED_TITLE = "Mocked Title"
 const val MOCKED_BODY = "Mocked Body"
@@ -38,13 +37,13 @@ const val MOCKED_ACTION_BUTTON_DATA =
     "[{\"label\":\"Go to chess.com\",\"uri\":\"https://chess.com/games/552\",\"type\":\"DEEPLINK\"},{\"label\":\"Open the app\",\"uri\":\"\",\"type\":\"OPENAPP\"}]"
 const val MOCKED_BASIC_TEMPLATE_BODY = "Shall we play a game?"
 
-fun <K, V> MutableMap<K,V>.removeKeysFromMap(listOfKeys: List<K>) {
+fun <K, V> MutableMap<K, V>.removeKeysFromMap(listOfKeys: List<K>) {
     for (key in listOfKeys) {
         this.remove(key)
     }
 }
 
-fun <K, V> MutableMap<K,V>.removeKeysFromMap(vararg keys: K) {
+fun <K, V> MutableMap<K, V>.removeKeysFromMap(vararg keys: K) {
     for (key in keys) {
         this.remove(key)
     }
