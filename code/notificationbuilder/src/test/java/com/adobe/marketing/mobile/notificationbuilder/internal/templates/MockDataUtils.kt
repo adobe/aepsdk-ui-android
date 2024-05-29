@@ -60,13 +60,13 @@ fun <K, V> MutableMap<K, V>.replaceValueInMap(vararg keyValues: Pair<K, V>) {
     }
 }
 
-internal fun provideMockedBasicPushTemplateWithMinimalData(isFromIntent: Boolean = false): BasicPushTemplate {
+internal fun provideMockedBasicPushTemplateWithRequiredData(isFromIntent: Boolean = false): BasicPushTemplate {
     val data: NotificationData
     if (isFromIntent) {
-        val mockBundle = MockAEPPushTemplateDataProvider.getMockedBundleWithMinimalData()
+        val mockBundle = MockAEPPushTemplateDataProvider.getMockedBundleWithRequiredData()
         data = IntentData(mockBundle, null)
     } else {
-        val dataMap = MockAEPPushTemplateDataProvider.getMockedDataMapWithBasicData()
+        val dataMap = MockAEPPushTemplateDataProvider.getMockedDataMapWithRequiredData()
         data = MapData(dataMap)
     }
     return BasicPushTemplate(data)

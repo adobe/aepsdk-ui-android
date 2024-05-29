@@ -19,17 +19,17 @@ import org.mockito.Mockito
 import org.mockito.kotlin.mock
 
 object MockAEPPushTemplateDataProvider {
-    fun getMockedDataMapWithBasicData(): MutableMap<String, String> {
+    fun getMockedDataMapWithRequiredData(): MutableMap<String, String> {
         return mutableMapOf(
-            Pair(PushTemplateConstants.PushPayloadKeys.TITLE, MOCKED_TITLE),
-            Pair(PushTemplateConstants.PushPayloadKeys.BODY, MOCKED_BODY),
-            Pair(PushTemplateConstants.PushPayloadKeys.VERSION, MOCKED_PAYLOAD_VERSION)
+            PushTemplateConstants.PushPayloadKeys.TITLE to MOCKED_TITLE,
+            PushTemplateConstants.PushPayloadKeys.BODY to MOCKED_BODY,
+            PushTemplateConstants.PushPayloadKeys.VERSION to MOCKED_PAYLOAD_VERSION
         )
     }
     /**
      * Returns a mocked data bundle with basic data.
      */
-    fun getMockedBundleWithMinimalData(): Bundle {
+    fun getMockedBundleWithRequiredData(): Bundle {
         val mockBundle = mock<Bundle>()
         Mockito.`when`(mockBundle.getString(PushTemplateConstants.PushPayloadKeys.TITLE))
             .thenReturn(MOCKED_TITLE)
@@ -45,7 +45,7 @@ object MockAEPPushTemplateDataProvider {
             PushTemplateConstants.PushPayloadKeys.TAG to MOCKED_TAG,
             PushTemplateConstants.PushPayloadKeys.TEMPLATE_TYPE to PushTemplateType.BASIC.value,
             PushTemplateConstants.PushPayloadKeys.ACTION_URI to MOCKED_ACTION_URI,
-            PushTemplateConstants.PushPayloadKeys.ACTION_TYPE to "NONE",
+            PushTemplateConstants.PushPayloadKeys.ACTION_TYPE to PushTemplateConstants.ActionType.NONE.name,
             PushTemplateConstants.PushPayloadKeys.ACTION_BUTTONS to MOCKED_ACTION_BUTTON_DATA,
             PushTemplateConstants.PushPayloadKeys.BADGE_COUNT to "5",
             PushTemplateConstants.PushPayloadKeys.BODY to MOCKED_BASIC_TEMPLATE_BODY,
@@ -77,7 +77,7 @@ object MockAEPPushTemplateDataProvider {
         Mockito.`when`(mockBundle.getString(PushTemplateConstants.PushPayloadKeys.ACTION_URI))
             .thenReturn(MOCKED_ACTION_URI)
         Mockito.`when`(mockBundle.getString(PushTemplateConstants.PushPayloadKeys.ACTION_TYPE))
-            .thenReturn("NONE")
+            .thenReturn(PushTemplateConstants.ActionType.NONE.name)
         Mockito.`when`(mockBundle.getString(PushTemplateConstants.PushPayloadKeys.ACTION_BUTTONS))
             .thenReturn(MOCKED_ACTION_BUTTON_DATA)
         Mockito.`when`(mockBundle.getString(PushTemplateConstants.PushPayloadKeys.BADGE_COUNT))
