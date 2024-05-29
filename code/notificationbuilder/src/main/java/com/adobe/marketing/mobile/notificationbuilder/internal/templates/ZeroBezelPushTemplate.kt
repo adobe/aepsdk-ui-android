@@ -11,10 +11,10 @@
 
 package com.adobe.marketing.mobile.notificationbuilder.internal.templates
 
-import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateConstants
-import com.adobe.marketing.mobile.util.DataReader
+import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateConstants.PushPayloadKeys
+import com.adobe.marketing.mobile.notificationbuilder.internal.util.NotificationData
 
-internal class ZeroBezelPushTemplate : AEPPushTemplate {
+internal class ZeroBezelPushTemplate(data: NotificationData) : AEPPushTemplate(data) {
 
     internal enum class ZeroBezelStyle(val collapsedStyle: String) {
         IMAGE("img"),
@@ -31,13 +31,15 @@ internal class ZeroBezelPushTemplate : AEPPushTemplate {
     internal var collapsedStyle: ZeroBezelStyle
         private set
 
-    constructor(data: Map<String, String>) : super(data) {
-        collapsedStyle = ZeroBezelStyle.getCollapsedStyleFromString(
-            DataReader.optString(
-                data,
-                PushTemplateConstants.PushPayloadKeys.ZERO_BEZEL_COLLAPSED_STYLE,
-                "txt"
+    /**
+     * Constructs a Zero Bezel Push Template from the provided data.
+     *
+     * @param data Notification data
+     */
+    init {
+        collapsedStyle = ZeroBezelStyle
+            .getCollapsedStyleFromString(
+                data.getString(PushPayloadKeys.ZERO_BEZEL_COLLAPSED_STYLE) ?: "txt"
             )
-        )
     }
 }

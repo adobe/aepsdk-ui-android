@@ -16,24 +16,26 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
-import android.content.Intent
 import android.view.View
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import com.adobe.marketing.mobile.notificationbuilder.NotificationConstructionFailedException
+import com.adobe.marketing.mobile.notificationbuilder.PushTemplateIntentConstants
 import com.adobe.marketing.mobile.notificationbuilder.R
-import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateConstants
+import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateConstants.LOG_TAG
+import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateConstants.PushPayloadKeys
 import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateImageUtils
-import com.adobe.marketing.mobile.notificationbuilder.internal.builders.extensions.addActionButtons
-import com.adobe.marketing.mobile.notificationbuilder.internal.builders.extensions.createNotificationChannelIfRequired
+import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.addActionButtons
+import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.createNotificationChannelIfRequired
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.BasicPushTemplate
+import com.adobe.marketing.mobile.notificationbuilder.internal.util.MapData
 import com.adobe.marketing.mobile.services.Log
 
 /**
  * Object responsible for constructing a [NotificationCompat.Builder] object containing a basic push template notification.
  */
 internal object BasicNotificationBuilder {
-    private const val SELF_TAG = "BasicTemplateNotificationBuilder"
+    private const val SELF_TAG = "BasicNotificationBuilder"
 
     @Throws(NotificationConstructionFailedException::class)
     fun construct(
@@ -42,24 +44,15 @@ internal object BasicNotificationBuilder {
         trackerActivityClass: Class<out Activity>?,
         broadcastReceiverClass: Class<out BroadcastReceiver>?
     ): NotificationCompat.Builder {
-        Log.trace(
-            PushTemplateConstants.LOG_TAG,
-            SELF_TAG,
-            "Building a basic template push notification."
-        )
+        Log.trace(LOG_TAG, SELF_TAG, "Building a basic template push notification.")
         val packageName = context.packageName
         val smallLayout = RemoteViews(packageName, R.layout.push_template_collapsed)
         val expandedLayout = RemoteViews(packageName, R.layout.push_template_expanded)
 
         val notificationManager =
             context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        val channelIdToUse: String = notificationManager.createNotificationChannelIfRequired(
-            context,
-            pushTemplate.channelId,
-            pushTemplate.sound,
-            pushTemplate.getNotificationImportance(),
-            pushTemplate.isFromIntent
-        )
+        val channelIdToUse: String =
+            notificationManager.createNotificationChannelIfRequired(context, pushTemplate)
 
         // create the notification builder with the common settings applied
         val notificationBuilder = AEPPushNotificationBuilder.construct(
@@ -77,11 +70,7 @@ internal object BasicNotificationBuilder {
         val downloadedImageCount = PushTemplateImageUtils.cacheImages(listOf(imageUri))
 
         if (downloadedImageCount == 0) {
-            Log.trace(
-                PushTemplateConstants.LOG_TAG,
-                SELF_TAG,
-                "No image found for basic push template."
-            )
+            Log.trace(LOG_TAG, SELF_TAG, "No image found for basic push template.")
             expandedLayout.setViewVisibility(R.id.expanded_template_image, View.GONE)
         } else {
             expandedLayout.setImageViewBitmap(
@@ -101,8 +90,8 @@ internal object BasicNotificationBuilder {
 
         // add a remind later button if we have a label and an epoch or delay timestamp
         pushTemplate.remindLaterText?.let { remindLaterText ->
-            if (pushTemplate.remindLaterEpochTimestamp != null ||
-                pushTemplate.remindLaterDelaySeconds != null
+            if (pushTemplate.remindLaterTimestamp != null ||
+                pushTemplate.remindLaterDuration != null
             ) {
                 val remindIntent = createRemindPendingIntent(
                     context,
@@ -124,7 +113,7 @@ internal object BasicNotificationBuilder {
         broadcastReceiverClass: Class<out BroadcastReceiver>?,
         dataMap: MutableMap<String, String>
     ): NotificationCompat.Builder {
-        val basicPushTemplate = BasicPushTemplate(dataMap)
+        val basicPushTemplate = BasicPushTemplate(MapData(dataMap))
         return construct(
             context,
             basicPushTemplate,
@@ -152,104 +141,29 @@ internal object BasicNotificationBuilder {
             return null
         }
         Log.trace(
-            PushTemplateConstants.LOG_TAG,
+            LOG_TAG,
             SELF_TAG,
             "Creating a remind later pending intent from a push template object."
         )
 
-        val remindIntent = Intent(PushTemplateConstants.IntentActions.REMIND_LATER_CLICKED).apply {
-            setClass(context.applicationContext, broadcastReceiverClass)
+        val remindIntent = AEPPushNotificationBuilder.createIntent(
+            PushTemplateIntentConstants.IntentActions.REMIND_LATER_CLICKED,
+            pushTemplate
+        )
+        remindIntent.putExtra(PushPayloadKeys.REMIND_LATER_TEXT, pushTemplate.remindLaterText)
+        remindIntent.putExtra(
+            PushPayloadKeys.REMIND_LATER_TIMESTAMP,
+            pushTemplate.remindLaterTimestamp
+        )
+        remindIntent.putExtra(
+            PushPayloadKeys.REMIND_LATER_DURATION,
+            pushTemplate.remindLaterDuration
+        )
+        remindIntent.putExtra(PushPayloadKeys.ACTION_BUTTONS, pushTemplate.actionButtonsString)
+        remindIntent.putExtra(PushPayloadKeys.CHANNEL_ID, channelId)
 
-            flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
-            putExtra(
-                PushTemplateConstants.IntentKeys.TEMPLATE_TYPE, pushTemplate.templateType?.value
-            )
-            putExtra(
-                PushTemplateConstants.IntentKeys.IMAGE_URI, pushTemplate.imageUrl
-            )
-            putExtra(
-                PushTemplateConstants.IntentKeys.ACTION_URI, pushTemplate.actionUri
-            )
-            putExtra(PushTemplateConstants.IntentKeys.CHANNEL_ID, channelId)
-            putExtra(
-                PushTemplateConstants.IntentKeys.CUSTOM_SOUND, pushTemplate.sound
-            )
-            putExtra(
-                PushTemplateConstants.IntentKeys.TITLE_TEXT,
-                pushTemplate.title
-            )
-            putExtra(
-                PushTemplateConstants.IntentKeys.BODY_TEXT,
-                pushTemplate.body
-            )
-            putExtra(
-                PushTemplateConstants.IntentKeys.EXPANDED_BODY_TEXT,
-                pushTemplate.expandedBodyText
-            )
-            putExtra(
-                PushTemplateConstants.IntentKeys.NOTIFICATION_BACKGROUND_COLOR,
-                pushTemplate.notificationBackgroundColor
-            )
-            putExtra(
-                PushTemplateConstants.IntentKeys.TITLE_TEXT_COLOR,
-                pushTemplate.titleTextColor
-            )
-            putExtra(
-                PushTemplateConstants.IntentKeys.EXPANDED_BODY_TEXT_COLOR,
-                pushTemplate.expandedBodyTextColor
-            )
-            putExtra(
-                PushTemplateConstants.IntentKeys.SMALL_ICON, pushTemplate.smallIcon
-            )
-            putExtra(
-                PushTemplateConstants.IntentKeys.SMALL_ICON_COLOR,
-                pushTemplate.smallIconColor
-            )
-            putExtra(
-                PushTemplateConstants.IntentKeys.LARGE_ICON, pushTemplate.largeIcon
-            )
-            putExtra(
-                PushTemplateConstants.IntentKeys.VISIBILITY,
-                pushTemplate.getNotificationVisibility()
-            )
-            putExtra(
-                PushTemplateConstants.IntentKeys.IMPORTANCE,
-                pushTemplate.getNotificationImportance()
-            )
-            putExtra(
-                PushTemplateConstants.IntentKeys.BADGE_COUNT, pushTemplate.badgeCount
-            )
-            putExtra(
-                PushTemplateConstants.IntentKeys.REMIND_EPOCH_TS,
-                pushTemplate.remindLaterEpochTimestamp
-            )
-            putExtra(
-                PushTemplateConstants.IntentKeys.REMIND_DELAY_SECONDS,
-                pushTemplate.remindLaterDelaySeconds
-            )
-            putExtra(
-                PushTemplateConstants.IntentKeys.REMIND_LABEL, pushTemplate.remindLaterText
-            )
-            putExtra(
-                PushTemplateConstants.IntentKeys.ACTION_BUTTONS_STRING,
-                pushTemplate.actionButtonsString
-            )
-            putExtra(
-                PushTemplateConstants.IntentKeys.STICKY, pushTemplate.isNotificationSticky
-            )
-            putExtra(
-                PushTemplateConstants.IntentKeys.TAG, pushTemplate.tag
-            )
-            putExtra(
-                PushTemplateConstants.IntentKeys.TICKER, pushTemplate.ticker
-            )
-            putExtra(
-                PushTemplateConstants.IntentKeys.PAYLOAD_VERSION, pushTemplate.payloadVersion
-            )
-            putExtra(
-                PushTemplateConstants.IntentKeys.PRIORITY,
-                pushTemplate.notificationPriority
-            )
+        broadcastReceiverClass.let {
+            remindIntent.setClass(context.applicationContext, broadcastReceiverClass)
         }
 
         return PendingIntent.getBroadcast(

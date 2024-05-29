@@ -9,13 +9,13 @@
   governing permissions and limitations under the License.
 */
 
-package com.adobe.marketing.mobile.notificationbuilder.internal.builders.extensions
+package com.adobe.marketing.mobile.notificationbuilder.internal.extensions
 
 import android.content.ContentResolver
 import android.content.Context
 import android.content.pm.PackageManager
 import android.net.Uri
-import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateConstants
+import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateConstants.LOG_TAG
 import com.adobe.marketing.mobile.services.Log
 
 private const val SELF_TAG = "AppResourceExtensions"
@@ -46,7 +46,7 @@ internal fun Context.getDefaultAppIcon(): Int {
         return packageManager.getApplicationInfo(packageName, 0).icon
     } catch (e: PackageManager.NameNotFoundException) {
         Log.warning(
-            PushTemplateConstants.LOG_TAG,
+            LOG_TAG,
             SELF_TAG,
             "Package manager NameNotFoundException while reading default application icon: ${e.localizedMessage}"
         )

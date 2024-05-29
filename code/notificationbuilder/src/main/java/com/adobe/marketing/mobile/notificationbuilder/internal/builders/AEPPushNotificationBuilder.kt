@@ -13,20 +13,22 @@ package com.adobe.marketing.mobile.notificationbuilder.internal.builders
 
 import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.os.Build
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import com.adobe.marketing.mobile.notificationbuilder.NotificationConstructionFailedException
 import com.adobe.marketing.mobile.notificationbuilder.R
-import com.adobe.marketing.mobile.notificationbuilder.internal.builders.extensions.setNotificationBackgroundColor
-import com.adobe.marketing.mobile.notificationbuilder.internal.builders.extensions.setNotificationBodyTextColor
-import com.adobe.marketing.mobile.notificationbuilder.internal.builders.extensions.setNotificationClickAction
-import com.adobe.marketing.mobile.notificationbuilder.internal.builders.extensions.setNotificationDeleteAction
-import com.adobe.marketing.mobile.notificationbuilder.internal.builders.extensions.setNotificationTitleTextColor
-import com.adobe.marketing.mobile.notificationbuilder.internal.builders.extensions.setRemoteViewLargeIcon
-import com.adobe.marketing.mobile.notificationbuilder.internal.builders.extensions.setSmallIcon
-import com.adobe.marketing.mobile.notificationbuilder.internal.builders.extensions.setSound
-import com.adobe.marketing.mobile.notificationbuilder.internal.builders.extensions.setVisibility
+import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateConstants
+import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setNotificationBackgroundColor
+import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setNotificationBodyTextColor
+import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setNotificationClickAction
+import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setNotificationDeleteAction
+import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setNotificationTitleTextColor
+import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setRemoteViewImage
+import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setSmallIcon
+import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setSound
+import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setVisibility
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.AEPPushTemplate
 
 // TODO: The utilities provided by this builder assumes the id's for various common elements (R.id.basic_small_layout,
@@ -55,12 +57,12 @@ internal object AEPPushNotificationBuilder {
 
         // set custom colors on the notification background, title text, and body text
         smallLayout.setNotificationBackgroundColor(
-            pushTemplate.notificationBackgroundColor,
+            pushTemplate.backgroundColor,
             R.id.basic_small_layout
         )
 
         expandedLayout.setNotificationBackgroundColor(
-            pushTemplate.notificationBackgroundColor,
+            pushTemplate.backgroundColor,
             containerLayoutViewId
         )
 
@@ -75,18 +77,18 @@ internal object AEPPushNotificationBuilder {
         )
 
         smallLayout.setNotificationBodyTextColor(
-            pushTemplate.expandedBodyTextColor,
+            pushTemplate.bodyTextColor,
             R.id.notification_body
         )
 
         expandedLayout.setNotificationBodyTextColor(
-            pushTemplate.expandedBodyTextColor,
+            pushTemplate.bodyTextColor,
             R.id.notification_body_expanded
         )
 
         // set a large icon if one is present
-        smallLayout.setRemoteViewLargeIcon(pushTemplate.largeIcon)
-        expandedLayout.setRemoteViewLargeIcon(pushTemplate.largeIcon)
+        smallLayout.setRemoteViewImage(pushTemplate.largeIcon, R.id.large_icon)
+        expandedLayout.setRemoteViewImage(pushTemplate.largeIcon, R.id.large_icon)
 
         val builder = NotificationCompat.Builder(context, channelIdToUse)
             .setTicker(pushTemplate.ticker)
@@ -118,5 +120,77 @@ internal object AEPPushNotificationBuilder {
             // notification requires a tone or vibration
         }
         return builder
+    }
+
+    internal fun createIntent(action: String, template: AEPPushTemplate): Intent {
+        val intent = Intent(action)
+        intent.flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
+
+        // add the notification payload version
+        intent.putExtra(PushTemplateConstants.PushPayloadKeys.VERSION, template.payloadVersion)
+
+        // add the notification text information
+        intent.putExtra(PushTemplateConstants.PushPayloadKeys.TITLE, template.title)
+        intent.putExtra(PushTemplateConstants.PushPayloadKeys.BODY, template.body)
+        intent.putExtra(
+            PushTemplateConstants.PushPayloadKeys.EXPANDED_BODY_TEXT,
+            template.expandedBodyText
+        )
+        intent.putExtra(PushTemplateConstants.PushPayloadKeys.TICKER, template.ticker)
+
+        // add the template type
+        intent.putExtra(
+            PushTemplateConstants.PushPayloadKeys.TEMPLATE_TYPE,
+            template.templateType?.value
+        )
+
+        // add the basic media information
+        intent.putExtra(PushTemplateConstants.PushPayloadKeys.IMAGE_URL, template.imageUrl)
+
+        // add the notification action information
+        intent.putExtra(PushTemplateConstants.PushPayloadKeys.ACTION_URI, template.actionUri)
+        intent.putExtra(
+            PushTemplateConstants.PushPayloadKeys.ACTION_TYPE,
+            template.actionType?.name
+        )
+
+        // add the notification icon information
+        intent.putExtra(PushTemplateConstants.PushPayloadKeys.SMALL_ICON, template.smallIcon)
+        intent.putExtra(PushTemplateConstants.PushPayloadKeys.LARGE_ICON, template.largeIcon)
+
+        // add the notification color data
+        intent.putExtra(
+            PushTemplateConstants.PushPayloadKeys.TITLE_TEXT_COLOR,
+            template.titleTextColor
+        )
+        intent.putExtra(
+            PushTemplateConstants.PushPayloadKeys.BODY_TEXT_COLOR,
+            template.bodyTextColor
+        )
+        intent.putExtra(
+            PushTemplateConstants.PushPayloadKeys.BACKGROUND_COLOR,
+            template.backgroundColor
+        )
+        intent.putExtra(
+            PushTemplateConstants.PushPayloadKeys.SMALL_ICON_COLOR,
+            template.smallIconColor
+        )
+
+        // add other notification properties
+        intent.putExtra(PushTemplateConstants.PushPayloadKeys.TAG, template.tag)
+        intent.putExtra(PushTemplateConstants.PushPayloadKeys.SOUND, template.sound)
+        intent.putExtra(
+            PushTemplateConstants.PushPayloadKeys.BADGE_COUNT,
+            template.badgeCount.toString()
+        )
+        intent.putExtra(
+            PushTemplateConstants.PushPayloadKeys.STICKY,
+            template.isNotificationSticky.toString()
+        )
+
+        // add notification priority and visibility
+        intent.putExtra(PushTemplateConstants.PushPayloadKeys.PRIORITY, template.priorityString)
+        intent.putExtra(PushTemplateConstants.PushPayloadKeys.VISIBILITY, template.visibilityString)
+        return intent
     }
 }

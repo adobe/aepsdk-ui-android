@@ -11,35 +11,36 @@
 
 package com.adobe.marketing.mobile.notificationbuilder.internal.templates
 
-import android.content.Intent
 import androidx.annotation.VisibleForTesting
-import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateConstants
+import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateConstants.ActionButtons
+import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateConstants.ActionType
+import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateConstants.LOG_TAG
+import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateConstants.PushPayloadKeys
+import com.adobe.marketing.mobile.notificationbuilder.internal.util.NotificationData
 import com.adobe.marketing.mobile.services.Log
-import com.adobe.marketing.mobile.util.DataReader
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 
-internal class BasicPushTemplate : AEPPushTemplate {
+internal class BasicPushTemplate(data: NotificationData) : AEPPushTemplate(data) {
 
     private val SELF_TAG = "BasicPushTemplate"
 
     /** Class representing the action button with label, link and type  */
     class ActionButton(val label: String, val link: String?, type: String?) {
-        val type: PushTemplateConstants.ActionType
+        val type: ActionType
 
         init {
             this.type = try {
-                PushTemplateConstants.ActionType.valueOf(
-                    type ?: PushTemplateConstants.ActionType.NONE.name
+                ActionType.valueOf(
+                    type ?: ActionType.NONE.name
                 )
             } catch (e: IllegalArgumentException) {
                 Log.warning(
-                    PushTemplateConstants.LOG_TAG,
-                    SELF_TAG,
+                    LOG_TAG, SELF_TAG,
                     "Invalid action button type provided, defaulting to NONE. Error : ${e.localizedMessage}"
                 )
-                PushTemplateConstants.ActionType.NONE
+                ActionType.NONE
             }
         }
 
@@ -55,29 +56,26 @@ internal class BasicPushTemplate : AEPPushTemplate {
              */
             fun getActionButtonFromJSONObject(jsonObject: JSONObject): ActionButton? {
                 return try {
-                    val label = jsonObject.getString(PushTemplateConstants.ActionButtons.LABEL)
+                    val label = jsonObject.getString(ActionButtons.LABEL)
                     if (label.isEmpty()) {
                         Log.debug(
-                            PushTemplateConstants.LOG_TAG,
-                            SELF_TAG, "Label is empty"
+                            LOG_TAG, SELF_TAG, "Label is empty"
                         )
                         return null
                     }
                     var uri: String? = null
-                    val type = jsonObject.getString(PushTemplateConstants.ActionButtons.TYPE)
-                    if (type == PushTemplateConstants.ActionType.WEBURL.name || type == PushTemplateConstants.ActionType.DEEPLINK.name) {
-                        uri = jsonObject.optString(PushTemplateConstants.ActionButtons.URI)
+                    val type = jsonObject.getString(ActionButtons.TYPE)
+                    if (type == ActionType.WEBURL.name || type == ActionType.DEEPLINK.name) {
+                        uri = jsonObject.optString(ActionButtons.URI)
                     }
                     Log.trace(
-                        PushTemplateConstants.LOG_TAG,
-                        SELF_TAG,
+                        LOG_TAG, SELF_TAG,
                         "Creating an ActionButton with label ($label), uri ($uri), and type ($type)."
                     )
                     ActionButton(label, uri, type)
                 } catch (e: JSONException) {
                     Log.warning(
-                        PushTemplateConstants.LOG_TAG,
-                        SELF_TAG,
+                        LOG_TAG, SELF_TAG,
                         "Exception in converting actionButtons json string to json object, Error : ${e.localizedMessage}."
                     )
                     null
@@ -87,57 +85,31 @@ internal class BasicPushTemplate : AEPPushTemplate {
     }
 
     // Optional, action buttons for the notification
-    internal var actionButtonsString: String?
-        private set
+    internal val actionButtonsString: String?
 
     // Optional, list of ActionButton for the notification
-    internal var actionButtonsList: List<ActionButton>?
-        private set
+    internal val actionButtonsList: List<ActionButton>?
 
     // Optional, If present, show a "remind later" button using the value provided as its label
-    internal var remindLaterText: String?
-        private set
+    internal val remindLaterText: String?
 
     // Optional, If present, schedule this notification to be re-delivered at this epoch timestamp (in seconds) provided.
-    internal var remindLaterEpochTimestamp: Long?
-        private set
+    internal val remindLaterTimestamp: Long?
 
     // Optional, If present, schedule this notification to be re-delivered after this provided time (in seconds).
-    internal var remindLaterDelaySeconds: Int?
-        private set
+    internal val remindLaterDuration: Int?
 
-    constructor(data: Map<String, String>) : super(data) {
-        actionButtonsString =
-            DataReader.optString(data, PushTemplateConstants.PushPayloadKeys.ACTION_BUTTONS, null)
+    /**
+     * Initializes the push template with the given NotificationData.
+     *
+     * @param data the data to initialize the push template with
+     */
+    init {
+        actionButtonsString = data.getString(PushPayloadKeys.ACTION_BUTTONS)
         actionButtonsList = getActionButtonsFromString(actionButtonsString)
-        remindLaterText = DataReader.optString(
-            data, PushTemplateConstants.PushPayloadKeys.REMIND_LATER_TEXT, null
-        )
-        val epochTimestampString = DataReader.optString(
-            data, PushTemplateConstants.PushPayloadKeys.REMIND_LATER_EPOCH_TIMESTAMP, null
-        )
-        remindLaterEpochTimestamp =
-            if (epochTimestampString.isNullOrEmpty()) null else epochTimestampString.toLong()
-
-        val delaySeconds = DataReader.optString(
-            data,
-            PushTemplateConstants.PushPayloadKeys.REMIND_LATER_DELAY_SECONDS, null
-        )
-        remindLaterDelaySeconds = if (delaySeconds.isNullOrEmpty()) null else delaySeconds.toInt()
-    }
-
-    constructor(intent: Intent) : super(intent) {
-        val intentExtras =
-            intent.extras ?: throw IllegalArgumentException("Intent extras are null")
-        actionButtonsString =
-            intentExtras.getString(PushTemplateConstants.IntentKeys.ACTION_BUTTONS_STRING)
-        actionButtonsList = getActionButtonsFromString(actionButtonsString)
-        remindLaterEpochTimestamp =
-            intentExtras.getLong(PushTemplateConstants.IntentKeys.REMIND_EPOCH_TS)
-        remindLaterDelaySeconds =
-            intentExtras.getInt(PushTemplateConstants.IntentKeys.REMIND_DELAY_SECONDS)
-        remindLaterText =
-            intentExtras.getString(PushTemplateConstants.IntentKeys.REMIND_LABEL)
+        remindLaterText = data.getString(PushPayloadKeys.REMIND_LATER_TEXT)
+        remindLaterTimestamp = data.getLong(PushPayloadKeys.REMIND_LATER_TIMESTAMP)
+        remindLaterDuration = data.getInteger(PushPayloadKeys.REMIND_LATER_DURATION)
     }
 
     /**
@@ -150,8 +122,7 @@ internal class BasicPushTemplate : AEPPushTemplate {
     internal fun getActionButtonsFromString(actionButtons: String?): List<ActionButton>? {
         if (actionButtons == null) {
             Log.debug(
-                PushTemplateConstants.LOG_TAG,
-                SELF_TAG,
+                LOG_TAG, SELF_TAG,
                 "Exception in converting actionButtons json string to json object, Error :" +
                     " actionButtons is null"
             )
@@ -167,8 +138,7 @@ internal class BasicPushTemplate : AEPPushTemplate {
             }
         } catch (e: JSONException) {
             Log.warning(
-                PushTemplateConstants.LOG_TAG,
-                SELF_TAG,
+                LOG_TAG, SELF_TAG,
                 "Exception in converting actionButtons json string to json object, Error : ${e.localizedMessage}"
             )
             return null

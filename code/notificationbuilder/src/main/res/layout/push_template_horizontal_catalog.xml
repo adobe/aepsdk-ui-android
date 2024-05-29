@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/catalog_container_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clipToPadding="false"
+    android:clipChildren="false"
+    android:orientation="horizontal"
+    android:theme="@style/DayNightTheme">
+
+    <ImageView
+        android:id="@+id/product_image"
+        android:scaleType="fitCenter"
+        android:adjustViewBounds="true"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/product_catalog_image_height"
+        android:layout_alignParentLeft="true"
+        android:contentDescription="@string/big_product_image">
+    </ImageView>
+
+    <LinearLayout
+        android:id="@+id/horizontal_catalog_mid_row_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/product_catalog_horizontal_mid_row_margin_top"
+        android:layout_below="@id/product_image">
+
+        <TextView
+            android:id="@+id/product_title"
+            style="@style/Title"
+            android:layout_weight="1"
+            android:layout_gravity="start"
+            android:layout_width="@dimen/product_catalog_horizontal_mid_row_width"
+            android:layout_height="@dimen/product_catalog_horizontal_mid_row_height"
+            android:paddingTop="@dimen/product_catalog_horizontal_mid_row_text_padding"
+            android:textAlignment="center"
+            android:textSize="14sp" />
+
+        <Button
+            android:id="@+id/cta_button"
+            android:layout_weight="1"
+            android:layout_gravity="end"
+            android:layout_width="@dimen/product_catalog_horizontal_mid_row_width"
+            android:layout_height="@dimen/product_catalog_horizontal_mid_row_height"
+            android:text="@string/buy_now"
+            android:textAlignment="center"
+            android:textSize="12sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/horizontal_catalog_bottom_row_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/product_catalog_horizontal_bottom_row_margin_top"
+        android:layout_below="@id/horizontal_catalog_mid_row_layout">
+
+        <ImageView
+            android:id="@+id/product_thumbnail_1"
+            android:layout_weight="1"
+            android:layout_gravity="start"
+            android:scaleType="center"
+            android:layout_height="@dimen/product_catalog_horizontal_bottom_row_height"
+            android:layout_width="@dimen/product_catalog_horizontal_bottom_row_width"
+            android:contentDescription="@string/product_thumbnail_1"/>
+
+        <ImageView
+            android:id="@+id/product_thumbnail_2"
+            android:layout_weight="1"
+            android:scaleType="center"
+            android:layout_height="@dimen/product_catalog_horizontal_bottom_row_height"
+            android:layout_width="@dimen/product_catalog_horizontal_bottom_row_width"
+            android:layout_marginLeft="@dimen/product_catalog_horizontal_bottom_row_margin_left"
+            android:contentDescription="@string/product_thumbnail_2"/>
+
+        <ImageView
+            android:id="@+id/product_thumbnail_3"
+            android:layout_weight="1"
+            android:scaleType="center"
+            android:layout_height="@dimen/product_catalog_horizontal_bottom_row_height"
+            android:layout_width="@dimen/product_catalog_horizontal_bottom_row_width"
+            android:layout_marginLeft="@dimen/product_catalog_horizontal_bottom_row_margin_left"
+            android:contentDescription="@string/product_thumbnail_3"/>
+    </LinearLayout>
+
+</RelativeLayout>

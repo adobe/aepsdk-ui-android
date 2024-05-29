@@ -16,14 +16,14 @@ import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
 import androidx.core.app.NotificationCompat
-import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateConstants
-import com.adobe.marketing.mobile.notificationbuilder.internal.builders.extensions.addActionButtons
-import com.adobe.marketing.mobile.notificationbuilder.internal.builders.extensions.createNotificationChannelIfRequired
-import com.adobe.marketing.mobile.notificationbuilder.internal.builders.extensions.setLargeIcon
-import com.adobe.marketing.mobile.notificationbuilder.internal.builders.extensions.setNotificationClickAction
-import com.adobe.marketing.mobile.notificationbuilder.internal.builders.extensions.setNotificationDeleteAction
-import com.adobe.marketing.mobile.notificationbuilder.internal.builders.extensions.setSmallIcon
-import com.adobe.marketing.mobile.notificationbuilder.internal.builders.extensions.setSound
+import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateConstants.LOG_TAG
+import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.addActionButtons
+import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.createNotificationChannelIfRequired
+import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setLargeIcon
+import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setNotificationClickAction
+import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setNotificationDeleteAction
+import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setSmallIcon
+import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setSound
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.BasicPushTemplate
 import com.adobe.marketing.mobile.services.Log
 
@@ -38,22 +38,13 @@ internal object LegacyNotificationBuilder {
         pushTemplate: BasicPushTemplate,
         trackerActivityClass: Class<out Activity>?
     ): NotificationCompat.Builder {
-        Log.trace(
-            PushTemplateConstants.LOG_TAG,
-            SELF_TAG,
-            "Building a legacy style push notification."
-        )
+        Log.trace(LOG_TAG, SELF_TAG, "Building a legacy style push notification.")
 
         // create the notification channel
         val notificationManager =
             context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        val channelId = notificationManager.createNotificationChannelIfRequired(
-            context,
-            pushTemplate.channelId,
-            pushTemplate.sound,
-            pushTemplate.getNotificationImportance(),
-            pushTemplate.isFromIntent
-        )
+        val channelId =
+            notificationManager.createNotificationChannelIfRequired(context, pushTemplate)
 
         // Create the notification builder object and set the ticker, title, body, and badge count
         val builder = NotificationCompat.Builder(context, channelId)

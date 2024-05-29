@@ -22,10 +22,13 @@ import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import androidx.core.app.RemoteInput
 import com.adobe.marketing.mobile.notificationbuilder.NotificationConstructionFailedException
+import com.adobe.marketing.mobile.notificationbuilder.PushTemplateIntentConstants
 import com.adobe.marketing.mobile.notificationbuilder.R
 import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateConstants
+import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateConstants.LOG_TAG
+import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateConstants.PushPayloadKeys
 import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateImageUtils
-import com.adobe.marketing.mobile.notificationbuilder.internal.builders.extensions.createNotificationChannelIfRequired
+import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.createNotificationChannelIfRequired
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.InputBoxPushTemplate
 import com.adobe.marketing.mobile.services.Log
 
@@ -42,24 +45,15 @@ internal object InputBoxNotificationBuilder {
         trackerActivityClass: Class<out Activity>?,
         broadcastReceiverClass: Class<out BroadcastReceiver>?
     ): NotificationCompat.Builder {
-        Log.trace(
-            PushTemplateConstants.LOG_TAG,
-            SELF_TAG,
-            "Building an input box template push notification."
-        )
+        Log.trace(LOG_TAG, SELF_TAG, "Building an input box template push notification.")
         val packageName = context.packageName
         val smallLayout = RemoteViews(packageName, R.layout.push_template_collapsed)
         val expandedLayout = RemoteViews(packageName, R.layout.push_template_expanded)
 
         val notificationManager =
             context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        val channelIdToUse: String = notificationManager.createNotificationChannelIfRequired(
-            context,
-            pushTemplate.channelId,
-            pushTemplate.sound,
-            pushTemplate.getNotificationImportance(),
-            pushTemplate.isFromIntent
-        )
+        val channelIdToUse: String =
+            notificationManager.createNotificationChannelIfRequired(context, pushTemplate)
 
         // create the notification builder with the common settings applied
         val notificationBuilder = AEPPushNotificationBuilder.construct(
@@ -81,11 +75,7 @@ internal object InputBoxNotificationBuilder {
             val pushImage = PushTemplateImageUtils.getCachedImage(imageUri)
             expandedLayout.setImageViewBitmap(R.id.expanded_template_image, pushImage)
         } else {
-            Log.trace(
-                PushTemplateConstants.LOG_TAG,
-                SELF_TAG,
-                "No image found for input box push template."
-            )
+            Log.trace(LOG_TAG, SELF_TAG, "No image found for input box push template.")
             expandedLayout.setViewVisibility(R.id.expanded_template_image, View.GONE)
         }
 
@@ -106,8 +96,7 @@ internal object InputBoxNotificationBuilder {
             return notificationBuilder
         }
         Log.trace(
-            PushTemplateConstants.LOG_TAG,
-            SELF_TAG,
+            LOG_TAG, SELF_TAG,
             "Adding an input box to capture text input. The input box receiver name is ${pushTemplate.inputBoxReceiverName}."
         )
         addInputTextAction(
@@ -179,102 +168,32 @@ internal object InputBoxNotificationBuilder {
             return null
         }
         Log.trace(
-            PushTemplateConstants.LOG_TAG,
+            LOG_TAG,
             SELF_TAG,
             "Creating a text input received intent from a push template object."
         )
 
-        val inputReceivedIntent = Intent(PushTemplateConstants.IntentActions.INPUT_RECEIVED)
+        val inputReceivedIntent = AEPPushNotificationBuilder.createIntent(
+            PushTemplateIntentConstants.IntentActions.INPUT_RECEIVED,
+            pushTemplate
+        )
+        inputReceivedIntent.putExtra(PushPayloadKeys.CHANNEL_ID, channelId)
+        inputReceivedIntent.putExtra(
+            PushPayloadKeys.INPUT_BOX_RECEIVER_NAME,
+            pushTemplate.inputBoxReceiverName
+        )
+        inputReceivedIntent.putExtra(PushPayloadKeys.INPUT_BOX_HINT, pushTemplate.inputTextHint)
+        inputReceivedIntent.putExtra(
+            PushPayloadKeys.INPUT_BOX_FEEDBACK_TEXT,
+            pushTemplate.feedbackText
+        )
+        inputReceivedIntent.putExtra(
+            PushPayloadKeys.INPUT_BOX_FEEDBACK_IMAGE,
+            pushTemplate.feedbackImage
+        )
         broadcastReceiverClass.let {
             inputReceivedIntent.setClass(context.applicationContext, broadcastReceiverClass)
         }
-
-        inputReceivedIntent.flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
-        inputReceivedIntent.putExtra(
-            PushTemplateConstants.IntentKeys.TEMPLATE_TYPE, pushTemplate.templateType?.value
-        )
-        inputReceivedIntent.putExtra(
-            PushTemplateConstants.IntentKeys.IMAGE_URI, pushTemplate.imageUrl
-        )
-        inputReceivedIntent.putExtra(
-            PushTemplateConstants.IntentKeys.ACTION_URI, pushTemplate.actionUri
-        )
-        inputReceivedIntent.putExtra(PushTemplateConstants.IntentKeys.CHANNEL_ID, channelId)
-        inputReceivedIntent.putExtra(
-            PushTemplateConstants.IntentKeys.CUSTOM_SOUND, pushTemplate.sound
-        )
-        inputReceivedIntent.putExtra(
-            PushTemplateConstants.IntentKeys.TITLE_TEXT,
-            pushTemplate.title
-        )
-        inputReceivedIntent.putExtra(
-            PushTemplateConstants.IntentKeys.BODY_TEXT,
-            pushTemplate.body
-        )
-        inputReceivedIntent.putExtra(
-            PushTemplateConstants.IntentKeys.EXPANDED_BODY_TEXT,
-            pushTemplate.expandedBodyText
-        )
-        inputReceivedIntent.putExtra(
-            PushTemplateConstants.IntentKeys.NOTIFICATION_BACKGROUND_COLOR,
-            pushTemplate.notificationBackgroundColor
-        )
-        inputReceivedIntent.putExtra(
-            PushTemplateConstants.IntentKeys.TITLE_TEXT_COLOR,
-            pushTemplate.titleTextColor
-        )
-        inputReceivedIntent.putExtra(
-            PushTemplateConstants.IntentKeys.EXPANDED_BODY_TEXT_COLOR,
-            pushTemplate.expandedBodyTextColor
-        )
-        inputReceivedIntent.putExtra(
-            PushTemplateConstants.IntentKeys.SMALL_ICON, pushTemplate.smallIcon
-        )
-        inputReceivedIntent.putExtra(
-            PushTemplateConstants.IntentKeys.SMALL_ICON_COLOR,
-            pushTemplate.smallIconColor
-        )
-        inputReceivedIntent.putExtra(
-            PushTemplateConstants.IntentKeys.LARGE_ICON, pushTemplate.largeIcon
-        )
-        inputReceivedIntent.putExtra(
-            PushTemplateConstants.IntentKeys.VISIBILITY,
-            pushTemplate.getNotificationVisibility()
-        )
-        inputReceivedIntent.putExtra(
-            PushTemplateConstants.IntentKeys.IMPORTANCE,
-            pushTemplate.getNotificationImportance()
-        )
-        inputReceivedIntent.putExtra(
-            PushTemplateConstants.IntentKeys.BADGE_COUNT, pushTemplate.badgeCount
-        )
-        inputReceivedIntent.putExtra(
-            PushTemplateConstants.IntentKeys.INPUT_BOX_FEEDBACK_TEXT, pushTemplate.feedbackText
-        )
-        inputReceivedIntent.putExtra(
-            PushTemplateConstants.IntentKeys.INPUT_BOX_FEEDBACK_IMAGE, pushTemplate.feedbackImage
-        )
-        inputReceivedIntent.putExtra(
-            PushTemplateConstants.IntentKeys.INPUT_BOX_RECEIVER_NAME,
-            pushTemplate.inputBoxReceiverName
-        )
-        inputReceivedIntent.putExtra(
-            PushTemplateConstants.IntentKeys.STICKY, pushTemplate.isNotificationSticky
-        )
-        inputReceivedIntent.putExtra(
-            PushTemplateConstants.IntentKeys.TAG, pushTemplate.tag
-        )
-        inputReceivedIntent.putExtra(
-            PushTemplateConstants.IntentKeys.TICKER, pushTemplate.ticker
-        )
-        inputReceivedIntent.putExtra(
-            PushTemplateConstants.IntentKeys.PAYLOAD_VERSION, pushTemplate.payloadVersion
-        )
-        inputReceivedIntent.putExtra(
-            PushTemplateConstants.IntentKeys.PRIORITY,
-            pushTemplate.notificationPriority
-        )
-
         return inputReceivedIntent
     }
 }

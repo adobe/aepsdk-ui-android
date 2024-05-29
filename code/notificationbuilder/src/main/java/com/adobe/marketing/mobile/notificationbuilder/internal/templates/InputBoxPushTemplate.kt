@@ -11,60 +11,36 @@
 
 package com.adobe.marketing.mobile.notificationbuilder.internal.templates
 
-import android.content.Intent
-import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateConstants
-import com.adobe.marketing.mobile.util.DataReader
+import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateConstants.PushPayloadKeys
+import com.adobe.marketing.mobile.notificationbuilder.internal.util.NotificationData
 
 /**
  * This class is used to parse the push template data payload or an intent and provide the necessary information
  * to build a notification containing an input box.
  */
-internal class InputBoxPushTemplate : AEPPushTemplate {
+internal class InputBoxPushTemplate(data: NotificationData) : AEPPushTemplate(data) {
     // Required, the intent action name to be used when the user submits the feedback.
-    internal var inputBoxReceiverName: String
+    internal val inputBoxReceiverName: String
 
     // Optional, If present, use it as the placeholder text for the text input field. Otherwise, use the default placeholder text of "Reply".
-    internal var inputTextHint: String?
-        private set
+    internal val inputTextHint: String?
 
     // Optional, once feedback has been submitted, use this text as the notification's body
-    internal var feedbackText: String?
-        private set
+    internal val feedbackText: String?
 
     // Optional, once feedback has been submitted, use this as the notification's image
-    internal var feedbackImage: String?
-        private set
+    internal val feedbackImage: String?
 
-    constructor(data: Map<String, String>) : super(data) {
-        inputBoxReceiverName = DataReader.optString(
-            data, PushTemplateConstants.PushPayloadKeys.INPUT_BOX_RECEIVER_NAME, null
-        )
-            ?: throw IllegalArgumentException("Required field \"${PushTemplateConstants.PushPayloadKeys.INPUT_BOX_RECEIVER_NAME}\" not found.")
-        inputTextHint = DataReader.optString(
-            data, PushTemplateConstants.PushPayloadKeys.INPUT_BOX_HINT, null
-        )
-        feedbackText = DataReader.optString(
-            data, PushTemplateConstants.PushPayloadKeys.INPUT_BOX_FEEDBACK_TEXT, null
-        )
-        feedbackImage = DataReader.optString(
-            data, PushTemplateConstants.PushPayloadKeys.INPUT_BOX_FEEDBACK_IMAGE, null
-        )
-    }
-
-    constructor(intent: Intent) : super(intent) {
-        val intentExtras =
-            intent.extras ?: throw IllegalArgumentException("Intent extras are null")
-        val receiverName =
-            intentExtras.getString(PushTemplateConstants.IntentKeys.INPUT_BOX_RECEIVER_NAME)
-        inputBoxReceiverName = receiverName
-            ?: throw IllegalArgumentException("Required field \"${PushTemplateConstants.IntentKeys.INPUT_BOX_RECEIVER_NAME}\" not found.")
-        inputTextHint = intentExtras.getString(
-            PushTemplateConstants.IntentKeys.INPUT_BOX_HINT,
-            PushTemplateConstants.DefaultValues.INPUT_BOX_DEFAULT_REPLY_TEXT
-        )
-        feedbackText =
-            intentExtras.getString(PushTemplateConstants.IntentKeys.INPUT_BOX_FEEDBACK_TEXT)
-        feedbackImage =
-            intentExtras.getString(PushTemplateConstants.IntentKeys.INPUT_BOX_FEEDBACK_IMAGE)
+    /**
+     * Initializes the input box push template with the provided data.
+     *
+     * @param data the notification data payload or an intent
+     * @throws IllegalArgumentException if the required fields are not found in the data
+     */
+    init {
+        inputBoxReceiverName = data.getRequiredString(PushPayloadKeys.INPUT_BOX_RECEIVER_NAME)
+        inputTextHint = data.getString(PushPayloadKeys.INPUT_BOX_HINT)
+        feedbackText = data.getString(PushPayloadKeys.INPUT_BOX_FEEDBACK_TEXT)
+        feedbackImage = data.getString(PushPayloadKeys.INPUT_BOX_FEEDBACK_IMAGE)
     }
 }

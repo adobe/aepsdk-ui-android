@@ -15,6 +15,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
 import android.graphics.RectF
+import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateConstants.LOG_TAG
 import com.adobe.marketing.mobile.services.HttpConnecting
 import com.adobe.marketing.mobile.services.HttpMethod
 import com.adobe.marketing.mobile.services.Log
@@ -78,7 +79,7 @@ internal object PushTemplateImageUtils {
             val cacheResult = cacheService[assetCacheLocation, url]
             if (cacheResult != null) {
                 Log.trace(
-                    PushTemplateConstants.LOG_TAG,
+                    LOG_TAG,
                     SELF_TAG,
                     "Found cached image for $url"
                 )
@@ -106,7 +107,7 @@ internal object PushTemplateImageUtils {
                             downloadedImageCount.incrementAndGet()
                         } catch (exception: IOException) {
                             Log.trace(
-                                PushTemplateConstants.LOG_TAG,
+                                LOG_TAG,
                                 SELF_TAG,
                                 "Exception occurred creating an input stream from a bitmap for {$url}: ${exception.localizedMessage}."
                             )
@@ -120,13 +121,13 @@ internal object PushTemplateImageUtils {
         try {
             if (latch.await(DOWNLOAD_TIMEOUT_SECS.toLong(), TimeUnit.SECONDS)) {
                 Log.trace(
-                    PushTemplateConstants.LOG_TAG,
+                    LOG_TAG,
                     SELF_TAG,
                     "All image downloads have completed."
                 )
             } else {
                 Log.warning(
-                    PushTemplateConstants.LOG_TAG,
+                    LOG_TAG,
                     SELF_TAG,
                     "Timed out waiting for image downloads to complete."
                 )
@@ -134,7 +135,7 @@ internal object PushTemplateImageUtils {
             }
         } catch (e: InterruptedException) {
             Log.warning(
-                PushTemplateConstants.LOG_TAG,
+                LOG_TAG,
                 SELF_TAG,
                 "Interrupted while waiting for image downloads to complete: ${e.localizedMessage}"
             )
@@ -185,17 +186,17 @@ internal object PushTemplateImageUtils {
         }
         val cacheResult = ServiceProvider.getInstance().cacheService[assetCacheLocation, url]
         if (cacheResult == null) {
-            Log.trace(PushTemplateConstants.LOG_TAG, SELF_TAG, "Image not found in cache for $url")
+            Log.trace(LOG_TAG, SELF_TAG, "Image not found in cache for $url")
             return null
         }
-        Log.trace(PushTemplateConstants.LOG_TAG, SELF_TAG, "Found cached image for $url")
+        Log.trace(LOG_TAG, SELF_TAG, "Found cached image for $url")
         return BitmapFactory.decodeStream(cacheResult.data)
     }
 
     private fun handleDownloadResponse(url: String?, connection: HttpConnecting?): Bitmap? {
         if (connection == null) {
             Log.warning(
-                PushTemplateConstants.LOG_TAG,
+                LOG_TAG,
                 SELF_TAG,
                 "Failed to download push notification image from url ($url), received a null connection."
             )
@@ -203,7 +204,7 @@ internal object PushTemplateImageUtils {
         }
         if ((connection.responseCode != HttpURLConnection.HTTP_OK)) {
             Log.debug(
-                PushTemplateConstants.LOG_TAG,
+                LOG_TAG,
                 SELF_TAG,
                 "Failed to download push notification image from url ($url). Response code was: ${connection.responseCode}."
             )
@@ -212,7 +213,7 @@ internal object PushTemplateImageUtils {
         val bitmap = BitmapFactory.decodeStream(connection.inputStream)
         bitmap?.let {
             Log.trace(
-                PushTemplateConstants.LOG_TAG,
+                LOG_TAG,
                 SELF_TAG,
                 "Downloaded push notification image from url ($url)"
             )
@@ -227,10 +228,11 @@ internal object PushTemplateImageUtils {
      * @return an `InputStream` created from the provided bitmap
      */
     private fun bitmapToInputStream(bitmap: Bitmap): InputStream {
-        val byteArrayOutputStream = ByteArrayOutputStream()
-        bitmap.compress(Bitmap.CompressFormat.PNG, FULL_BITMAP_QUALITY, byteArrayOutputStream)
-        val bitmapData = byteArrayOutputStream.toByteArray()
-        return ByteArrayInputStream(bitmapData)
+        ByteArrayOutputStream().use {
+            bitmap.compress(Bitmap.CompressFormat.PNG, FULL_BITMAP_QUALITY, it)
+            val bitmapData = it.toByteArray()
+            return ByteArrayInputStream(bitmapData)
+        }
     }
 
     /**
@@ -246,7 +248,7 @@ internal object PushTemplateImageUtils {
         imageUrl: String
     ) {
         Log.trace(
-            PushTemplateConstants.LOG_TAG,
+            LOG_TAG,
             SELF_TAG,
             "Caching image downloaded from $imageUrl."
         )

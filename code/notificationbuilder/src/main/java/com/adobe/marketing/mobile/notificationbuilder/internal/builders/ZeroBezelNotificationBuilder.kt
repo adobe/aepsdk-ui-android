@@ -19,14 +19,14 @@ import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import com.adobe.marketing.mobile.notificationbuilder.NotificationConstructionFailedException
 import com.adobe.marketing.mobile.notificationbuilder.R
-import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateConstants
+import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateConstants.LOG_TAG
 import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateImageUtils
-import com.adobe.marketing.mobile.notificationbuilder.internal.builders.extensions.createNotificationChannelIfRequired
+import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.createNotificationChannelIfRequired
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.ZeroBezelPushTemplate
 import com.adobe.marketing.mobile.services.Log
 
 internal object ZeroBezelNotificationBuilder {
-    private const val SELF_TAG = "BasicTemplateNotificationBuilder"
+    private const val SELF_TAG = "ZeroBezelNotificationBuilder"
 
     @Throws(NotificationConstructionFailedException::class)
     fun construct(
@@ -34,11 +34,7 @@ internal object ZeroBezelNotificationBuilder {
         pushTemplate: ZeroBezelPushTemplate,
         trackerActivityClass: Class<out Activity>?
     ): NotificationCompat.Builder {
-        Log.trace(
-            PushTemplateConstants.LOG_TAG,
-            SELF_TAG,
-            "Building a zero bezel template push notification."
-        )
+        Log.trace(LOG_TAG, SELF_TAG, "Building a zero bezel template push notification.")
         val packageName = context.packageName
         val smallLayout = RemoteViews(packageName, R.layout.push_template_zero_bezel_collapsed)
         val expandedLayout = RemoteViews(packageName, R.layout.push_template_zero_bezel_expanded)
@@ -62,11 +58,7 @@ internal object ZeroBezelNotificationBuilder {
                 smallLayout.setViewVisibility(R.id.gradient_template_image, View.GONE)
             }
         } else {
-            Log.trace(
-                PushTemplateConstants.LOG_TAG,
-                SELF_TAG,
-                "No image found for zero bezel push template."
-            )
+            Log.trace(LOG_TAG, SELF_TAG, "No image found for zero bezel push template.")
             // hide the image views if no image was downloaded
             expandedLayout.setViewVisibility(R.id.expanded_template_image, View.GONE)
             expandedLayout.setViewVisibility(R.id.gradient_template_image, View.GONE)
@@ -78,11 +70,7 @@ internal object ZeroBezelNotificationBuilder {
         val notificationManager =
             context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         val channelIdToUse: String = notificationManager.createNotificationChannelIfRequired(
-            context,
-            pushTemplate.channelId,
-            pushTemplate.sound,
-            pushTemplate.getNotificationImportance(),
-            pushTemplate.isFromIntent
+            context, pushTemplate
         )
 
         // create the notification builder with the common settings applied

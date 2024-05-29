@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="buy_now">Buy Now</string>
+    <string name="price">Price</string>
+    <string name="large_icon">large icon</string>
+    <string name="product_thumbnail_1">product thumbnail 1</string>
+    <string name="product_thumbnail_2">product thumbnail 2</string>
+    <string name="product_thumbnail_3">product thumbnail 3</string>
+    <string name="big_product_image">big product image</string>
+    <string name="product_rating_confirm">Confirm</string>
+</resources>

@@ -9,7 +9,7 @@
   governing permissions and limitations under the License.
 */
 
-package com.adobe.marketing.mobile.notificationbuilder.internal.builders.extensions
+package com.adobe.marketing.mobile.notificationbuilder.internal.extensions
 
 import android.app.Activity
 import android.app.PendingIntent
@@ -21,6 +21,7 @@ import androidx.core.app.NotificationCompat
 import com.adobe.marketing.mobile.MobileCore
 import com.adobe.marketing.mobile.notificationbuilder.internal.PendingIntentUtils
 import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateConstants
+import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateConstants.LOG_TAG
 import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateImageUtils
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.AEPPushTemplate
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.BasicPushTemplate
@@ -57,7 +58,7 @@ internal fun NotificationCompat.Builder.setSmallIcon(
             iconResourceId = iconFromApp
         } else {
             Log.warning(
-                PushTemplateConstants.LOG_TAG,
+                LOG_TAG,
                 SELF_TAG,
                 "No valid small icon found. Notification will not be displayed."
             )
@@ -80,7 +81,7 @@ private fun NotificationCompat.Builder.setSmallIconColor(
 ) {
     if (iconColorHex.isNullOrEmpty()) {
         Log.trace(
-            PushTemplateConstants.LOG_TAG,
+            LOG_TAG,
             SELF_TAG,
             "Empty icon color hex string found, custom color will not be applied to the notification icon."
         )
@@ -92,7 +93,7 @@ private fun NotificationCompat.Builder.setSmallIconColor(
         setColorized(true).color = Color.parseColor("#$iconColorHex")
     } catch (exception: IllegalArgumentException) {
         Log.trace(
-            PushTemplateConstants.LOG_TAG,
+            LOG_TAG,
             SELF_TAG,
             "Unrecognized hex string passed to Color.parseColor(), custom color will not be applied to the notification icon."
         )
@@ -125,7 +126,7 @@ internal fun NotificationCompat.Builder.setVisibility(
         else -> {
             setVisibility(NotificationCompat.VISIBILITY_PRIVATE)
             Log.debug(
-                PushTemplateConstants.LOG_TAG,
+                LOG_TAG,
                 SELF_TAG,
                 "Invalid visibility value received from the payload. Using the default visibility value."
             )
@@ -149,7 +150,7 @@ internal fun NotificationCompat.Builder.setSound(
 ): NotificationCompat.Builder {
     if (customSound.isNullOrEmpty()) {
         Log.trace(
-            PushTemplateConstants.LOG_TAG,
+            LOG_TAG,
             SELF_TAG,
             "No custom sound found in the push template, using the default notification sound."
         )
@@ -159,7 +160,7 @@ internal fun NotificationCompat.Builder.setSound(
         return this
     }
     Log.trace(
-        PushTemplateConstants.LOG_TAG,
+        LOG_TAG,
         SELF_TAG,
         "Setting sound from bundle named $customSound."
     )

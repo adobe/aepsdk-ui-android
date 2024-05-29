@@ -11,24 +11,30 @@
 
 package com.adobe.marketing.mobile.notificationbuilder.internal.templates
 
-import android.content.Intent
+import com.adobe.marketing.mobile.notificationbuilder.PushTemplateIntentConstants
 import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateConstants
+import com.adobe.marketing.mobile.notificationbuilder.internal.util.IntentData
+import com.adobe.marketing.mobile.notificationbuilder.internal.util.NotificationData
 
-internal class ManualCarouselPushTemplate : CarouselPushTemplate {
+internal class ManualCarouselPushTemplate(data: NotificationData) : CarouselPushTemplate(data) {
     internal var intentAction: String? = null
         private set
     internal var centerImageIndex: Int = PushTemplateConstants.DefaultValues.NO_CENTER_INDEX_SET
 
-    constructor(data: Map<String, String>) : super(data) {
-        centerImageIndex = getDefaultCarouselIndex(carouselLayoutType)
-    }
-
-    constructor(intent: Intent) : super(intent) {
-        intentAction = intent.action
-        centerImageIndex = intent.getIntExtra(
-            PushTemplateConstants.IntentKeys.CENTER_IMAGE_INDEX,
-            getDefaultCarouselIndex(carouselLayoutType)
-        )
+    /**
+     * Constructs a Manual Carousel Push Template from the provided data.
+     * If the intent action is not null, then the data is from an intent.
+     *
+     * @param data Notification data
+     */
+    init {
+        centerImageIndex = getDefaultCarouselIndex(carouselLayout)
+        if (data is IntentData && data.actionName != null) {
+            this.intentAction = data.actionName
+            centerImageIndex =
+                data.getInteger(PushTemplateIntentConstants.IntentKeys.CENTER_IMAGE_INDEX)
+                    ?: getDefaultCarouselIndex(carouselLayout)
+        }
     }
 
     companion object {

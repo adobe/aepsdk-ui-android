@@ -9,13 +9,16 @@
   governing permissions and limitations under the License.
 */
 
-package com.adobe.marketing.mobile.notificationbuilder.internal.templates
+package com.adobe.marketing.mobile.notificationbuilder.internal.util
 
-import com.adobe.marketing.mobile.notificationbuilder.internal.util.NotificationData
+import android.os.Bundle
 
 /**
- * Auto Carousel Push Template
- *
- * @param data Notification data
+ * Class responsible for extracting notification data from an intent.
  */
-internal class AutoCarouselPushTemplate(data: NotificationData) : CarouselPushTemplate(data)
+internal class IntentData(private val extras: Bundle, val actionName: String?) : NotificationData {
+    override fun getString(key: String): String? = extras.getString(key)
+    override fun getInteger(key: String): Int? = extras.getString(key)?.toIntOrNull()
+    override fun getBoolean(key: String): Boolean? = extras.getString(key)?.toBoolean()
+    override fun getLong(key: String): Long? = extras.getString(key)?.toLongOrNull()
+}

@@ -20,9 +20,10 @@ import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import com.adobe.marketing.mobile.notificationbuilder.R
 import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateConstants
+import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateConstants.LOG_TAG
 import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateImageUtils
-import com.adobe.marketing.mobile.notificationbuilder.internal.builders.extensions.createNotificationChannelIfRequired
-import com.adobe.marketing.mobile.notificationbuilder.internal.builders.extensions.setRemoteViewClickAction
+import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.createNotificationChannelIfRequired
+import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setRemoteViewClickAction
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.AutoCarouselPushTemplate
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.CarouselPushTemplate
 import com.adobe.marketing.mobile.services.Log
@@ -31,7 +32,7 @@ import com.adobe.marketing.mobile.services.Log
  * Object responsible for constructing a [NotificationCompat.Builder] object containing a auto carousel push template notification.
  */
 internal object AutoCarouselNotificationBuilder {
-    private const val SELF_TAG = "AutoCarouselTemplateNotificationBuilder"
+    private const val SELF_TAG = "AutoCarouselNotificationBuilder"
 
     fun construct(
         context: Context,
@@ -39,11 +40,7 @@ internal object AutoCarouselNotificationBuilder {
         trackerActivityClass: Class<out Activity>?,
         broadcastReceiverClass: Class<out BroadcastReceiver>?,
     ): NotificationCompat.Builder {
-        Log.trace(
-            PushTemplateConstants.LOG_TAG,
-            SELF_TAG,
-            "Building an auto carousel template push notification."
-        )
+        Log.trace(LOG_TAG, SELF_TAG, "Building an auto carousel template push notification.")
 
         val packageName = context.packageName
         val smallLayout = RemoteViews(packageName, R.layout.push_template_collapsed)
@@ -67,8 +64,7 @@ internal object AutoCarouselNotificationBuilder {
         // fallback to a basic push template notification builder if less than 3 images were able to be downloaded
         if (downloadedImageCount < PushTemplateConstants.DefaultValues.CAROUSEL_MINIMUM_IMAGE_COUNT) {
             Log.trace(
-                PushTemplateConstants.LOG_TAG,
-                SELF_TAG,
+                LOG_TAG, SELF_TAG,
                 "Less than 3 images are available for the auto carousel push template, falling back to a basic push template."
             )
             if (downloadedImageCount > 0) {
@@ -87,13 +83,8 @@ internal object AutoCarouselNotificationBuilder {
             context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
         // Create the notification channel if needed
-        val channelIdToUse = notificationManager.createNotificationChannelIfRequired(
-            context,
-            pushTemplate.channelId,
-            pushTemplate.sound,
-            pushTemplate.getNotificationImportance(),
-            pushTemplate.isFromIntent
-        )
+        val channelIdToUse =
+            notificationManager.createNotificationChannelIfRequired(context, pushTemplate)
 
         // create the notification builder with the common settings applied
         return AEPPushNotificationBuilder.construct(
@@ -132,7 +123,7 @@ internal object AutoCarouselNotificationBuilder {
             val pushImage: Bitmap? = PushTemplateImageUtils.getCachedImage(imageUri)
             if (pushImage == null) {
                 Log.trace(
-                    PushTemplateConstants.LOG_TAG,
+                    LOG_TAG,
                     SELF_TAG,
                     "Failed to retrieve an image from $imageUri, will not create a new carousel item."
                 )
@@ -151,6 +142,7 @@ internal object AutoCarouselNotificationBuilder {
                     trackerActivityClass,
                     R.id.carousel_item_image_view,
                     interactionUri,
+                    null,
                     pushTemplate.tag,
                     pushTemplate.isNotificationSticky ?: false
                 )
