@@ -38,4 +38,5 @@ aepLibrary {
 
 dependencies {
     implementation("com.adobe.marketing.mobile:core:$mavenCoreVersion")
+    testImplementation("org.robolectric:robolectric:4.7")
 }

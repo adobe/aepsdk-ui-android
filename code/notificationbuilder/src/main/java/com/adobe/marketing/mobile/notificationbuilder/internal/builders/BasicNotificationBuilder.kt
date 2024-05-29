@@ -18,6 +18,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.view.View
 import android.widget.RemoteViews
+import androidx.annotation.VisibleForTesting
 import androidx.core.app.NotificationCompat
 import com.adobe.marketing.mobile.notificationbuilder.NotificationConstructionFailedException
 import com.adobe.marketing.mobile.notificationbuilder.PushTemplateIntentConstants
@@ -131,7 +132,8 @@ internal object BasicNotificationBuilder {
      * @param pushTemplate the [BasicPushTemplate] object containing the basic push template data
      * @return the created remind later [PendingIntent]
      */
-    private fun createRemindPendingIntent(
+    @VisibleForTesting
+    internal fun createRemindPendingIntent(
         context: Context,
         broadcastReceiverClass: Class<out BroadcastReceiver>?,
         channelId: String,
