@@ -43,6 +43,7 @@ object MockAEPPushTemplateDataProvider {
     fun getMockedAEPDataMapWithAllKeys(): MutableMap<String, String> {
         return mutableMapOf(
             PushTemplateConstants.PushPayloadKeys.TAG to MOCKED_TAG,
+            PushTemplateConstants.PushPayloadKeys.TITLE to MOCKED_TITLE,
             PushTemplateConstants.PushPayloadKeys.TEMPLATE_TYPE to PushTemplateType.BASIC.value,
             PushTemplateConstants.PushPayloadKeys.ACTION_URI to MOCKED_ACTION_URI,
             PushTemplateConstants.PushPayloadKeys.ACTION_TYPE to PushTemplateConstants.ActionType.NONE.name,
@@ -57,8 +58,9 @@ object MockAEPPushTemplateDataProvider {
             PushTemplateConstants.PushPayloadKeys.BACKGROUND_COLOR to "FFD966",
             PushTemplateConstants.PushPayloadKeys.PRIORITY to NotificationPriority.getNotificationPriority(MOCKED_PRIORITY),
             PushTemplateConstants.PushPayloadKeys.VISIBILITY to MOCKED_VISIBILITY,
-            PushTemplateConstants.PushPayloadKeys.REMIND_LATER_TEXT to "remind me",
-            PushTemplateConstants.PushPayloadKeys.REMIND_LATER_TIMESTAMP to "1234567890",
+            PushTemplateConstants.PushPayloadKeys.REMIND_LATER_TEXT to MOCK_REMIND_LATER_TEXT,
+            PushTemplateConstants.PushPayloadKeys.REMIND_LATER_TIMESTAMP to MOCK_REMIND_LATER_TIME,
+            PushTemplateConstants.PushPayloadKeys.REMIND_LATER_DURATION to MOCK_REMIND_LATER_DURATION,
             PushTemplateConstants.PushPayloadKeys.SOUND to "bell",
             PushTemplateConstants.PushPayloadKeys.SMALL_ICON to MOCKED_SMALL_ICON,
             PushTemplateConstants.PushPayloadKeys.TITLE_TEXT_COLOR to "FFD966",
@@ -72,6 +74,8 @@ object MockAEPPushTemplateDataProvider {
         val mockBundle = mock<Bundle>()
         Mockito.`when`(mockBundle.getString(PushTemplateConstants.PushPayloadKeys.TAG))
             .thenReturn(MOCKED_TAG)
+        Mockito.`when`(mockBundle.getString(PushTemplateConstants.PushPayloadKeys.TITLE))
+            .thenReturn(MOCKED_TITLE)
         Mockito.`when`(mockBundle.getString(PushTemplateConstants.PushPayloadKeys.TEMPLATE_TYPE))
             .thenReturn(PushTemplateType.BASIC.value)
         Mockito.`when`(mockBundle.getString(PushTemplateConstants.PushPayloadKeys.ACTION_URI))
@@ -101,9 +105,11 @@ object MockAEPPushTemplateDataProvider {
         Mockito.`when`(mockBundle.getString(PushTemplateConstants.PushPayloadKeys.VISIBILITY))
             .thenReturn(MOCKED_VISIBILITY)
         Mockito.`when`(mockBundle.getString(PushTemplateConstants.PushPayloadKeys.REMIND_LATER_TEXT))
-            .thenReturn("remind me")
+            .thenReturn(MOCK_REMIND_LATER_TEXT)
         Mockito.`when`(mockBundle.getString(PushTemplateConstants.PushPayloadKeys.REMIND_LATER_TIMESTAMP))
-            .thenReturn("1234567890")
+            .thenReturn(MOCK_REMIND_LATER_TIME)
+        Mockito.`when`(mockBundle.getString(PushTemplateConstants.PushPayloadKeys.REMIND_LATER_DURATION))
+            .thenReturn(MOCK_REMIND_LATER_DURATION)
         Mockito.`when`(mockBundle.getString(PushTemplateConstants.PushPayloadKeys.SOUND))
             .thenReturn("bell")
         Mockito.`when`(mockBundle.getString(PushTemplateConstants.PushPayloadKeys.SMALL_ICON))
