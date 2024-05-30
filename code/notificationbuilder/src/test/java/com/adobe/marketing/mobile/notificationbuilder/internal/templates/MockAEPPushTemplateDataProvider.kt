@@ -43,6 +43,7 @@ object MockAEPPushTemplateDataProvider {
     fun getMockedAEPDataMapWithAllKeys(): MutableMap<String, String> {
         return mutableMapOf(
             PushTemplateConstants.PushPayloadKeys.TAG to MOCKED_TAG,
+            PushTemplateConstants.PushPayloadKeys.TITLE to MOCKED_TITLE,
             PushTemplateConstants.PushPayloadKeys.TEMPLATE_TYPE to PushTemplateType.BASIC.value,
             PushTemplateConstants.PushPayloadKeys.ACTION_URI to MOCKED_ACTION_URI,
             PushTemplateConstants.PushPayloadKeys.ACTION_TYPE to PushTemplateConstants.ActionType.NONE.name,
@@ -72,6 +73,9 @@ object MockAEPPushTemplateDataProvider {
         val mockBundle = mock<Bundle>()
         Mockito.`when`(mockBundle.getString(PushTemplateConstants.PushPayloadKeys.TAG))
             .thenReturn(MOCKED_TAG)
+        Mockito.`when`(mockBundle.getString(PushTemplateConstants.PushPayloadKeys.TITLE)).thenReturn(
+            MOCKED_TITLE
+        )
         Mockito.`when`(mockBundle.getString(PushTemplateConstants.PushPayloadKeys.TEMPLATE_TYPE))
             .thenReturn(PushTemplateType.BASIC.value)
         Mockito.`when`(mockBundle.getString(PushTemplateConstants.PushPayloadKeys.ACTION_URI))

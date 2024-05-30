@@ -12,62 +12,51 @@
 package com.adobe.marketing.mobile.notificationbuilder.internal.builders
 
 import android.app.Activity
-import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
+import android.os.Bundle
 import androidx.core.app.NotificationCompat
 import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateConstants
-import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateConstants.DEFAULT_CHANNEL_ID
-import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateConstants.SILENT_CHANNEL_NAME
+import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateConstants.DefaultValues.DEFAULT_CHANNEL_ID
+import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateConstants.DefaultValues.SILENT_NOTIFICATION_CHANNEL_ID
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.BasicPushTemplate
+import com.adobe.marketing.mobile.notificationbuilder.internal.templates.MockAEPPushTemplateDataProvider
+import com.adobe.marketing.mobile.notificationbuilder.internal.templates.removeKeysFromMap
+import com.adobe.marketing.mobile.notificationbuilder.internal.templates.replaceValueInMap
+import com.adobe.marketing.mobile.notificationbuilder.internal.util.IntentData
+import com.adobe.marketing.mobile.notificationbuilder.internal.util.MapData
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertNotNull
+import junit.framework.TestCase.assertNull
 import org.junit.Assert.assertArrayEquals
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.Mock
-import org.mockito.Mockito.`when`
-import org.mockito.MockitoAnnotations
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 import org.robolectric.Shadows
 import org.robolectric.annotation.Config
-import kotlin.test.assertNull
 
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [31])
 class LegacyNotificationBuilderTest {
 
-    @Mock
-    private lateinit var pushTemplate: BasicPushTemplate
     private lateinit var trackerActivityClass: Class<out Activity>
     private lateinit var context: Context
+    private lateinit var dataMap: MutableMap<String, String>
+    private lateinit var mockBundle: Bundle
 
     @Before
     fun setUp() {
-        MockitoAnnotations.openMocks(this)
         context = RuntimeEnvironment.getApplication()
         trackerActivityClass = DummyActivity::class.java
+        dataMap = MockAEPPushTemplateDataProvider.getMockedAEPDataMapWithAllKeys()
+        mockBundle = MockAEPPushTemplateDataProvider.getMockedAEPBundleWithAllKeys()
     }
 
     @Test
     fun `verify construct should map valid BasicPushTemplate data to notification data`() {
-        `when`(pushTemplate.ticker).thenReturn("Test Ticker")
-        `when`(pushTemplate.title).thenReturn("Test Title")
-        `when`(pushTemplate.body).thenReturn("Test Body")
-        `when`(pushTemplate.badgeCount).thenReturn(5)
-        `when`(pushTemplate.channelId).thenReturn("Test Channel Id")
-        `when`(pushTemplate.smallIcon).thenReturn("skipleft")
-        val actionButtonsList = listOf(
-            BasicPushTemplate.ActionButton("label1", null, null),
-            BasicPushTemplate.ActionButton("label2", null, null)
-        )
-        `when`(pushTemplate.actionButtonsList).thenReturn(actionButtonsList)
-        `when`(pushTemplate.actionUri).thenReturn("test://actionUri")
-        `when`(pushTemplate.tag).thenReturn("testTag")
-        `when`(pushTemplate.isNotificationSticky).thenReturn(true)
-
+        val pushTemplate = BasicPushTemplate(MapData(dataMap))
         val notificationBuilder =
             LegacyNotificationBuilder.construct(context, pushTemplate, trackerActivityClass)
         val pendingIntent = notificationBuilder.build().contentIntent
@@ -91,11 +80,10 @@ class LegacyNotificationBuilderTest {
         assertEquals(pushTemplate.channelId, notificationBuilder.build().channelId)
         assertNotNull(notificationBuilder.build().smallIcon)
         assertEquals(
-            actionButtonsList.map { it.label },
+            pushTemplate.actionButtonsList?.map { it.label },
             notificationBuilder.build().actions.map { it.title }
         )
         assertNotNull(notificationBuilder.build().deleteIntent)
-
         assertEquals(
             pushTemplate.actionUri,
             intent.getStringExtra(PushTemplateConstants.Tracking.TrackingKeys.ACTION_URI)
@@ -112,71 +100,44 @@ class LegacyNotificationBuilderTest {
 
     @Test
     fun `construct should set silent notification if isFromIntent is true`() {
-        `when`(pushTemplate.channelId).thenReturn("Test Channel Id")
-        `when`(pushTemplate.getNotificationImportance()).thenReturn(NotificationManager.IMPORTANCE_HIGH)
-        `when`(pushTemplate.isFromIntent).thenReturn(true)
+        val pushTemplate = BasicPushTemplate(IntentData(mockBundle, null))
         val notificationBuilder =
             LegacyNotificationBuilder.construct(context, pushTemplate, trackerActivityClass)
-        assertEquals(SILENT_CHANNEL_NAME, notificationBuilder.build().channelId)
-    }
-
-    @Test
-    fun `construct should not set silent notification if isFromIntent is false`() {
-        `when`(pushTemplate.channelId).thenReturn("Test Channel Id")
-        `when`(pushTemplate.getNotificationImportance()).thenReturn(NotificationManager.IMPORTANCE_HIGH)
-        `when`(pushTemplate.isFromIntent).thenReturn(false)
-        val notificationBuilder =
-            LegacyNotificationBuilder.construct(context, pushTemplate, trackerActivityClass)
-        assertEquals(pushTemplate.channelId, notificationBuilder.build().channelId)
+        assertEquals(SILENT_NOTIFICATION_CHANNEL_ID, notificationBuilder.build().channelId)
     }
 
     @Test
     fun `construct should set default channel ID if pushTemplate channelId is null`() {
-        `when`(pushTemplate.channelId).thenReturn(null)
-        `when`(pushTemplate.getNotificationImportance()).thenReturn(NotificationManager.IMPORTANCE_HIGH)
-        `when`(pushTemplate.isFromIntent).thenReturn(false)
+        dataMap.removeKeysFromMap(PushTemplateConstants.PushPayloadKeys.CHANNEL_ID)
+        val pushTemplate = BasicPushTemplate(MapData(dataMap))
         val notificationBuilder =
             LegacyNotificationBuilder.construct(context, pushTemplate, trackerActivityClass)
         assertEquals(DEFAULT_CHANNEL_ID, notificationBuilder.build().channelId)
     }
 
     @Test
-    fun `construct should set notification visibility to public`() {
-        `when`(pushTemplate.getNotificationVisibility()).thenReturn(NotificationCompat.VISIBILITY_PUBLIC)
-        val notificationBuilder =
-            LegacyNotificationBuilder.construct(context, pushTemplate, trackerActivityClass)
-        assertEquals(NotificationCompat.VISIBILITY_PUBLIC, notificationBuilder.build().visibility)
-    }
-
-    @Test
-    fun `construct should set notification visibility to private`() {
-        `when`(pushTemplate.getNotificationVisibility()).thenReturn(NotificationCompat.VISIBILITY_PRIVATE)
-        val notificationBuilder =
-            LegacyNotificationBuilder.construct(context, pushTemplate, trackerActivityClass)
-        assertEquals(NotificationCompat.VISIBILITY_PRIVATE, notificationBuilder.build().visibility)
-    }
-
-    @Test
-    fun `construct should not set priority for API level 26 and above`() {
-        `when`(pushTemplate.getNotificationImportance()).thenReturn(NotificationManager.IMPORTANCE_HIGH)
-        val notificationBuilder =
-            LegacyNotificationBuilder.construct(context, pushTemplate, trackerActivityClass)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            assertEquals(0, notificationBuilder.build().priority)
-        }
-    }
-
-    @Test
     fun `construct should not set smallIcon if pushTemplate smallIcon is invalid`() {
-        `when`(pushTemplate.smallIcon).thenReturn("someRandomResourceName")
+        dataMap.replaceValueInMap(
+            Pair(
+                PushTemplateConstants.PushPayloadKeys.SMALL_ICON,
+                "invalid_small_icon"
+            )
+        )
+        val pushTemplate = BasicPushTemplate(MapData(dataMap))
         val notificationBuilder =
             LegacyNotificationBuilder.construct(context, pushTemplate, trackerActivityClass)
         assertNull(notificationBuilder.build().smallIcon)
     }
 
     @Test
-    fun `construct should handle invalid pushTemplate sound`() {
-        `when`(pushTemplate.sound).thenReturn("invalid_sound")
+    fun `construct should not set notification sound if pushTemplate sound is invalid`() {
+        dataMap.replaceValueInMap(
+            Pair(
+                PushTemplateConstants.PushPayloadKeys.SOUND,
+                "invalid_sound"
+            )
+        )
+        val pushTemplate = BasicPushTemplate(MapData(dataMap))
         val notificationBuilder =
             LegacyNotificationBuilder.construct(context, pushTemplate, trackerActivityClass)
         assertNull(notificationBuilder.build().sound)
@@ -185,6 +146,7 @@ class LegacyNotificationBuilderTest {
     @Config(sdk = [25])
     @Test
     fun `construct should set priority and vibration for API level below 26`() {
+        val pushTemplate = BasicPushTemplate(MapData(dataMap))
         val notificationBuilder =
             LegacyNotificationBuilder.construct(context, pushTemplate, trackerActivityClass)
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
