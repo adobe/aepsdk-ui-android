@@ -1,26 +1,42 @@
+/*
+  Copyright 2024 Adobe. All rights reserved.
+  This file is licensed to you under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License. You may obtain a copy
+  of the License at http://www.apache.org/licenses/LICENSE-2.0
+  Unless required by applicable law or agreed to in writing, software distributed under
+  the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
+  OF ANY KIND, either express or implied. See the License for the specific language
+  governing permissions and limitations under the License.
+*/
+
 package com.adobe.marketing.mobile.notificationbuilder.internal.builders
 
 import android.app.Activity
 import android.content.BroadcastReceiver
 import android.content.Context
+import android.content.Intent
+import androidx.core.app.NotificationCompat
+import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateConstants
+import com.adobe.marketing.mobile.notificationbuilder.internal.templates.BasicPushTemplate
+import com.adobe.marketing.mobile.notificationbuilder.internal.templates.MOCKED_CHANNEL_ID
+import com.adobe.marketing.mobile.notificationbuilder.internal.templates.MOCK_REMIND_LATER_DURATION
+import com.adobe.marketing.mobile.notificationbuilder.internal.templates.MOCK_REMIND_LATER_TEXT
+import com.adobe.marketing.mobile.notificationbuilder.internal.templates.MOCK_REMIND_LATER_TIME
+import com.adobe.marketing.mobile.notificationbuilder.internal.templates.MockAEPPushTemplateDataProvider
+import com.adobe.marketing.mobile.notificationbuilder.internal.templates.provideMockedBasicPushTemplateWithAllKeys
+import com.adobe.marketing.mobile.notificationbuilder.internal.templates.provideMockedBasicPushTemplateWithRequiredData
+import com.adobe.marketing.mobile.notificationbuilder.internal.util.MapData
+import junit.framework.TestCase.assertEquals
+import org.junit.Assert.assertNull
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
 import org.robolectric.RobolectricTestRunner
-import kotlin.test.assertNotNull
-import androidx.core.app.NotificationCompat
-import com.adobe.marketing.mobile.notificationbuilder.internal.templates.BasicPushTemplate
-import junit.framework.TestCase.assertEquals
 import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
-import android.content.Intent
-import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateConstants
-import com.adobe.marketing.mobile.notificationbuilder.internal.util.MapData
-import org.junit.Assert.*
-import org.robolectric.Shadows.shadowOf
-import kotlin.properties.Delegates
+import kotlin.test.assertNotNull
 
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [31])
@@ -30,16 +46,7 @@ class BasicNotificationBuilderTest {
     private lateinit var basicPushTemplate: BasicPushTemplate
     private lateinit var context: Context
     private lateinit var trackerActivityClass: Class<out Activity>
-
-
-    private lateinit var dataMap: MutableMap<String, String>
     private lateinit var broadcastReceiverClass: Class<out BroadcastReceiver>
-    private lateinit var channelId: String
-
-    private lateinit var remindLaterText : String
-    private lateinit var actionButtonsString: String
-    private var remindLaterTimestamp by Delegates.notNull<Long>()
-    private var remindLaterDuration by Delegates.notNull<Int>()
 
     @Before
     fun setUp() {
@@ -48,18 +55,6 @@ class BasicNotificationBuilderTest {
         context = RuntimeEnvironment.getApplication()
         trackerActivityClass = DummyActivity::class.java
         broadcastReceiverClass = DummyBroadcastReceiver::class.java
-
-        dataMap = mutableMapOf(
-            "adb_version" to "1.0",
-            "adb_title" to "Test Title",
-            "adb_body" to "Test Body"
-        )
-
-        channelId = "testChannelId"
-        remindLaterText = "Remind Later"
-        actionButtonsString = "Action Button String"
-        remindLaterTimestamp = 1715271471L
-        remindLaterDuration = 3600
     }
 
     @Test
@@ -80,53 +75,135 @@ class BasicNotificationBuilderTest {
             context,
             trackerActivityClass,
             broadcastReceiverClass,
-            dataMap
+            MockAEPPushTemplateDataProvider.getMockedDataMapWithRequiredData()
         )
         assertEquals(NotificationCompat.Builder::class.java, notificationBuilder.javaClass)
     }
 
     @Test
-    fun `createRemindPendingIntent should return PendingIntent with correct extended data`() {
-
-        val pushTemplate = BasicPushTemplate(MapData(dataMap))
-
-        val pendingIntent = BasicNotificationBuilder.createRemindPendingIntent(
-            context,
-            broadcastReceiverClass,
-            channelId,
-            pushTemplate
-        )
-
-        assertNotNull(pendingIntent)
-        val intent = shadowOf(pendingIntent).savedIntent
-
-        intent.putExtra(PushTemplateConstants.PushPayloadKeys.REMIND_LATER_TEXT, remindLaterText)
-        assertEquals(remindLaterText, intent.getStringExtra(PushTemplateConstants.PushPayloadKeys.REMIND_LATER_TEXT))
-
-        intent.putExtra(PushTemplateConstants.PushPayloadKeys.REMIND_LATER_TIMESTAMP, remindLaterTimestamp)
-        assertEquals(remindLaterTimestamp, intent.getLongExtra(PushTemplateConstants.PushPayloadKeys.REMIND_LATER_TIMESTAMP, -1))
-
-        intent.putExtra(PushTemplateConstants.PushPayloadKeys.REMIND_LATER_DURATION, remindLaterDuration)
-        assertEquals(remindLaterDuration, intent.getIntExtra(PushTemplateConstants.PushPayloadKeys.REMIND_LATER_DURATION, -1))
-
-        intent.putExtra(PushTemplateConstants.PushPayloadKeys.ACTION_BUTTONS, actionButtonsString)
-        assertEquals(actionButtonsString, intent.getStringExtra(PushTemplateConstants.PushPayloadKeys.ACTION_BUTTONS))
-        assertEquals(channelId, intent.getStringExtra(PushTemplateConstants.PushPayloadKeys.CHANNEL_ID))
-    }
-
-    @Test
     fun `createRemindPendingIntent should return null when broadcastReceiverClass is null`() {
 
-        val pushTemplate = BasicPushTemplate(MapData(dataMap))
+        val pushTemplate = provideMockedBasicPushTemplateWithAllKeys()
 
         val pendingIntent = BasicNotificationBuilder.createRemindPendingIntent(
             context,
             null,
-            channelId,
+            MOCKED_CHANNEL_ID,
             pushTemplate
         )
 
         assertNull(pendingIntent)
+    }
+
+    @Test
+    fun `remindLaterButton is added when remindLaterText is not null, remindLaterTimestamp is not null, remindLaterDuration is not null`() {
+        val pushTemplate = provideMockedBasicPushTemplateWithAllKeys()
+
+        val notificationBuilder = BasicNotificationBuilder.construct(
+            context,
+            pushTemplate,
+            trackerActivityClass,
+            broadcastReceiverClass
+        )
+
+        val actions = notificationBuilder.mActions
+
+        val remindLaterAction = actions.find {
+            it.title == MOCK_REMIND_LATER_TEXT
+        }
+
+        assertNotNull(remindLaterAction)
+    }
+
+    @Test
+    fun `remindLaterButton is not added when remindLaterText is null`() {
+        val pushTemplate = provideMockedBasicPushTemplateWithRequiredData()
+
+        val notificationBuilder = BasicNotificationBuilder.construct(
+            context,
+            pushTemplate,
+            trackerActivityClass,
+            broadcastReceiverClass
+        )
+
+        val actions = notificationBuilder.mActions
+
+        val remindLaterAction = actions.find {
+            it.title == MOCK_REMIND_LATER_TEXT
+        }
+
+        assertNull(remindLaterAction)
+    }
+
+    @Test
+    fun `remindLaterButton is not added when remindLaterText is not null, remindLaterTimestamp is null, remindLaterDuration is null`() {
+        val dataMap = MockAEPPushTemplateDataProvider.getMockedDataMapWithRequiredData()
+        dataMap[PushTemplateConstants.PushPayloadKeys.REMIND_LATER_TEXT] = MOCK_REMIND_LATER_TEXT
+
+        val pushTemplate = BasicPushTemplate(MapData(dataMap))
+
+        val notificationBuilder = BasicNotificationBuilder.construct(
+            context,
+            pushTemplate,
+            trackerActivityClass,
+            broadcastReceiverClass
+        )
+
+        val actions = notificationBuilder.mActions
+
+        val remindLaterAction = actions.find {
+            it.title == MOCK_REMIND_LATER_TEXT
+        }
+
+        assertNull(remindLaterAction)
+    }
+
+    @Test
+    fun `remindLaterButton is added when remindLaterText is not null, remindLaterTimestamp is not null, remindLaterDuration is null`() {
+        val dataMap = MockAEPPushTemplateDataProvider.getMockedDataMapWithRequiredData()
+        dataMap[PushTemplateConstants.PushPayloadKeys.REMIND_LATER_TEXT] = MOCK_REMIND_LATER_TEXT
+        dataMap[PushTemplateConstants.PushPayloadKeys.REMIND_LATER_TIMESTAMP] = MOCK_REMIND_LATER_TIME
+
+        val pushTemplate = BasicPushTemplate(MapData(dataMap))
+
+        val notificationBuilder = BasicNotificationBuilder.construct(
+            context,
+            pushTemplate,
+            trackerActivityClass,
+            broadcastReceiverClass
+        )
+
+        val actions = notificationBuilder.mActions
+
+        val remindLaterAction = actions.find {
+            it.title == MOCK_REMIND_LATER_TEXT
+        }
+
+        assertNotNull(remindLaterAction)
+    }
+
+    @Test
+    fun `remindLaterButton is added when remindLaterText is not null, remindLaterTimestamp is null, remindLaterDuration is not null`() {
+        val dataMap = MockAEPPushTemplateDataProvider.getMockedDataMapWithRequiredData()
+        dataMap[PushTemplateConstants.PushPayloadKeys.REMIND_LATER_TEXT] = MOCK_REMIND_LATER_TEXT
+        dataMap[PushTemplateConstants.PushPayloadKeys.REMIND_LATER_DURATION] = MOCK_REMIND_LATER_DURATION
+
+        val pushTemplate = BasicPushTemplate(MapData(dataMap))
+
+        val notificationBuilder = BasicNotificationBuilder.construct(
+            context,
+            pushTemplate,
+            trackerActivityClass,
+            broadcastReceiverClass
+        )
+
+        val actions = notificationBuilder.mActions
+
+        val remindLaterAction = actions.find {
+            it.title == MOCK_REMIND_LATER_TEXT
+        }
+
+        assertNotNull(remindLaterAction)
     }
 }
 

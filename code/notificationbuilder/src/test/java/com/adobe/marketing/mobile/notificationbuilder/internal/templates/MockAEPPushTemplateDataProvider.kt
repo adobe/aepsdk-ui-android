@@ -50,7 +50,7 @@ object MockAEPPushTemplateDataProvider {
             PushTemplateConstants.PushPayloadKeys.ACTION_BUTTONS to MOCKED_ACTION_BUTTON_DATA,
             PushTemplateConstants.PushPayloadKeys.BADGE_COUNT to "5",
             PushTemplateConstants.PushPayloadKeys.BODY to MOCKED_BASIC_TEMPLATE_BODY,
-            PushTemplateConstants.PushPayloadKeys.CHANNEL_ID to "2024",
+            PushTemplateConstants.PushPayloadKeys.CHANNEL_ID to MOCKED_CHANNEL_ID,
             PushTemplateConstants.PushPayloadKeys.EXPANDED_BODY_TEXT to MOCKED_BASIC_TEMPLATE_BODY_EXPANDED,
             PushTemplateConstants.PushPayloadKeys.BODY_TEXT_COLOR to "FFD966",
             PushTemplateConstants.PushPayloadKeys.IMAGE_URL to MOCKED_IMAGE_URI,
