@@ -12,6 +12,7 @@
 package com.adobe.marketing.mobile.notificationbuilder.internal.builders
 
 import android.app.Activity
+import android.app.Notification
 import android.content.Context
 import android.os.Build
 import android.os.Bundle
@@ -57,33 +58,34 @@ class LegacyNotificationBuilderTest {
     @Test
     fun `verify construct should map valid BasicPushTemplate data to notification data`() {
         val pushTemplate = BasicPushTemplate(MapData(dataMap))
-        val notificationBuilder =
+        val notification =
             LegacyNotificationBuilder.construct(context, pushTemplate, trackerActivityClass)
-        val pendingIntent = notificationBuilder.build().contentIntent
+                .build()
+        val pendingIntent = notification.contentIntent
         val shadowPendingIntent = Shadows.shadowOf(pendingIntent)
         val intent = shadowPendingIntent.savedIntent
 
-        assertEquals(NotificationCompat.Builder::class.java, notificationBuilder.javaClass)
-        assertEquals(pushTemplate.ticker, notificationBuilder.build().tickerText)
+        assertEquals(Notification::class.java, notification.javaClass)
+        assertEquals(pushTemplate.ticker, notification.tickerText)
         assertEquals(
             pushTemplate.title,
-            notificationBuilder.build().extras.getString(NotificationCompat.EXTRA_TITLE)
+            notification.extras.getString(NotificationCompat.EXTRA_TITLE)
         )
         assertEquals(
             pushTemplate.body,
-            notificationBuilder.build().extras.getString(NotificationCompat.EXTRA_TEXT)
+            notification.extras.getString(NotificationCompat.EXTRA_TEXT)
         )
         assertEquals(
             pushTemplate.body,
-            notificationBuilder.build().extras.getString(NotificationCompat.EXTRA_TEXT)
+            notification.extras.getString(NotificationCompat.EXTRA_TEXT)
         )
-        assertEquals(pushTemplate.channelId, notificationBuilder.build().channelId)
-        assertNotNull(notificationBuilder.build().smallIcon)
+        assertEquals(pushTemplate.channelId, notification.channelId)
+        assertNotNull(notification.smallIcon)
         assertEquals(
             pushTemplate.actionButtonsList?.map { it.label },
-            notificationBuilder.build().actions.map { it.title }
+            notification.actions.map { it.title }
         )
-        assertNotNull(notificationBuilder.build().deleteIntent)
+        assertNotNull(notification.deleteIntent)
         assertEquals(
             pushTemplate.actionUri,
             intent.getStringExtra(PushTemplateConstants.Tracking.TrackingKeys.ACTION_URI)
@@ -101,18 +103,20 @@ class LegacyNotificationBuilderTest {
     @Test
     fun `construct should set silent notification if isFromIntent is true`() {
         val pushTemplate = BasicPushTemplate(IntentData(mockBundle, null))
-        val notificationBuilder =
+        val notification =
             LegacyNotificationBuilder.construct(context, pushTemplate, trackerActivityClass)
-        assertEquals(SILENT_NOTIFICATION_CHANNEL_ID, notificationBuilder.build().channelId)
+                .build()
+        assertEquals(SILENT_NOTIFICATION_CHANNEL_ID, notification.channelId)
     }
 
     @Test
     fun `construct should set default channel ID if pushTemplate channelId is null`() {
         dataMap.removeKeysFromMap(PushTemplateConstants.PushPayloadKeys.CHANNEL_ID)
         val pushTemplate = BasicPushTemplate(MapData(dataMap))
-        val notificationBuilder =
+        val notification =
             LegacyNotificationBuilder.construct(context, pushTemplate, trackerActivityClass)
-        assertEquals(DEFAULT_CHANNEL_ID, notificationBuilder.build().channelId)
+                .build()
+        assertEquals(DEFAULT_CHANNEL_ID, notification.channelId)
     }
 
     @Test
@@ -124,9 +128,10 @@ class LegacyNotificationBuilderTest {
             )
         )
         val pushTemplate = BasicPushTemplate(MapData(dataMap))
-        val notificationBuilder =
+        val notification =
             LegacyNotificationBuilder.construct(context, pushTemplate, trackerActivityClass)
-        assertNull(notificationBuilder.build().smallIcon)
+                .build()
+        assertNull(notification.smallIcon)
     }
 
     @Test
@@ -138,20 +143,44 @@ class LegacyNotificationBuilderTest {
             )
         )
         val pushTemplate = BasicPushTemplate(MapData(dataMap))
-        val notificationBuilder =
+        val notification =
             LegacyNotificationBuilder.construct(context, pushTemplate, trackerActivityClass)
-        assertNull(notificationBuilder.build().sound)
+                .build()
+        assertNull(notification.sound)
+    }
+
+    @Test
+    fun `construct should set sticky flag to false when isNotificationSticky is false`() {
+        dataMap.replaceValueInMap(
+            Pair(
+                PushTemplateConstants.PushPayloadKeys.STICKY,
+                "false"
+            )
+        )
+        val pushTemplate = BasicPushTemplate(MapData(dataMap))
+        val notification =
+            LegacyNotificationBuilder.construct(context, pushTemplate, trackerActivityClass)
+                .build()
+        val pendingIntent = notification.contentIntent
+        val shadowPendingIntent = Shadows.shadowOf(pendingIntent)
+        val intent = shadowPendingIntent.savedIntent
+        // Assert that the sticky flag is false
+        assertEquals(
+            false,
+            intent.getBooleanExtra(PushTemplateConstants.PushPayloadKeys.STICKY, false)
+        )
     }
 
     @Config(sdk = [25])
     @Test
     fun `construct should set priority and vibration for API level below 26`() {
         val pushTemplate = BasicPushTemplate(MapData(dataMap))
-        val notificationBuilder =
+        val notification =
             LegacyNotificationBuilder.construct(context, pushTemplate, trackerActivityClass)
+                .build()
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-            assertEquals(NotificationCompat.PRIORITY_HIGH, notificationBuilder.build().priority)
-            assertArrayEquals(LongArray(0), notificationBuilder.build().vibrate)
+            assertEquals(NotificationCompat.PRIORITY_HIGH, notification.priority)
+            assertArrayEquals(LongArray(0), notification.vibrate)
         }
     }
 }
