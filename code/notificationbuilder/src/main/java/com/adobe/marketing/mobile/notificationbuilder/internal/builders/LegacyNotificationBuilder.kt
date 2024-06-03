@@ -57,7 +57,7 @@ internal object LegacyNotificationBuilder {
             // small Icon must be present, otherwise the notification will not be displayed.
             .setSmallIcon(context, pushTemplate.smallIcon, pushTemplate.smallIconColor)
             // set notification visibility
-            .setVisibility(pushTemplate.getNotificationVisibility())
+            .setVisibility(pushTemplate.visibility.value)
             // add any action buttons defined for the notification
             .addActionButtons(
                 context,

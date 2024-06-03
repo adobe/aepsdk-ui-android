@@ -13,7 +13,7 @@ package com.adobe.marketing.mobile.notificationbuilder.internal
 
 import androidx.core.app.NotificationCompat
 
-enum class NotificationPriority(private val priority: Int, private val priorityString: String) {
+enum class NotificationPriority(val value: Int, val stringValue: String) {
     PRIORITY_DEFAULT(NotificationCompat.PRIORITY_DEFAULT, "PRIORITY_DEFAULT"),
     PRIORITY_MIN(NotificationCompat.PRIORITY_MIN, "PRIORITY_MIN"),
     PRIORITY_LOW(NotificationCompat.PRIORITY_LOW, "PRIORITY_LOW"),
@@ -21,41 +21,23 @@ enum class NotificationPriority(private val priority: Int, private val priorityS
     PRIORITY_MAX(NotificationCompat.PRIORITY_MAX, "PRIORITY_MAX");
 
     companion object {
-        private val notificationPriorityMap = values().associateBy(
-            NotificationPriority::priorityString,
-            NotificationPriority::priority
-        )
+        private val mapByString = values().associateBy { it.stringValue }
+        private val mapByValue = values().associateBy { it.value }
 
         /**
-         * Returns the [NotificationCompat] priority value represented by the [String].
-         *
-         * @param priority [String] representation of the [NotificationCompat] priority
-         * @return [Int] containing the [NotificationCompat] priority value
-         */
-        internal fun getNotificationCompatPriorityFromString(priority: String?): Int {
-            return if (priority == null) NotificationCompat.PRIORITY_DEFAULT
-            else notificationPriorityMap[priority] ?: NotificationCompat.PRIORITY_DEFAULT
-        }
-
-        private val notificationCompatPriorityMap: Map<Int, String> = values().associateBy(
-            NotificationPriority::priority,
-            NotificationPriority::priorityString
-        )
-
-        /**
-         * Returns the [String] representation for the [NotificationCompat] priority value.
-         *
-         * @param priority [Int] containing the [NotificationCompat] priority value
-         * @return [String] representation of the [NotificationCompat] priority
+         * Returns the [NotificationPriority] enum for the given [priorityString].
+         * If the [priorityString] is null or not found, returns [PRIORITY_DEFAULT].
          */
         @JvmStatic
-        fun getNotificationPriority(priority: Int?): String {
-            return if (priority == null) PRIORITY_DEFAULT.priorityString
-            else notificationCompatPriorityMap[priority] ?: PRIORITY_DEFAULT.priorityString
-        }
-    }
+        fun fromString(priorityString: String?): NotificationPriority =
+            priorityString?.let { mapByString[it] } ?: PRIORITY_DEFAULT
 
-    override fun toString(): String {
-        return priorityString
+        /**
+         * Returns the [NotificationPriority] enum for the given [value].
+         * If the [value] is null or not found, returns [PRIORITY_DEFAULT].
+         */
+        @JvmStatic
+        fun fromValue(value: Int?): NotificationPriority =
+            value?.let { mapByValue[it] } ?: PRIORITY_DEFAULT
     }
 }

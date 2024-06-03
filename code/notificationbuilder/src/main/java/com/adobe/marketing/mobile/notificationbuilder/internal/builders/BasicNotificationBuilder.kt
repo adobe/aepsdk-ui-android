@@ -29,7 +29,7 @@ import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateImage
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.addActionButtons
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.createNotificationChannelIfRequired
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.BasicPushTemplate
-import com.adobe.marketing.mobile.notificationbuilder.internal.util.MapData
+import com.adobe.marketing.mobile.notificationbuilder.internal.util.NotificationData
 import com.adobe.marketing.mobile.services.Log
 
 /**
@@ -112,9 +112,9 @@ internal object BasicNotificationBuilder {
         context: Context,
         trackerActivityClass: Class<out Activity>?,
         broadcastReceiverClass: Class<out BroadcastReceiver>?,
-        dataMap: MutableMap<String, String>
+        data: NotificationData
     ): NotificationCompat.Builder {
-        val basicPushTemplate = BasicPushTemplate(MapData(dataMap))
+        val basicPushTemplate = BasicPushTemplate(data)
         return construct(
             context,
             basicPushTemplate,

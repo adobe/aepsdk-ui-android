@@ -13,47 +13,32 @@ package com.adobe.marketing.mobile.notificationbuilder.internal
 
 import androidx.core.app.NotificationCompat
 
-enum class NotificationVisibility(val visibility: Int, val visibilityString: String) {
-    VISIBILITY_PRIVATE(NotificationCompat.VISIBILITY_PRIVATE, "VISIBILITY_PRIVATE"),
-    VISIBILITY_PUBLIC(NotificationCompat.VISIBILITY_PUBLIC, "VISIBILITY_PUBLIC"),
-    VISIBILITY_SECRET(NotificationCompat.VISIBILITY_SECRET, "VISIBILITY_SECRET");
+enum class NotificationVisibility(val value: Int, val stringValue: String) {
+    VISIBILITY_PRIVATE(NotificationCompat.VISIBILITY_PRIVATE, "PRIVATE"),
+    VISIBILITY_PUBLIC(NotificationCompat.VISIBILITY_PUBLIC, "PUBLIC"),
+    VISIBILITY_SECRET(NotificationCompat.VISIBILITY_SECRET, "SECRET");
 
     companion object {
-        private val notificationVisibilityMap = values().associateBy(
-            NotificationVisibility::visibilityString,
-            NotificationVisibility::visibility
-        )
+
+        private val mapString = NotificationVisibility.values().associateBy { it.stringValue }
+        private val mapValue = NotificationVisibility.values().associateBy { it.value }
 
         /**
-         * Returns the [NotificationCompat.NotificationVisibility] value represented by the [String].
-         *
-         * @param visibility [String] representation of the [NotificationCompat.NotificationVisibility]
-         * @return [Int] containing the [NotificationCompat.NotificationVisibility] value
-         */
-        internal fun getNotificationCompatVisibilityFromString(visibility: String?): Int {
-            return if (visibility == null) NotificationCompat.VISIBILITY_PRIVATE
-            else notificationVisibilityMap[visibility] ?: NotificationCompat.VISIBILITY_PRIVATE
-        }
-
-        private val notificationCompatVisibilityMap: Map<Int, String> = values().associateBy(
-            NotificationVisibility::visibility,
-            NotificationVisibility::visibilityString
-        )
-
-        /**
-         * Returns the [String] representation for the [NotificationCompat.NotificationVisibility] value.
-         *
-         * @param visibility [Int] containing the [NotificationCompat.NotificationVisibility] value
-         * @return [String] representation of the [NotificationCompat.NotificationVisibility]
+         * Returns the [NotificationVisibility] enum for the given [visibilityString].
+         * If the [visibilityString] is null or not found, returns [VISIBILITY_PRIVATE].
          */
         @JvmStatic
-        fun getNotificationVisibility(visibility: Int?): String {
-            return if (visibility == null) VISIBILITY_PRIVATE.visibilityString
-            else notificationCompatVisibilityMap[visibility] ?: VISIBILITY_PRIVATE.visibilityString
+        fun fromString(visibilityString: String?): NotificationVisibility {
+            return visibilityString?.let { mapString[it] } ?: VISIBILITY_PRIVATE
         }
-    }
 
-    override fun toString(): String {
-        return visibilityString
+        /**
+         * Returns the [NotificationVisibility] enum for the given [visibilityValue].
+         * If the [visibilityValue] is null or not found, returns [VISIBILITY_PRIVATE].
+         */
+        @JvmStatic
+        fun fromValue(visibilityValue: Int?): NotificationVisibility {
+            return visibilityValue?.let { mapValue[it] } ?: VISIBILITY_PRIVATE
+        }
     }
 }

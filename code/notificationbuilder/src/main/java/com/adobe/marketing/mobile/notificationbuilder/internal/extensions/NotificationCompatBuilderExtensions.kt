@@ -110,7 +110,7 @@ private fun NotificationCompat.Builder.setSmallIconColor(
 internal fun NotificationCompat.Builder.setVisibility(
     pushTemplate: AEPPushTemplate
 ): NotificationCompat.Builder {
-    when (pushTemplate.getNotificationVisibility()) {
+    when (pushTemplate.visibility.value) {
         NotificationCompat.VISIBILITY_PUBLIC -> setVisibility(
             NotificationCompat.VISIBILITY_PUBLIC
         )
