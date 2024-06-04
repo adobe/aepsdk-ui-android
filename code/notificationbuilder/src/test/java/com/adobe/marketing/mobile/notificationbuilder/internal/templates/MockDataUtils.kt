@@ -20,7 +20,7 @@ const val MOCKED_BODY = "Mocked Body"
 const val MOCKED_PAYLOAD_VERSION = "1"
 const val MOCKED_CAROUSEL_LAYOUT = "default"
 const val MOCKED_BODY_TEXT_COLOR = "#FFFFFF"
-const val MOCKED_SMALL_ICON = "chat_bubble"
+const val MOCKED_SMALL_ICON = "skipleft"
 const val MOCKED_LARGE_ICON = "https://cdn-icons-png.flaticon.com/128/864/864639.png"
 const val MOCKED_SMALL_ICON_COLOR = "#000000"
 const val MOCKED_VISIBILITY = "PUBLIC"
@@ -101,7 +101,7 @@ internal fun provideMockedManualCarousalTemplate(isFromIntent: Boolean = false):
         val dataMap = MockCarousalTemplateDataProvider.getMockedMapWithManualCarouselData()
         data = MapData(dataMap)
     }
-    return CarouselPushTemplate.createCarouselPushTemplate(data) as ManualCarouselPushTemplate
+    return CarouselPushTemplate(data) as ManualCarouselPushTemplate
 }
 
 internal fun provideMockedAutoCarousalTemplate(isFromIntent: Boolean = false): AutoCarouselPushTemplate {
@@ -113,5 +113,5 @@ internal fun provideMockedAutoCarousalTemplate(isFromIntent: Boolean = false): A
         val dataMap = MockCarousalTemplateDataProvider.getMockedMapWithAutoCarouselData()
         data = MapData(dataMap)
     }
-    return CarouselPushTemplate.createCarouselPushTemplate(data) as AutoCarouselPushTemplate
+    return CarouselPushTemplate(data) as AutoCarouselPushTemplate
 }

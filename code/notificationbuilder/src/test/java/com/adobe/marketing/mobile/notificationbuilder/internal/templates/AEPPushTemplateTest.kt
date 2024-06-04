@@ -12,9 +12,9 @@
 package com.adobe.marketing.mobile.notificationbuilder.internal.templates
 
 import android.app.NotificationManager
-import com.adobe.marketing.mobile.notificationbuilder.internal.NotificationPriority
-import com.adobe.marketing.mobile.notificationbuilder.internal.NotificationVisibility
-import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateConstants
+import com.adobe.marketing.mobile.notificationbuilder.NotificationPriority
+import com.adobe.marketing.mobile.notificationbuilder.NotificationVisibility
+import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants
 import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateType
 import com.adobe.marketing.mobile.notificationbuilder.internal.util.MapData
 import org.junit.Assert.assertEquals

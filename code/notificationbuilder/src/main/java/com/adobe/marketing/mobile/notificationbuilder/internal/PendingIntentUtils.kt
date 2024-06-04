@@ -12,14 +12,73 @@
 package com.adobe.marketing.mobile.notificationbuilder.internal
 
 import android.app.Activity
+import android.app.AlarmManager
 import android.app.PendingIntent
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.os.Build
+import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants
+import com.adobe.marketing.mobile.services.Log
 import java.util.Random
 
 internal object PendingIntentUtils {
 
     private const val SELF_TAG = "PendingIntentUtils"
+
+    internal fun createPendingIntentForScheduledNotifications(
+        context: Context,
+        scheduledIntent: Intent,
+        broadcastReceiverClass: Class<out BroadcastReceiver>?,
+        triggerAtSeconds: Long,
+    ) {
+        broadcastReceiverClass?.let {
+            scheduledIntent.setClass(context, broadcastReceiverClass)
+        }
+
+        val pendingIntent: PendingIntent = PendingIntent.getBroadcast(
+            context,
+            Random().nextInt(),
+            scheduledIntent,
+            PendingIntent.FLAG_MUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        )
+
+        val alarmManager =
+            context.getSystemService(Context.ALARM_SERVICE) as AlarmManager? ?: return
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
+            isExactAlarmsAllowed(alarmManager)
+        ) {
+            Log.trace(
+                PushTemplateConstants.LOG_TAG,
+                SELF_TAG,
+                "Exact alarms are permitted, scheduling an exact alarm for the current notification."
+            )
+            alarmManager.setExactAndAllowWhileIdle(
+                AlarmManager.RTC_WAKEUP, triggerAtSeconds * 1000, pendingIntent
+            )
+        } else {
+            // schedule an inexact alarm for the current notification
+            Log.trace(
+                PushTemplateConstants.LOG_TAG,
+                SELF_TAG,
+                "Exact alarms are not permitted, scheduling an inexact alarm for the current notification."
+            )
+            alarmManager[AlarmManager.RTC_WAKEUP, triggerAtSeconds * 1000] =
+                pendingIntent
+        }
+    }
+
+    /**
+     * Checks if exact alarms are allowed on the device
+     *
+     * @param alarmManager [AlarmManager] instance
+     * @return true if exact alarms are allowed, false otherwise
+     */
+    internal fun isExactAlarmsAllowed(alarmManager: AlarmManager?): Boolean {
+        return Build.VERSION.SDK_INT < Build.VERSION_CODES.S ||
+            alarmManager?.canScheduleExactAlarms() ?: false
+    }
 
     /**
      * Creates a pending intent for a notification.
@@ -32,7 +91,7 @@ internal object PendingIntentUtils {
      * @param stickyNotification [Boolean] if false, remove the notification after it is interacted with
      * @return the created [PendingIntent]
      */
-    internal fun createPendingIntent(
+    internal fun createPendingIntentForTrackerActivity(
         context: Context,
         trackerActivityClass: Class<out Activity>?,
         actionUri: String?,
@@ -40,13 +99,13 @@ internal object PendingIntentUtils {
         tag: String?,
         stickyNotification: Boolean
     ): PendingIntent? {
-        val intent = Intent(PushTemplateConstants.NotificationAction.BUTTON_CLICKED)
+        val intent = Intent(PushTemplateConstants.NotificationAction.CLICKED)
         trackerActivityClass?.let {
             intent.setClass(context.applicationContext, trackerActivityClass)
         }
         intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP)
         intent.putExtra(PushTemplateConstants.PushPayloadKeys.TAG, tag)
-        intent.putExtra(PushTemplateConstants.PushPayloadKeys.STICKY, stickyNotification)
+        intent.putExtra(PushTemplateConstants.PushPayloadKeys.STICKY, stickyNotification.toString())
         addActionDetailsToIntent(
             intent,
             actionUri,
@@ -74,10 +133,10 @@ internal object PendingIntentUtils {
         actionId: String?
     ) {
         if (!actionUri.isNullOrEmpty()) {
-            intent.putExtra(PushTemplateConstants.Tracking.TrackingKeys.ACTION_URI, actionUri)
+            intent.putExtra(PushTemplateConstants.TrackingKeys.ACTION_URI, actionUri)
         }
         if (!actionId.isNullOrEmpty()) {
-            intent.putExtra(PushTemplateConstants.Tracking.TrackingKeys.ACTION_ID, actionId)
+            intent.putExtra(PushTemplateConstants.TrackingKeys.ACTION_ID, actionId)
         }
     }
 }

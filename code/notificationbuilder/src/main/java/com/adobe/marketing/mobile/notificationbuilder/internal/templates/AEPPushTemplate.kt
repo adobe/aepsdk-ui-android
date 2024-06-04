@@ -14,10 +14,10 @@ package com.adobe.marketing.mobile.notificationbuilder.internal.templates
 import android.app.NotificationManager
 import android.os.Build
 import androidx.annotation.RequiresApi
-import com.adobe.marketing.mobile.notificationbuilder.internal.NotificationPriority
-import com.adobe.marketing.mobile.notificationbuilder.internal.NotificationVisibility
-import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateConstants.ActionType
-import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateConstants.PushPayloadKeys
+import com.adobe.marketing.mobile.notificationbuilder.NotificationPriority
+import com.adobe.marketing.mobile.notificationbuilder.NotificationVisibility
+import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.ActionType
+import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.PushPayloadKeys
 import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateType
 import com.adobe.marketing.mobile.notificationbuilder.internal.util.IntentData
 import com.adobe.marketing.mobile.notificationbuilder.internal.util.NotificationData
@@ -105,8 +105,6 @@ internal sealed class AEPPushTemplate(val data: NotificationData) {
 
     /**
      * Initializes the push template with the given NotificationData.
-     *
-     * @param data the data to initialize the push template with
      */
     init {
         // extract the payload version

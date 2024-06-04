@@ -11,7 +11,7 @@
 
 package com.adobe.marketing.mobile.notificationbuilder.internal.templates
 
-import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateConstants.PushPayloadKeys
+import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.PushPayloadKeys
 import com.adobe.marketing.mobile.notificationbuilder.internal.util.NotificationData
 
 /**
@@ -33,9 +33,6 @@ internal class InputBoxPushTemplate(data: NotificationData) : AEPPushTemplate(da
 
     /**
      * Initializes the input box push template with the provided data.
-     *
-     * @param data the notification data payload or an intent
-     * @throws IllegalArgumentException if the required fields are not found in the data
      */
     init {
         inputBoxReceiverName = data.getRequiredString(PushPayloadKeys.INPUT_BOX_RECEIVER_NAME)

@@ -12,6 +12,7 @@
 package com.adobe.marketing.mobile.notificationbuilder.internal
 
 import androidx.core.app.NotificationCompat
+import com.adobe.marketing.mobile.notificationbuilder.NotificationPriority
 import org.junit.Assert.assertEquals
 import org.junit.Test
 

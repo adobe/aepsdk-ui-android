@@ -12,7 +12,7 @@
 package com.adobe.marketing.mobile.notificationbuilder.internal.templates
 
 import android.os.Bundle
-import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateConstants
+import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants
 import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateType
 import org.mockito.Mockito
 import org.mockito.kotlin.mock

@@ -20,10 +20,9 @@ import android.view.View
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import com.adobe.marketing.mobile.notificationbuilder.NotificationConstructionFailedException
-import com.adobe.marketing.mobile.notificationbuilder.PushTemplateIntentConstants
+import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants
+import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.LOG_TAG
 import com.adobe.marketing.mobile.notificationbuilder.R
-import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateConstants
-import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateConstants.LOG_TAG
 import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateImageUtils
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.createNotificationChannelIfRequired
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setNotificationTitleTextColor
@@ -189,7 +188,7 @@ internal object ProductRatingNotificationBuilder {
         }
         Log.trace(LOG_TAG, SELF_TAG, "Creating a rating click pending intent from a push template object.")
 
-        val ratingButtonClickIntent = AEPPushNotificationBuilder.createIntent(PushTemplateIntentConstants.IntentActions.RATING_ICON_CLICKED, pushTemplate)
+        val ratingButtonClickIntent = AEPPushNotificationBuilder.createIntent(PushTemplateConstants.IntentActions.RATING_ICON_CLICKED, pushTemplate)
         broadcastReceiverClass.let {
             ratingButtonClickIntent.setClass(context.applicationContext, broadcastReceiverClass)
         }
@@ -199,7 +198,7 @@ internal object ProductRatingNotificationBuilder {
             pushTemplate.ratingActionString
         )
         ratingButtonClickIntent.putExtra(
-            PushTemplateIntentConstants.IntentKeys.RATING_SELECTED,
+            PushTemplateConstants.IntentKeys.RATING_SELECTED,
             ratingButtonSelection.toString()
         )
         ratingButtonClickIntent.putExtra(

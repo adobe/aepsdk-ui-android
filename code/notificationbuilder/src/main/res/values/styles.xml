@@ -40,5 +40,10 @@
         <item name="android:maxLines">1</item>
         <item name="android:ellipsize">end</item>
     </style>
+    <style name="Timer" parent="android:TextAppearance.Material.Caption">
+        <item name="android:textColor">?android:textColorPrimary</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:maxLines">1</item>
+    </style>
     <style name="DayNightTheme" parent="Theme.AppCompat.DayNight"/>
 </resources>

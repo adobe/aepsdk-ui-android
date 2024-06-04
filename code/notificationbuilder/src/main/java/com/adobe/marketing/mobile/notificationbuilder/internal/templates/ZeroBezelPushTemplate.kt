@@ -11,7 +11,7 @@
 
 package com.adobe.marketing.mobile.notificationbuilder.internal.templates
 
-import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateConstants.PushPayloadKeys
+import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.PushPayloadKeys
 import com.adobe.marketing.mobile.notificationbuilder.internal.util.NotificationData
 
 internal class ZeroBezelPushTemplate(data: NotificationData) : AEPPushTemplate(data) {
@@ -33,8 +33,6 @@ internal class ZeroBezelPushTemplate(data: NotificationData) : AEPPushTemplate(d
 
     /**
      * Constructs a Zero Bezel Push Template from the provided data.
-     *
-     * @param data Notification data
      */
     init {
         collapsedStyle = ZeroBezelStyle
