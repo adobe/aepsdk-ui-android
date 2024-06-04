@@ -16,6 +16,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import androidx.core.app.NotificationCompat
+import com.adobe.marketing.mobile.notificationbuilder.NotificationConstructionFailedException
 import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateConstants
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.BasicPushTemplate
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.MOCKED_CHANNEL_ID
@@ -36,6 +37,7 @@ import org.mockito.MockitoAnnotations
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
+import kotlin.test.assertFailsWith
 import kotlin.test.assertNotNull
 
 @RunWith(RobolectricTestRunner::class)
@@ -65,8 +67,88 @@ class BasicNotificationBuilderTest {
 
     @Test
     fun `construct should return a NotificationCompat Builder`() {
-        val notificationBuilder = BasicNotificationBuilder.construct(context, basicPushTemplate, trackerActivityClass, broadcastReceiverClass)
+        val pushTemplate = provideMockedBasicPushTemplateWithAllKeys()
+        val notificationBuilder = BasicNotificationBuilder.construct(context, pushTemplate, trackerActivityClass, broadcastReceiverClass)
+
         assertEquals(NotificationCompat.Builder::class.java, notificationBuilder.javaClass)
+        assertNotNull(notificationBuilder)
+        // mChannelId
+        // mActions title "remind me" "Open the app"
+        // mActions size = 3; actionsbutton list size?
+        // STICKY notification
+        // tag
+
+        /*
+        * 1. context
+        * 2. pushTemplate
+        * 3. channelIdToUse
+        * 4. trackerActivityClass
+        * 5. smallLayout
+        * 6. expandedLayout
+        * 7. ContainerLayoutViewId
+        * 8. imageUri
+        * 9. downloadedImageCount
+        *
+        * 1. expandedLayout.setViewVisibility
+        * 2. expandedLayout.setImageViewBitmap
+        *
+        * addActionButtons
+        *   1. context
+        *   2. trackerActivityClass
+        *   3. pushTemplate.actionButtonsList
+        *   4. pushTemplate.tag
+        *   5. pushTemplate.isNotificationSticky
+        *
+        * write tests for scenarios where it can throw exception -> NotificationConstructionFailedException
+        * */
+    }
+
+    @Test
+    fun `Actions list should be set properly`() {
+        val pushTemplate = provideMockedBasicPushTemplateWithAllKeys()
+        val notificationBuilder = BasicNotificationBuilder.construct(
+            context,
+            pushTemplate,
+            trackerActivityClass,
+            broadcastReceiverClass
+        )
+
+        val actions = notificationBuilder.mActions
+        val listOfActionTitles = listOf("remind me", "Open the app", "Go to chess.com")
+
+        assertNotNull(actions)
+        assertEquals(listOfActionTitles.size, actions.size)
+
+        val build = notificationBuilder.build()
+        build.
+
+        for (eachActionTitle in listOfActionTitles) {
+            val action = actions.find {
+                it.title == eachActionTitle
+            }
+            assertNotNull(action)
+        }
+    }
+
+//    @Test
+//    fun `channelIdToUse parameter should be set properly`() {
+//        val pushTemplate = provideMockedBasicPushTemplateWithAllKeys()
+//        val notificationBuilder = BasicNotificationBuilder.construct(context, pushTemplate, trackerActivityClass, broadcastReceiverClass)
+//
+//        assertEquals(MOCKED_CHANNEL_ID, notificationBuilder.mChannelId)
+//    }
+
+    @Test
+    fun `construct should throw NotificationConstructionFailedException when invalid push template is provided`() {
+
+        assertFailsWith (
+            exceptionClass = NotificationConstructionFailedException::class,
+            block = { BasicNotificationBuilder.construct(context, context, trackerActivityClass, broadcastReceiverClass) }
+        )
+
+//        {
+//            BasicNotificationBuilder.construct(context, null, trackerActivityClass, broadcastReceiverClass)
+//        }
     }
 
     @Test
