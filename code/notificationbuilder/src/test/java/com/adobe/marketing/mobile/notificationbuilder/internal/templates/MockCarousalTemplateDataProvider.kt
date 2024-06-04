@@ -12,8 +12,7 @@
 package com.adobe.marketing.mobile.notificationbuilder.internal.templates
 
 import android.os.Bundle
-import com.adobe.marketing.mobile.notificationbuilder.internal.NotificationPriority
-import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateConstants
+import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants
 import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateType
 import org.mockito.Mockito
 import org.mockito.kotlin.mock
@@ -43,7 +42,7 @@ object MockCarousalTemplateDataProvider {
             PushTemplateConstants.PushPayloadKeys.LARGE_ICON to MOCKED_LARGE_ICON,
             PushTemplateConstants.PushPayloadKeys.SMALL_ICON_COLOR to MOCKED_SMALL_ICON_COLOR,
             PushTemplateConstants.PushPayloadKeys.VISIBILITY to MOCKED_VISIBILITY,
-            PushTemplateConstants.PushPayloadKeys.PRIORITY to NotificationPriority.getNotificationPriority(MOCKED_PRIORITY),
+            PushTemplateConstants.PushPayloadKeys.PRIORITY to MOCKED_PRIORITY,
             PushTemplateConstants.PushPayloadKeys.TICKER to MOCKED_TICKER,
             PushTemplateConstants.PushPayloadKeys.STICKY to "true",
             PushTemplateConstants.PushPayloadKeys.TAG to MOCKED_TAG,
@@ -88,7 +87,7 @@ object MockCarousalTemplateDataProvider {
         Mockito.`when`(mockBundle.getString(PushTemplateConstants.PushPayloadKeys.VISIBILITY))
             .thenReturn(MOCKED_VISIBILITY)
         Mockito.`when`(mockBundle.getString(PushTemplateConstants.PushPayloadKeys.PRIORITY))
-            .thenReturn(NotificationPriority.getNotificationPriority(MOCKED_PRIORITY))
+            .thenReturn(MOCKED_PRIORITY)
         Mockito.`when`(mockBundle.getString(PushTemplateConstants.PushPayloadKeys.TICKER))
             .thenReturn(MOCKED_TICKER)
         Mockito.`when`(mockBundle.getString(PushTemplateConstants.PushPayloadKeys.TAG))

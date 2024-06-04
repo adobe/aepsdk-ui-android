@@ -21,15 +21,15 @@ import android.widget.RemoteViews
 import androidx.annotation.VisibleForTesting
 import androidx.core.app.NotificationCompat
 import com.adobe.marketing.mobile.notificationbuilder.NotificationConstructionFailedException
-import com.adobe.marketing.mobile.notificationbuilder.PushTemplateIntentConstants
+import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants
+import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.LOG_TAG
+import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.PushPayloadKeys
 import com.adobe.marketing.mobile.notificationbuilder.R
-import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateConstants.LOG_TAG
-import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateConstants.PushPayloadKeys
 import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateImageUtils
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.addActionButtons
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.createNotificationChannelIfRequired
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.BasicPushTemplate
-import com.adobe.marketing.mobile.notificationbuilder.internal.util.MapData
+import com.adobe.marketing.mobile.notificationbuilder.internal.util.NotificationData
 import com.adobe.marketing.mobile.services.Log
 
 /**
@@ -112,9 +112,9 @@ internal object BasicNotificationBuilder {
         context: Context,
         trackerActivityClass: Class<out Activity>?,
         broadcastReceiverClass: Class<out BroadcastReceiver>?,
-        dataMap: MutableMap<String, String>
+        data: NotificationData
     ): NotificationCompat.Builder {
-        val basicPushTemplate = BasicPushTemplate(MapData(dataMap))
+        val basicPushTemplate = BasicPushTemplate(data)
         return construct(
             context,
             basicPushTemplate,
@@ -149,17 +149,17 @@ internal object BasicNotificationBuilder {
         )
 
         val remindIntent = AEPPushNotificationBuilder.createIntent(
-            PushTemplateIntentConstants.IntentActions.REMIND_LATER_CLICKED,
+            PushTemplateConstants.IntentActions.REMIND_LATER_CLICKED,
             pushTemplate
         )
         remindIntent.putExtra(PushPayloadKeys.REMIND_LATER_TEXT, pushTemplate.remindLaterText)
         remindIntent.putExtra(
             PushPayloadKeys.REMIND_LATER_TIMESTAMP,
-            pushTemplate.remindLaterTimestamp
+            pushTemplate.remindLaterTimestamp.toString()
         )
         remindIntent.putExtra(
             PushPayloadKeys.REMIND_LATER_DURATION,
-            pushTemplate.remindLaterDuration
+            pushTemplate.remindLaterDuration.toString()
         )
         remindIntent.putExtra(PushPayloadKeys.ACTION_BUTTONS, pushTemplate.actionButtonsString)
         remindIntent.putExtra(PushPayloadKeys.CHANNEL_ID, channelId)

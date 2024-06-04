@@ -11,8 +11,7 @@
 
 package com.adobe.marketing.mobile.notificationbuilder.internal.templates
 
-import com.adobe.marketing.mobile.notificationbuilder.PushTemplateIntentConstants
-import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateConstants
+import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants
 import com.adobe.marketing.mobile.notificationbuilder.internal.util.IntentData
 import com.adobe.marketing.mobile.notificationbuilder.internal.util.NotificationData
 
@@ -24,15 +23,13 @@ internal class ManualCarouselPushTemplate(data: NotificationData) : CarouselPush
     /**
      * Constructs a Manual Carousel Push Template from the provided data.
      * If the intent action is not null, then the data is from an intent.
-     *
-     * @param data Notification data
      */
     init {
         centerImageIndex = getDefaultCarouselIndex(carouselLayout)
         if (data is IntentData && data.actionName != null) {
             this.intentAction = data.actionName
             centerImageIndex =
-                data.getInteger(PushTemplateIntentConstants.IntentKeys.CENTER_IMAGE_INDEX)
+                data.getInteger(PushTemplateConstants.IntentKeys.CENTER_IMAGE_INDEX)
                     ?: getDefaultCarouselIndex(carouselLayout)
         }
     }

@@ -12,7 +12,8 @@
         android:id="@+id/large_icon"
         android:layout_height="@dimen/large_icon_height"
         android:layout_width="@dimen/large_icon_width"
-        android:layout_alignParentRight="true" />
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"/>
 
     <TextView
         android:id="@+id/notification_title"

@@ -11,8 +11,7 @@
 
 package com.adobe.marketing.mobile.notificationbuilder.internal.templates
 
-import com.adobe.marketing.mobile.notificationbuilder.PushTemplateIntentConstants
-import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateConstants
+import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants
 import com.adobe.marketing.mobile.notificationbuilder.internal.util.NotificationData
 import com.adobe.marketing.mobile.services.Log
 import org.json.JSONArray
@@ -72,7 +71,7 @@ internal class ProductRatingPushTemplate(data: NotificationData) : AEPPushTempla
         if (ratingActionList.size < 3 || ratingActionList.size > 5) {
             throw IllegalArgumentException("\"${PushTemplateConstants.PushPayloadKeys.RATING_ACTIONS}\" field must have 3 to 5 rating actions")
         }
-        ratingSelected = data.getInteger(PushTemplateIntentConstants.IntentKeys.RATING_SELECTED)
+        ratingSelected = data.getInteger(PushTemplateConstants.IntentKeys.RATING_SELECTED)
             ?: PushTemplateConstants.ProductRatingKeys.RATING_UNSELECTED
     }
 

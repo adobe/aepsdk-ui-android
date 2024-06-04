@@ -18,8 +18,8 @@ import android.os.Build
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import com.adobe.marketing.mobile.notificationbuilder.NotificationConstructionFailedException
+import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants
 import com.adobe.marketing.mobile.notificationbuilder.R
-import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateConstants
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setNotificationBackgroundColor
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setNotificationBodyTextColor
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setNotificationClickAction
@@ -28,7 +28,6 @@ import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setNot
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setRemoteViewImage
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setSmallIcon
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setSound
-import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setVisibility
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.AEPPushTemplate
 
 // TODO: The utilities provided by this builder assumes the id's for various common elements (R.id.basic_small_layout,
@@ -99,10 +98,7 @@ internal object AEPPushNotificationBuilder {
             // small icon must be present, otherwise the notification will not be displayed.
             .setSmallIcon(context, pushTemplate.smallIcon, pushTemplate.smallIconColor)
             // set notification visibility
-            .setVisibility(pushTemplate)
-            // set custom sound, note this applies to API 25 and lower only as API 26 and up set the
-            // sound on the notification channel
-            .setSound(context, pushTemplate.sound)
+            .setVisibility(pushTemplate.visibility.value)
             .setNotificationClickAction(
                 context,
                 trackerActivityClass,
@@ -111,6 +107,12 @@ internal object AEPPushNotificationBuilder {
                 pushTemplate.isNotificationSticky ?: false
             )
             .setNotificationDeleteAction(context, trackerActivityClass)
+
+        // if not from intent, set custom sound, note this applies to API 25 and lower only as
+        // API 26 and up set the sound on the notification channel
+        if (!pushTemplate.isFromIntent) {
+            builder.setSound(context, pushTemplate.sound)
+        }
 
         // if API level is below 26 (prior to notification channels) then notification priority is
         // set on the notification builder
@@ -189,8 +191,8 @@ internal object AEPPushNotificationBuilder {
         )
 
         // add notification priority and visibility
-        intent.putExtra(PushTemplateConstants.PushPayloadKeys.PRIORITY, template.priorityString)
-        intent.putExtra(PushTemplateConstants.PushPayloadKeys.VISIBILITY, template.visibilityString)
+        intent.putExtra(PushTemplateConstants.PushPayloadKeys.PRIORITY, template.priority.stringValue)
+        intent.putExtra(PushTemplateConstants.PushPayloadKeys.VISIBILITY, template.visibility.stringValue)
         return intent
     }
 }

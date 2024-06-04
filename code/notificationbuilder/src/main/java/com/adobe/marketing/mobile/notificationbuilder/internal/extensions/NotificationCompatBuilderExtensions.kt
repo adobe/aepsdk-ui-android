@@ -19,9 +19,9 @@ import android.graphics.Color
 import android.media.RingtoneManager
 import androidx.core.app.NotificationCompat
 import com.adobe.marketing.mobile.MobileCore
+import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants
+import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.LOG_TAG
 import com.adobe.marketing.mobile.notificationbuilder.internal.PendingIntentUtils
-import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateConstants
-import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateConstants.LOG_TAG
 import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateImageUtils
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.AEPPushTemplate
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.BasicPushTemplate
@@ -110,7 +110,7 @@ private fun NotificationCompat.Builder.setSmallIconColor(
 internal fun NotificationCompat.Builder.setVisibility(
     pushTemplate: AEPPushTemplate
 ): NotificationCompat.Builder {
-    when (pushTemplate.getNotificationVisibility()) {
+    when (pushTemplate.visibility.value) {
         NotificationCompat.VISIBILITY_PUBLIC -> setVisibility(
             NotificationCompat.VISIBILITY_PUBLIC
         )
@@ -225,7 +225,7 @@ internal fun NotificationCompat.Builder.setNotificationClickAction(
     tag: String?,
     stickyNotification: Boolean
 ): NotificationCompat.Builder {
-    val pendingIntent: PendingIntent? = PendingIntentUtils.createPendingIntent(
+    val pendingIntent: PendingIntent? = PendingIntentUtils.createPendingIntentForTrackerActivity(
         context,
         trackerActivityClass,
         actionUri,
@@ -268,9 +268,8 @@ internal fun NotificationCompat.Builder.setNotificationDeleteAction(
  *
  * @param context the application [Context]
  * @param trackerActivityClass the [Activity] class to use as the tracker activity
- * @param actionButtonsString `String` a JSON string containing action buttons to attach
+ * @param actionButtons list of [BasicPushTemplate.ActionButton] containing action buttons to attach
  * to the notification
- * notification
  * @param tag `String` containing the tag to use when scheduling the notification
  * @param stickyNotification [Boolean]  if false, remove the notification after the action
  * button is pressed
@@ -290,7 +289,7 @@ internal fun NotificationCompat.Builder.addActionButtons(
             if (eachButton.type === PushTemplateConstants.ActionType.DEEPLINK ||
                 eachButton.type === PushTemplateConstants.ActionType.WEBURL
             ) {
-                PendingIntentUtils.createPendingIntent(
+                PendingIntentUtils.createPendingIntentForTrackerActivity(
                     context,
                     trackerActivityClass,
                     eachButton.link,
@@ -299,7 +298,7 @@ internal fun NotificationCompat.Builder.addActionButtons(
                     stickyNotification
                 )
             } else {
-                PendingIntentUtils.createPendingIntent(
+                PendingIntentUtils.createPendingIntentForTrackerActivity(
                     context,
                     trackerActivityClass,
                     null,

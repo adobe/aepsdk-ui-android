@@ -18,9 +18,9 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
+import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants
+import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.LOG_TAG
 import com.adobe.marketing.mobile.notificationbuilder.R
-import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateConstants
-import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateConstants.LOG_TAG
 import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateImageUtils
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.createNotificationChannelIfRequired
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setRemoteViewClickAction
@@ -51,8 +51,19 @@ internal object AutoCarouselNotificationBuilder {
             pushTemplate.carouselItems.map { it.imageUri }
         )
 
+        // fallback to a basic push template notification builder if less than 3 images were able to be downloaded
+        if (downloadedImageCount < PushTemplateConstants.DefaultValues.CAROUSEL_MINIMUM_IMAGE_COUNT) {
+            Log.trace(LOG_TAG, SELF_TAG, "Less than 3 images are available for the auto carousel push template, falling back to a basic push template.")
+            return BasicNotificationBuilder.fallbackToBasicNotification(
+                context,
+                trackerActivityClass,
+                broadcastReceiverClass,
+                pushTemplate.data,
+            )
+        }
+
         // load images into the carousel
-        val downloadedImageUris = populateAutoCarouselImages(
+        populateAutoCarouselImages(
             context,
             trackerActivityClass,
             expandedLayout,
@@ -60,24 +71,6 @@ internal object AutoCarouselNotificationBuilder {
             pushTemplate.carouselItems,
             packageName
         )
-
-        // fallback to a basic push template notification builder if less than 3 images were able to be downloaded
-        if (downloadedImageCount < PushTemplateConstants.DefaultValues.CAROUSEL_MINIMUM_IMAGE_COUNT) {
-            Log.trace(
-                LOG_TAG, SELF_TAG,
-                "Less than 3 images are available for the auto carousel push template, falling back to a basic push template."
-            )
-            if (downloadedImageCount > 0) {
-                pushTemplate.messageData[PushTemplateConstants.PushPayloadKeys.IMAGE_URL] =
-                    downloadedImageUris[0]
-            }
-            return BasicNotificationBuilder.fallbackToBasicNotification(
-                context,
-                trackerActivityClass,
-                broadcastReceiverClass,
-                pushTemplate.messageData
-            )
-        }
 
         val notificationManager =
             context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager

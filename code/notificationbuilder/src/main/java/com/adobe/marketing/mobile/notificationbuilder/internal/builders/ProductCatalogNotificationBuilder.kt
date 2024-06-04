@@ -19,11 +19,10 @@ import android.content.Context
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import com.adobe.marketing.mobile.notificationbuilder.NotificationConstructionFailedException
-import com.adobe.marketing.mobile.notificationbuilder.PushTemplateIntentConstants
+import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants
+import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.LOG_TAG
 import com.adobe.marketing.mobile.notificationbuilder.R
 import com.adobe.marketing.mobile.notificationbuilder.internal.PendingIntentUtils
-import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateConstants
-import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateConstants.LOG_TAG
 import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateImageUtils
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.createNotificationChannelIfRequired
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setElementColor
@@ -151,7 +150,7 @@ internal object ProductCatalogNotificationBuilder {
         expandedLayout.setImageViewBitmap(R.id.product_image, pushImage)
         expandedLayout.setOnClickPendingIntent(
             R.id.product_image,
-            PendingIntentUtils.createPendingIntent(
+            PendingIntentUtils.createPendingIntentForTrackerActivity(
                 context,
                 trackerActivityClass,
                 pushTemplate.catalogItems[pushTemplate.currentIndex].uri,
@@ -245,7 +244,7 @@ internal object ProductCatalogNotificationBuilder {
         // apply the open uri action to the cta button
         expandedLayout.setOnClickPendingIntent(
             R.id.cta_button,
-            PendingIntentUtils.createPendingIntent(
+            PendingIntentUtils.createPendingIntentForTrackerActivity(
                 context,
                 trackerActivityClass,
                 pushTemplate.ctaButtonUri,
@@ -278,7 +277,7 @@ internal object ProductCatalogNotificationBuilder {
      * Sets custom colors to the product catalog CTA button text.
      *
      * @param containerViewId [Int] containing the resource id of the push template notification RemoteViews
-     * @param buttonColor [String] containing the hex color code for the cta button text
+     * @param buttonTextColor [String] containing the hex color code for the cta button text
      */
     private fun RemoteViews.setCtaButtonTextColor(
         containerViewId: Int,
@@ -320,7 +319,7 @@ internal object ProductCatalogNotificationBuilder {
         )
 
         val thumbnailClickIntent = AEPPushNotificationBuilder.createIntent(
-            PushTemplateIntentConstants.IntentActions.CATALOG_THUMBNAIL_CLICKED,
+            PushTemplateConstants.IntentActions.CATALOG_THUMBNAIL_CLICKED,
             pushTemplate
         ).apply {
             setClass(context.applicationContext, broadcastReceiverClass)
@@ -350,7 +349,7 @@ internal object ProductCatalogNotificationBuilder {
                 pushTemplate.rawCatalogItems
             )
             putExtra(
-                PushTemplateIntentConstants.IntentKeys.CATALOG_ITEM_INDEX,
+                PushTemplateConstants.IntentKeys.CATALOG_ITEM_INDEX,
                 currentIndex.toString()
             )
         }

@@ -12,9 +12,9 @@
 package com.adobe.marketing.mobile.notificationbuilder.internal.templates
 
 import android.app.NotificationManager
-import com.adobe.marketing.mobile.notificationbuilder.internal.NotificationPriority
-import com.adobe.marketing.mobile.notificationbuilder.internal.NotificationVisibility
-import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateConstants
+import com.adobe.marketing.mobile.notificationbuilder.NotificationPriority
+import com.adobe.marketing.mobile.notificationbuilder.NotificationVisibility
+import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants
 import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateType
 import com.adobe.marketing.mobile.notificationbuilder.internal.util.MapData
 import org.junit.Assert.assertEquals
@@ -89,15 +89,10 @@ class AEPPushTemplateTest {
         assertEquals(MOCKED_IMAGE_URI, aepPushTemplate.imageUrl)
         assertEquals(MOCKED_LARGE_ICON, aepPushTemplate.largeIcon)
         assertEquals("FFD966", aepPushTemplate.backgroundColor)
-        assertEquals(MOCKED_PRIORITY, aepPushTemplate.getNotificationPriority())
-        assertEquals(
-            NotificationVisibility.getNotificationCompatVisibilityFromString(
-                MOCKED_VISIBILITY
-            ),
-            aepPushTemplate.getNotificationVisibility()
-        )
-        assertEquals("PRIORITY_DEFAULT", aepPushTemplate.priorityString)
-        assertEquals("PUBLIC", aepPushTemplate.visibilityString)
+        assertEquals(NotificationPriority.fromString(MOCKED_PRIORITY), aepPushTemplate.priority)
+        assertEquals(NotificationVisibility.fromString(MOCKED_VISIBILITY), aepPushTemplate.visibility)
+        assertEquals("PRIORITY_HIGH", aepPushTemplate.priority.stringValue)
+        assertEquals("PUBLIC", aepPushTemplate.visibility.stringValue)
         assertEquals("bell", aepPushTemplate.sound)
         assertEquals(MOCKED_SMALL_ICON, aepPushTemplate.smallIcon)
         assertEquals("FFD966", aepPushTemplate.titleTextColor)
@@ -107,7 +102,7 @@ class AEPPushTemplateTest {
         assertEquals(aepPushTemplate.smallIconColor, null)
         assertEquals(
             aepPushTemplate.getNotificationImportance(),
-            NotificationManager.IMPORTANCE_DEFAULT
+            NotificationManager.IMPORTANCE_HIGH
         )
     }
 
@@ -116,6 +111,6 @@ class AEPPushTemplateTest {
         val data = MockAEPPushTemplateDataProvider.getMockedAEPDataMapWithAllKeys()
         data.remove(PushTemplateConstants.PushPayloadKeys.PRIORITY)
         val aepPushTemplate = BasicPushTemplate(MapData(data))
-        assertEquals("PRIORITY_DEFAULT", NotificationPriority.getNotificationPriority(aepPushTemplate.getNotificationPriority()))
+        assertEquals("PRIORITY_DEFAULT", aepPushTemplate.priority.stringValue)
     }
 }
