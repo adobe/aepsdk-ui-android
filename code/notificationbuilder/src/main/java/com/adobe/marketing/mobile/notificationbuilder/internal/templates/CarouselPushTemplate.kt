@@ -11,17 +11,16 @@
 
 package com.adobe.marketing.mobile.notificationbuilder.internal.templates
 
-import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateConstants.CarouselItemKeys
-import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateConstants.DefaultValues
-import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateConstants.LOG_TAG
-import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateConstants.PushPayloadKeys
+import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.CarouselItemKeys
+import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.DefaultValues
+import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.LOG_TAG
+import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.PushPayloadKeys
 import com.adobe.marketing.mobile.notificationbuilder.internal.util.NotificationData
 import com.adobe.marketing.mobile.services.Log
 import org.json.JSONArray
 import org.json.JSONException
 
-internal open class CarouselPushTemplate protected constructor(data: NotificationData) :
-    AEPPushTemplate(data) {
+internal sealed class CarouselPushTemplate(data: NotificationData) : AEPPushTemplate(data) {
     // Optional, Determines how the carousel will be operated. Valid values are "auto" or "manual".
     // Default is "auto".
     internal val carouselMode: String
@@ -46,8 +45,6 @@ internal open class CarouselPushTemplate protected constructor(data: Notificatio
 
     /**
      * Initializes the push template with the given NotificationData.
-     *
-     * @param data the data to initialize the push template with
      */
     init {
         carouselLayout = data.getRequiredString(PushPayloadKeys.CAROUSEL_LAYOUT)
@@ -60,7 +57,7 @@ internal open class CarouselPushTemplate protected constructor(data: Notificatio
     companion object {
         private const val SELF_TAG = "CarouselPushTemplate"
 
-        fun createCarouselPushTemplate(data: NotificationData): CarouselPushTemplate {
+        operator fun invoke(data: NotificationData): CarouselPushTemplate {
             val carouselMode = data.getString(PushPayloadKeys.CAROUSEL_OPERATION_MODE)
                 ?: DefaultValues.AUTO_CAROUSEL_MODE
             return if (carouselMode == DefaultValues.AUTO_CAROUSEL_MODE) {

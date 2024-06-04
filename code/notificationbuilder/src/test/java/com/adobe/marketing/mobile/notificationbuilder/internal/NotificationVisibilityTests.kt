@@ -12,6 +12,7 @@
 package com.adobe.marketing.mobile.notificationbuilder.internal
 
 import androidx.core.app.NotificationCompat
+import com.adobe.marketing.mobile.notificationbuilder.NotificationVisibility
 import org.junit.Assert.assertEquals
 import org.junit.Test
 class NotificationVisibilityTests {

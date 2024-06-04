@@ -12,10 +12,10 @@
 package com.adobe.marketing.mobile.notificationbuilder.internal.templates
 
 import androidx.annotation.VisibleForTesting
-import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateConstants.ActionButtons
-import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateConstants.ActionType
-import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateConstants.LOG_TAG
-import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateConstants.PushPayloadKeys
+import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.ActionButtons
+import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.ActionType
+import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.LOG_TAG
+import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.PushPayloadKeys
 import com.adobe.marketing.mobile.notificationbuilder.internal.util.NotificationData
 import com.adobe.marketing.mobile.services.Log
 import org.json.JSONArray
@@ -101,8 +101,6 @@ internal class BasicPushTemplate(data: NotificationData) : AEPPushTemplate(data)
 
     /**
      * Initializes the push template with the given NotificationData.
-     *
-     * @param data the data to initialize the push template with
      */
     init {
         actionButtonsString = data.getString(PushPayloadKeys.ACTION_BUTTONS)

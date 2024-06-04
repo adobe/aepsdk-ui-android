@@ -12,12 +12,15 @@
 package com.adobe.marketing.mobile.notificationbuilder
 
 import android.app.Activity
+import android.app.PendingIntent
 import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
 import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import com.adobe.marketing.mobile.notificationbuilder.NotificationBuilder.constructNotificationBuilder
-import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateConstants
-import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateConstants.LOG_TAG
+import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.LOG_TAG
+import com.adobe.marketing.mobile.notificationbuilder.internal.PendingIntentUtils
 import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateType
 import com.adobe.marketing.mobile.notificationbuilder.internal.builders.AutoCarouselNotificationBuilder
 import com.adobe.marketing.mobile.notificationbuilder.internal.builders.BasicNotificationBuilder
@@ -26,6 +29,7 @@ import com.adobe.marketing.mobile.notificationbuilder.internal.builders.LegacyNo
 import com.adobe.marketing.mobile.notificationbuilder.internal.builders.ManualCarouselNotificationBuilder
 import com.adobe.marketing.mobile.notificationbuilder.internal.builders.ProductCatalogNotificationBuilder
 import com.adobe.marketing.mobile.notificationbuilder.internal.builders.ProductRatingNotificationBuilder
+import com.adobe.marketing.mobile.notificationbuilder.internal.builders.TimerNotificationBuilder
 import com.adobe.marketing.mobile.notificationbuilder.internal.builders.ZeroBezelNotificationBuilder
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.AEPPushTemplate
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.AutoCarouselPushTemplate
@@ -35,11 +39,14 @@ import com.adobe.marketing.mobile.notificationbuilder.internal.templates.InputBo
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.ManualCarouselPushTemplate
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.ProductCatalogPushTemplate
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.ProductRatingPushTemplate
+import com.adobe.marketing.mobile.notificationbuilder.internal.templates.TimerPushTemplate
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.ZeroBezelPushTemplate
 import com.adobe.marketing.mobile.notificationbuilder.internal.util.IntentData
 import com.adobe.marketing.mobile.notificationbuilder.internal.util.MapData
+import com.adobe.marketing.mobile.notificationbuilder.internal.util.NotificationData
 import com.adobe.marketing.mobile.services.Log
 import com.adobe.marketing.mobile.services.ServiceProvider
+import com.adobe.marketing.mobile.util.TimeUtils
 
 /**
  * Public facing object to construct a [NotificationCompat.Builder] object for the specified [PushTemplateType].
@@ -48,14 +55,24 @@ import com.adobe.marketing.mobile.services.ServiceProvider
  */
 object NotificationBuilder {
     private const val SELF_TAG = "NotificationBuilder"
-    const val VERSION = "3.0.0"
+    private const val VERSION = "3.0.0"
 
     @JvmStatic
     fun version(): String {
         return VERSION
     }
 
-    @Throws(NotificationConstructionFailedException::class)
+    /**
+     * Constructs a [NotificationCompat.Builder] object from the provided [messageData]
+     *
+     * @param messageData [Map] containing the data needed for the notification construction
+     * @param trackerActivityClass [Class] of the [Activity] to be launched when the notification is clicked
+     * @param broadcastReceiverClass [Class] of the [BroadcastReceiver] to be used for handling notification actions
+     * @return [NotificationCompat.Builder] object
+     * @throws [NotificationConstructionFailedException] if the notification construction fails due to missing data
+     * @throws [IllegalArgumentException] if the provided message data has invalid data
+     */
+    @Throws(NotificationConstructionFailedException::class, IllegalArgumentException::class)
     @JvmStatic
     fun constructNotificationBuilder(
         messageData: Map<String, String>,
@@ -67,9 +84,109 @@ object NotificationBuilder {
         if (messageData.isEmpty()) {
             throw NotificationConstructionFailedException("Message data is empty, cannot build a notification.")
         }
-        val pushTemplateType =
-            PushTemplateType.fromString(messageData[PushTemplateConstants.PushPayloadKeys.TEMPLATE_TYPE])
         val notificationData = MapData(messageData)
+        return createNotificationBuilder(context, notificationData, trackerActivityClass, broadcastReceiverClass)
+    }
+
+    /**
+     * Constructs a [NotificationCompat.Builder] object from the provided [intent]
+     *
+     * @param intent [Intent] containing the data needed for the notification construction
+     * @param trackerActivityClass [Class] of the [Activity] to be launched when the notification is clicked
+     * @param broadcastReceiverClass [Class] of the [BroadcastReceiver] to be used for handling notification actions
+     * @return [NotificationCompat.Builder] object
+     * @throws [NotificationConstructionFailedException] if the notification construction fails due to missing data
+     * @throws [IllegalArgumentException] if the provided message data has invalid data
+     */
+    @Throws(NotificationConstructionFailedException::class, IllegalArgumentException::class)
+    @JvmStatic
+    fun constructNotificationBuilder(
+        intent: Intent,
+        trackerActivityClass: Class<out Activity>?,
+        broadcastReceiverClass: Class<out BroadcastReceiver>?
+    ): NotificationCompat.Builder {
+        val context = ServiceProvider.getInstance().appContextService.applicationContext
+            ?: throw NotificationConstructionFailedException("Application context is null, cannot build a notification.")
+        val extras = intent.extras ?: throw NotificationConstructionFailedException("Intent extras are null, cannot re-build the notification.")
+        val intentData = IntentData(extras, intent.action)
+        return createNotificationBuilder(context, intentData, trackerActivityClass, broadcastReceiverClass)
+    }
+
+    /**
+     * Handles the remind later intent by scheduling a [PendingIntent] to the [broadcastReceiverClass]
+     * which will be fired at a time specified in the [remindLaterIntent].
+     *
+     * Once the PendingIntent is fired, the [broadcastReceiverClass] is responsible for
+     * reconstructing the notification and displaying it.
+     *
+     * @param remindLaterIntent [Intent] containing the data needed to schedule and recreate the notification
+     * @param broadcastReceiverClass [Class] of the [BroadcastReceiver] that will be fired when the [PendingIntent] resolves at a later time
+     */
+    @Throws(NotificationConstructionFailedException::class, IllegalArgumentException::class)
+    @JvmStatic
+    fun handleRemindIntent(
+        remindLaterIntent: Intent,
+        broadcastReceiverClass: Class<out BroadcastReceiver>?
+    ) {
+        val context = ServiceProvider.getInstance().appContextService.applicationContext
+            ?: throw NotificationConstructionFailedException("Application context is null, cannot schedule notification for later.")
+
+        // get the time for remind later from the intent extras
+        val intentExtras = remindLaterIntent.extras
+            ?: throw NotificationConstructionFailedException("Intent extras are null, cannot schedule notification for later.")
+        val remindLaterTimestamp =
+            intentExtras.getString(PushTemplateConstants.PushPayloadKeys.REMIND_LATER_TIMESTAMP)?.toLongOrNull() ?: 0
+        val remindLaterDuration =
+            intentExtras.getString(PushTemplateConstants.PushPayloadKeys.REMIND_LATER_DURATION)?.toLongOrNull() ?: 0
+
+        // calculate difference in fire date from the current date if timestamp is provided
+        val secondsUntilFireDate: Long = if (remindLaterDuration > 0) remindLaterDuration
+        else remindLaterTimestamp - TimeUtils.getUnixTimeInSeconds()
+
+        val notificationManager = NotificationManagerCompat.from(context)
+        val tag = intentExtras.getString(PushTemplateConstants.PushPayloadKeys.TAG)
+
+        // if fire date is greater than 0 then we want to schedule a reminder notification.
+        if (secondsUntilFireDate <= 0) {
+            tag?.let { notificationManager.cancel(tag.hashCode()) }
+            throw IllegalArgumentException("Remind later timestamp or duration is less than or equal to current timestamp, cannot schedule notification for later.")
+        }
+        Log.trace(LOG_TAG, SELF_TAG, "Remind later pressed, will reschedule the notification to be displayed $secondsUntilFireDate seconds from now")
+
+        // calculate the trigger time
+        val triggerTimeInSeconds: Long = if (remindLaterDuration > 0) remindLaterDuration + TimeUtils.getUnixTimeInSeconds()
+        else remindLaterTimestamp
+
+        // schedule a pending intent to be broadcast at the specified timestamp
+        if (broadcastReceiverClass == null) {
+            Log.trace(
+                LOG_TAG,
+                SELF_TAG,
+                "Broadcast receiver class is null, will not schedule a notification from the received" +
+                    " intent with action ${remindLaterIntent.action}"
+            )
+            tag?.let { notificationManager.cancel(tag.hashCode()) }
+            return
+        }
+        val scheduledIntent = Intent(PushTemplateConstants.IntentActions.SCHEDULED_NOTIFICATION_BROADCAST)
+        scheduledIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
+        scheduledIntent.putExtras(intentExtras)
+        PendingIntentUtils.createPendingIntentForScheduledNotifications(context, scheduledIntent, broadcastReceiverClass, triggerTimeInSeconds)
+
+        // cancel the displayed notification
+        tag?.let { notificationManager.cancel(tag.hashCode()) }
+    }
+
+    private fun createNotificationBuilder(
+        context: Context,
+        notificationData: NotificationData,
+        trackerActivityClass: Class<out Activity>?,
+        broadcastReceiverClass: Class<out BroadcastReceiver>?
+    ): NotificationCompat.Builder {
+
+        val pushTemplateType =
+            PushTemplateType.fromString(notificationData.getString(PushTemplateConstants.PushPayloadKeys.TEMPLATE_TYPE))
+
         when (pushTemplateType) {
             PushTemplateType.BASIC -> {
                 val basicPushTemplate = BasicPushTemplate(notificationData)
@@ -83,7 +200,7 @@ object NotificationBuilder {
 
             PushTemplateType.CAROUSEL -> {
                 val carouselPushTemplate =
-                    CarouselPushTemplate.createCarouselPushTemplate(notificationData)
+                    CarouselPushTemplate(notificationData)
 
                 when (carouselPushTemplate) {
                     is AutoCarouselPushTemplate -> {
@@ -105,7 +222,11 @@ object NotificationBuilder {
                     }
 
                     else -> {
-                        Log.trace(LOG_TAG, SELF_TAG, "Unknown carousel push template type, creating a legacy style notification.")
+                        Log.trace(
+                            LOG_TAG,
+                            SELF_TAG,
+                            "Unknown carousel push template type, creating a legacy style notification."
+                        )
                         return LegacyNotificationBuilder.construct(
                             context,
                             BasicPushTemplate(notificationData),
@@ -151,90 +272,19 @@ object NotificationBuilder {
                 )
             }
 
+            PushTemplateType.TIMER -> {
+                return TimerNotificationBuilder.construct(
+                    context,
+                    TimerPushTemplate(notificationData),
+                    trackerActivityClass,
+                    broadcastReceiverClass
+                )
+            }
+
             PushTemplateType.UNKNOWN -> {
                 return LegacyNotificationBuilder.construct(
                     context,
                     BasicPushTemplate(notificationData),
-                    trackerActivityClass
-                )
-            }
-        }
-    }
-
-    @Throws(NotificationConstructionFailedException::class)
-    @JvmStatic
-    fun constructNotificationBuilder(
-        intent: Intent,
-        trackerActivityClass: Class<out Activity>?,
-        broadcastReceiverClass: Class<out BroadcastReceiver>?
-    ): NotificationCompat.Builder {
-        val context = ServiceProvider.getInstance().appContextService.applicationContext
-            ?: throw NotificationConstructionFailedException("Application context is null, cannot build a notification.")
-        val extras = intent.extras ?: throw NotificationConstructionFailedException("Intent extras are null, cannot re-build the notification.")
-        val pushTemplateType =
-            PushTemplateType.fromString(intent.getStringExtra(PushTemplateConstants.PushPayloadKeys.TEMPLATE_TYPE))
-        val intentData = IntentData(extras, intent.action)
-
-        when (pushTemplateType) {
-            PushTemplateType.BASIC -> {
-                Log.trace(LOG_TAG, SELF_TAG, "Building a basic style push notification.")
-                return BasicNotificationBuilder.construct(
-                    context,
-                    BasicPushTemplate(intentData),
-                    trackerActivityClass,
-                    broadcastReceiverClass
-                )
-            }
-
-            PushTemplateType.CAROUSEL -> {
-                return ManualCarouselNotificationBuilder.construct(
-                    context,
-                    ManualCarouselPushTemplate(intentData),
-                    trackerActivityClass,
-                    broadcastReceiverClass
-                )
-            }
-
-            PushTemplateType.INPUT_BOX -> {
-                return InputBoxNotificationBuilder.construct(
-                    context,
-                    InputBoxPushTemplate(intentData),
-                    trackerActivityClass,
-                    broadcastReceiverClass
-                )
-            }
-
-            PushTemplateType.PRODUCT_CATALOG -> {
-                return ProductCatalogNotificationBuilder.construct(
-                    context,
-                    ProductCatalogPushTemplate(intentData),
-                    trackerActivityClass,
-                    broadcastReceiverClass
-                )
-            }
-
-            PushTemplateType.PRODUCT_RATING -> {
-                return ProductRatingNotificationBuilder.construct(
-                    context,
-                    ProductRatingPushTemplate(intentData),
-                    trackerActivityClass,
-                    broadcastReceiverClass
-                )
-            }
-
-            PushTemplateType.UNKNOWN -> {
-                return LegacyNotificationBuilder.construct(
-                    context,
-                    BasicPushTemplate(intentData),
-                    trackerActivityClass
-                )
-            }
-
-            else -> {
-                // default to legacy notification
-                return LegacyNotificationBuilder.construct(
-                    context,
-                    BasicPushTemplate(intentData),
                     trackerActivityClass
                 )
             }

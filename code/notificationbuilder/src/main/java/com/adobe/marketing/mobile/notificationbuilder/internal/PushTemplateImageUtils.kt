@@ -15,7 +15,8 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
 import android.graphics.RectF
-import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateConstants.LOG_TAG
+import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants
+import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.LOG_TAG
 import com.adobe.marketing.mobile.services.HttpConnecting
 import com.adobe.marketing.mobile.services.HttpMethod
 import com.adobe.marketing.mobile.services.Log
@@ -48,7 +49,7 @@ internal object PushTemplateImageUtils {
 
     /**
      * Downloads and caches images provided in the [urlList]. Prior to downloading, the image url
-     * is used to retrieve a [CacheResult] containing a previously cached image.
+     * is used to retrieve a previously cached image using [CacheService].
      * If a valid cache result is returned then no image is downloaded.
      * If no cache result is returned, a call to [downloadImage] is made to download then cache the image.
      *

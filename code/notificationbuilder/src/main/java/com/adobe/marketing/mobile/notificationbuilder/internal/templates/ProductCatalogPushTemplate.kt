@@ -11,11 +11,11 @@
 
 package com.adobe.marketing.mobile.notificationbuilder.internal.templates
 
-import com.adobe.marketing.mobile.notificationbuilder.PushTemplateIntentConstants
-import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateConstants.CatalogItemKeys
-import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateConstants.DefaultValues
-import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateConstants.LOG_TAG
-import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateConstants.PushPayloadKeys
+import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants
+import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.CatalogItemKeys
+import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.DefaultValues
+import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.LOG_TAG
+import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.PushPayloadKeys
 import com.adobe.marketing.mobile.notificationbuilder.internal.util.NotificationData
 import com.adobe.marketing.mobile.services.Log
 import org.json.JSONArray
@@ -66,9 +66,6 @@ internal class ProductCatalogPushTemplate(data: NotificationData) : AEPPushTempl
 
     /**
      * Constructs a Product Catalog push template with the given NotificationData.
-     *
-     * @param data the data to initialize the push template with
-     * @throws IllegalArgumentException if any required fields for building the Product Catalog push template are missing
      */
     init {
         ctaButtonText = data.getRequiredString(PushPayloadKeys.CATALOG_CTA_BUTTON_TEXT)
@@ -78,7 +75,7 @@ internal class ProductCatalogPushTemplate(data: NotificationData) : AEPPushTempl
         displayLayout = data.getRequiredString(PushPayloadKeys.CATALOG_LAYOUT)
         rawCatalogItems = data.getRequiredString(PushPayloadKeys.CATALOG_ITEMS)
         catalogItems = parseCatalogItemsFromString(rawCatalogItems)
-        currentIndex = data.getInteger(PushTemplateIntentConstants.IntentKeys.CATALOG_ITEM_INDEX)
+        currentIndex = data.getInteger(PushTemplateConstants.IntentKeys.CATALOG_ITEM_INDEX)
             ?: DefaultValues.PRODUCT_CATALOG_START_INDEX
     }
 
