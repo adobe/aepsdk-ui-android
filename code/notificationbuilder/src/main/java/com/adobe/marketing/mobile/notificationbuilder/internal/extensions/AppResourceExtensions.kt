@@ -69,6 +69,6 @@ internal fun Context.getSoundUriForResourceName(
             "://" +
             packageName +
             "/raw/" +
-            soundName
+            (soundName ?: "")
     )
 }
