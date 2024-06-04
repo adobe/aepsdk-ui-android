@@ -18,10 +18,8 @@ import android.os.Build
 import android.os.Bundle
 import androidx.core.app.NotificationCompat
 import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants
+import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.DefaultValues.DEFAULT_CHANNEL_ID
 import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.DefaultValues.SILENT_NOTIFICATION_CHANNEL_ID
-import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateConstants
-import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateConstants.DefaultValues.DEFAULT_CHANNEL_ID
-import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateConstants.DefaultValues.SILENT_NOTIFICATION_CHANNEL_ID
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.BasicPushTemplate
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.MockAEPPushTemplateDataProvider
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.removeKeysFromMap
@@ -90,15 +88,15 @@ class LegacyNotificationBuilderTest {
         assertNotNull(notification.deleteIntent)
         assertEquals(
             pushTemplate.actionUri,
-            intent.getStringExtra(PushTemplateConstants.Tracking.TrackingKeys.ACTION_URI)
+            intent.getStringExtra(PushTemplateConstants.TrackingKeys.ACTION_URI)
         )
         assertEquals(
             pushTemplate.tag,
             intent.getStringExtra(PushTemplateConstants.PushPayloadKeys.TAG)
         )
         assertEquals(
-            pushTemplate.isNotificationSticky,
-            intent.getBooleanExtra(PushTemplateConstants.PushPayloadKeys.STICKY, false)
+            pushTemplate.isNotificationSticky.toString(),
+            intent.getStringExtra(PushTemplateConstants.PushPayloadKeys.STICKY)
         )
     }
 
@@ -147,15 +145,15 @@ class LegacyNotificationBuilderTest {
         assertNotNull(notification.deleteIntent)
         assertEquals(
             pushTemplate.actionUri,
-            intent.getStringExtra(PushTemplateConstants.Tracking.TrackingKeys.ACTION_URI)
+            intent.getStringExtra(PushTemplateConstants.TrackingKeys.ACTION_URI)
         )
         assertEquals(
             pushTemplate.tag,
             intent.getStringExtra(PushTemplateConstants.PushPayloadKeys.TAG)
         )
         assertEquals(
-            pushTemplate.isNotificationSticky,
-            intent.getBooleanExtra(PushTemplateConstants.PushPayloadKeys.STICKY, false)
+            pushTemplate.isNotificationSticky.toString(),
+            intent.getStringExtra(PushTemplateConstants.PushPayloadKeys.STICKY)
         )
     }
 
@@ -206,8 +204,7 @@ class LegacyNotificationBuilderTest {
         val intent = shadowPendingIntent.savedIntent
         // Assert that the sticky flag is false
         assertEquals(
-            false,
-            intent.getBooleanExtra(PushTemplateConstants.PushPayloadKeys.STICKY, false)
+            "false", intent.getStringExtra(PushTemplateConstants.PushPayloadKeys.STICKY)
         )
     }
 
