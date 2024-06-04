@@ -116,7 +116,45 @@ class LegacyNotificationBuilderTest {
         val notification =
             LegacyNotificationBuilder.construct(context, pushTemplate, trackerActivityClass)
                 .build()
+        val pendingIntent = notification.contentIntent
+        val shadowPendingIntent = Shadows.shadowOf(pendingIntent)
+        val intent = shadowPendingIntent.savedIntent
+
         assertEquals(DEFAULT_CHANNEL_ID, notification.channelId)
+
+        // verify that rest of the notification attributes are same as the ones derived from template
+        assertEquals(Notification::class.java, notification.javaClass)
+        assertEquals(pushTemplate.ticker, notification.tickerText)
+        assertEquals(
+            pushTemplate.title,
+            notification.extras.getString(NotificationCompat.EXTRA_TITLE)
+        )
+        assertEquals(
+            pushTemplate.body,
+            notification.extras.getString(NotificationCompat.EXTRA_TEXT)
+        )
+        assertEquals(
+            pushTemplate.body,
+            notification.extras.getString(NotificationCompat.EXTRA_TEXT)
+        )
+        assertNotNull(notification.smallIcon)
+        assertEquals(
+            pushTemplate.actionButtonsList?.map { it.label },
+            notification.actions.map { it.title }
+        )
+        assertNotNull(notification.deleteIntent)
+        assertEquals(
+            pushTemplate.actionUri,
+            intent.getStringExtra(PushTemplateConstants.Tracking.TrackingKeys.ACTION_URI)
+        )
+        assertEquals(
+            pushTemplate.tag,
+            intent.getStringExtra(PushTemplateConstants.PushPayloadKeys.TAG)
+        )
+        assertEquals(
+            pushTemplate.isNotificationSticky,
+            intent.getBooleanExtra(PushTemplateConstants.PushPayloadKeys.STICKY, false)
+        )
     }
 
     @Test
