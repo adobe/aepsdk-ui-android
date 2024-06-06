@@ -12,37 +12,90 @@
 package com.adobe.marketing.mobile.notificationbuilder.internal.extensions
 
 import android.content.Context
+import android.content.pm.ApplicationInfo
+import android.content.pm.PackageManager
+import android.content.res.Resources
 import android.net.Uri
+import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
-import org.robolectric.RuntimeEnvironment
-import org.robolectric.annotation.Config
+import org.mockito.Mock
+import org.mockito.MockedStatic
+import org.mockito.Mockito.mock
+import org.mockito.Mockito.mockStatic
+import org.mockito.Mockito.`when`
+import org.mockito.MockitoAnnotations
+import org.mockito.kotlin.any
 
-@RunWith(RobolectricTestRunner::class)
-@Config(sdk = [31])
 class AppResourceExtensionsTest {
 
+    @Mock
     private lateinit var mockContext: Context
+
+    @Mock
+    private lateinit var mockPackageManager: PackageManager
+
+    @Mock
+    private lateinit var mockResources: Resources
+
+    @Mock
+    private lateinit var mockUri: Uri
+    private lateinit var mockedStaticUri: MockedStatic<Uri>
 
     @Before
     fun setup() {
-        mockContext = RuntimeEnvironment.getApplication()
+        MockitoAnnotations.openMocks(this)
+        mockedStaticUri = mockStatic(Uri::class.java)
+        mockedStaticUri.`when`<Any> { Uri.parse(any()) }.thenReturn(mockUri)
+        `when`(mockContext.packageManager).thenReturn(mockPackageManager)
+        `when`(mockContext.resources).thenReturn(mockResources)
+    }
+
+    @After
+    fun teardown() {
+        mockedStaticUri.close()
     }
 
     @Test
     fun `test getIconWithResourceName for valid icon name`() {
         val iconName = "skipleft"
-        val expectedIconId =
-            mockContext.resources.getIdentifier(iconName, "drawable", mockContext.packageName)
+        `when`(
+            mockContext.resources.getIdentifier(
+                iconName,
+                "drawable",
+                mockContext.packageName
+            )
+        ).thenReturn(1234)
+
         val iconId = mockContext.getIconWithResourceName(iconName)
-        assertEquals(expectedIconId, iconId)
+        assertEquals(1234, iconId)
     }
 
     @Test
     fun `test getIconWithResourceName for invalid icon name`() {
+        `when`(
+            mockContext.resources.getIdentifier(
+                "",
+                "drawable",
+                mockContext.packageName
+            )
+        ).thenReturn(0)
+        `when`(
+            mockContext.resources.getIdentifier(
+                null,
+                "drawable",
+                mockContext.packageName
+            )
+        ).thenReturn(0)
+        `when`(
+            mockContext.resources.getIdentifier(
+                "invalid_icon",
+                "drawable",
+                mockContext.packageName
+            )
+        ).thenReturn(0)
+
         val emptyIconId = mockContext.getIconWithResourceName("")
         val nullIconId = mockContext.getIconWithResourceName(null)
         val invalidIconId = mockContext.getIconWithResourceName("invalid_icon")
@@ -53,17 +106,36 @@ class AppResourceExtensionsTest {
 
     @Test
     fun `test getDefaultAppIcon`() {
+        `when`(mockPackageManager.getApplicationInfo(mockContext.packageName, 0)).thenReturn(
+            mock(
+                ApplicationInfo::class.java
+            ).apply { icon = 1234 }
+        )
+
         val defaultAppIcon = mockContext.getDefaultAppIcon()
-        val expectedIcon = mockContext.applicationInfo.icon
-        assertEquals(expectedIcon, defaultAppIcon)
+        assertEquals(1234, defaultAppIcon)
     }
 
     @Test
-    fun `test getSoundUriForResourceName`() {
-        val testSound = "test_sound"
+    fun `test getDefaultAppIcon when PackageManager throws NameNotFoundException`() {
+        val packageName = "com.adobe.marketing.mobile.notificationbuilder"
+        `when`(mockContext.packageName).thenReturn(packageName)
+        `when`(
+            mockPackageManager.getApplicationInfo(
+                packageName,
+                0
+            )
+        ).thenThrow(PackageManager.NameNotFoundException())
+
+        val iconId = mockContext.getDefaultAppIcon()
+        assertEquals(-1, iconId)
+    }
+
+    @Test
+    fun `test getSoundUriForResourceName for valid sound resource`() {
         val expectedUri =
-            Uri.parse("android.resource://com.adobe.marketing.mobile.notificationbuilder.test/raw/$testSound")
-        val resultUri = mockContext.getSoundUriForResourceName(testSound)
+            Uri.parse("android.resource://com.adobe.marketing.mobile.notificationbuilder.test/raw/test_sound")
+        val resultUri = mockContext.getSoundUriForResourceName("test_sound")
         assertEquals(expectedUri, resultUri)
     }
 
