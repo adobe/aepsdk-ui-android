@@ -1,4 +1,3 @@
-import com.adobe.marketing.mobile.gradle.BuildConstants
 
 /*
  * Copyright 2024 Adobe. All rights reserved.
