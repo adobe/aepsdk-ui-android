@@ -44,7 +44,7 @@ const val MOCKED_MALFORMED_JSON_ACTION_BUTTON = "[" +
     "{}," +
     "{\"label\":\"Open the app\",\"uri\":\"\",\"type\":\"GO_TO_WEB_PAGE\"}," +
     "{\"label\":\"Go to chess.com\",\"uri\":\"https://chess.com/games/552\",\"type\":\"DEEPLINK\"}]"
-const val MOCKED_CHANNEL_ID = "AEPSDKPushChannel"
+const val MOCKED_CHANNEL_ID = "AEPSDKPushChannel1"
 
 fun <K, V> MutableMap<K, V>.removeKeysFromMap(listOfKeys: List<K>) {
     for (key in listOfKeys) {
