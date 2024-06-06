@@ -1,0 +1,17 @@
+{
+  "adb_version": "1",
+  "adb_template_type": "basic",
+  "adb_title": "Game request",
+  "adb_body": "Shall we play a game?",
+  "adb_body_ex": "Basic push template with action buttons.",
+  "adb_sound": "bells",
+  "adb_n_count": "1",
+  "adb_n_priority": "PRIORITY_HIGH",
+  "adb_uri": "https://chess.com/games",
+  "adb_a_type": "WEBURL",
+  "adb_act": "[{\"label\":\"Go to chess.com\",\"uri\":\"https:\/\/chess.com\/games\/552\",\"type\":\"DEEPLINK\"},{\"label\":\"Open the app\",\"uri\":\"\",\"type\":\"OPENAPP\"}]",
+  "adb_channel_id": "2024",
+  "adb_small_icon": "chat_bubble",
+  "adb_large_icon": "https://cdn-icons-png.flaticon.com/128/864/864639.png",
+  "adb_sticky": "true"
+}

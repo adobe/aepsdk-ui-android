@@ -56,4 +56,8 @@
     <dimen name="rating_star_height">20dp</dimen>
     <dimen name="rating_confirm_padding">10dp</dimen>
     <dimen name="timer_image_height">200dp</dimen>
+    <dimen name="multi_icon_close_button_height">48dp</dimen>
+    <dimen name="multi_icon_single_icon_height">48dp</dimen>
+    <dimen name="multi_icon_layout_height">56dp</dimen>
+    <dimen name="multi_icon_item_padding">4dp</dimen>
 </resources>

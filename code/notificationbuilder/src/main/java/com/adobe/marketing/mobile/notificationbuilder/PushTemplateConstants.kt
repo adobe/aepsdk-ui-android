@@ -21,6 +21,8 @@ object PushTemplateConstants {
     internal const val CACHE_BASE_DIR = "pushtemplates"
     internal const val PUSH_IMAGE_CACHE = "pushimagecache"
 
+    internal const val DEFAULT_DELETE_ICON_NAME = "cross"
+
     /** Enum to denote the type of action  */
     internal enum class ActionType {
         DEEPLINK, WEBURL, DISMISS, OPENAPP, NONE
@@ -40,6 +42,7 @@ object PushTemplateConstants {
     object NotificationAction {
         const val DISMISSED = "Notification Dismissed"
         const val CLICKED = "Notification Clicked"
+        const val INPUT_RECEIVED = "Input Received"
     }
     object TrackingKeys {
         const val ACTION_ID = "actionId"
@@ -49,8 +52,8 @@ object PushTemplateConstants {
     internal object DefaultValues {
         // When no channel name is received from the push notification, this default channel name is used.
         // This will appear in the notification settings for the app.
-        internal const val DEFAULT_CHANNEL_NAME = "AEPSDK Push Notifications"
-        internal const val SILENT_CHANNEL_NAME = "AEPSDK Silent Push Notifications"
+        internal const val DEFAULT_CHANNEL_NAME = "General Notifications"
+        internal const val SILENT_CHANNEL_NAME = "Silent Notifications"
         internal const val DEFAULT_CHANNEL_ID = "AEPSDKPushChannel"
         internal const val SILENT_NOTIFICATION_CHANNEL_ID = "AEPSDKSilentPushChannel"
         internal const val CAROUSEL_MAX_BITMAP_WIDTH = 300
@@ -65,6 +68,9 @@ object PushTemplateConstants {
         internal const val INPUT_BOX_DEFAULT_REPLY_TEXT = "Reply"
         internal const val PRODUCT_CATALOG_START_INDEX = 0
         internal const val PRODUCT_CATALOG_VERTICAL_LAYOUT = "vertical"
+        internal const val ICON_TEMPLATE_CANCEL_IMAGE_NAME = "cross"
+        internal const val ICON_TEMPLATE_MIN_IMAGE_COUNT = 3
+        internal const val ICON_TEMPLATE_MAX_IMAGE_COUNT = 5
 
         // TODO: revisit this value. should cache time be configurable rather than have a static
         // value?
@@ -131,6 +137,9 @@ object PushTemplateConstants {
         const val RATING_SELECTED_ICON = "adb_rate_selected_icon"
         const val RATING_ACTIONS = "adb_rate_act"
 
+        const val MULTI_ICON_ITEMS = "adb_items"
+        const val MULTI_ICON_CLOSE_BUTTON = "adb_cancel_image"
+
         internal object TimerKeys {
             const val ALTERNATE_TITLE = "adb_title_alt"
             const val ALTERNATE_BODY = "adb_body_alt"
@@ -181,9 +190,12 @@ object PushTemplateConstants {
     object IntentKeys {
         const val CENTER_IMAGE_INDEX = "centerImageIndex"
         const val CATALOG_ITEM_INDEX = "catalogItemIndex"
-        const val IMAGE_URLS = "imageUrls"
-        const val IMAGE_CAPTIONS = "imageCaptions"
-        const val IMAGE_CLICK_ACTIONS = "imageClickActions"
         const val RATING_SELECTED = "ratingSelected"
+    }
+
+    internal object MultiIconTemplateKeys {
+        const val IMG = "img"
+        const val URI = "uri"
+        const val TYPE = "type"
     }
 }

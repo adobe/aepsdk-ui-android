@@ -107,7 +107,7 @@ internal object PushTemplateImageUtils {
                             }
                             downloadedImageCount.incrementAndGet()
                         } catch (exception: IOException) {
-                            Log.trace(
+                            Log.warning(
                                 LOG_TAG,
                                 SELF_TAG,
                                 "Exception occurred creating an input stream from a bitmap for {$url}: ${exception.localizedMessage}."
@@ -187,7 +187,7 @@ internal object PushTemplateImageUtils {
         }
         val cacheResult = ServiceProvider.getInstance().cacheService[assetCacheLocation, url]
         if (cacheResult == null) {
-            Log.trace(LOG_TAG, SELF_TAG, "Image not found in cache for $url")
+            Log.warning(LOG_TAG, SELF_TAG, "Image not found in cache for $url")
             return null
         }
         Log.trace(LOG_TAG, SELF_TAG, "Found cached image for $url")

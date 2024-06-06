@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ImageView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/icon_item_image_view"
+    android:layout_width="@dimen/multi_icon_single_icon_height"
+    android:maxWidth="@dimen/multi_icon_single_icon_height"
+    android:layout_height="@dimen/multi_icon_single_icon_height"
+    android:layout_gravity="center"
+    android:scaleType="fitCenter"
+    android:foreground="?selectableItemBackground"
+    android:layout_weight="1"
+    android:padding="@dimen/multi_icon_item_padding"
+    android:theme="@style/DayNightTheme" />

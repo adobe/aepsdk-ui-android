@@ -46,7 +46,7 @@
 
         <ImageView
             android:id="@+id/manual_carousel_filmstrip_center"
-            android:scaleType="fitCenter"
+            android:scaleType="centerCrop"
             android:adjustViewBounds="true"
             android:layout_width="@dimen/filmstrip_carousel_center_image_width"
             android:layout_height="match_parent"

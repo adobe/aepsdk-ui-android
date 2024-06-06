@@ -21,4 +21,7 @@ internal class IntentData(private val extras: Bundle, val actionName: String?) :
     override fun getInteger(key: String): Int? = extras.getString(key)?.toIntOrNull()
     override fun getBoolean(key: String): Boolean? = extras.getString(key)?.toBoolean()
     override fun getLong(key: String): Long? = extras.getString(key)?.toLongOrNull()
+    override fun getBundle(): Bundle {
+        return extras
+    }
 }

@@ -1,0 +1,21 @@
+{
+  "adb_version": "1",
+  "adb_template_type": "car",
+  "adb_car_mode": "auto",
+  "adb_car_layout": "default",
+  "adb_title": "Auto Carousel with wide images",
+  "adb_body": "Notification body for auto carousal wide screen test",
+  "adb_body_ex": "Notification expanded body for auto carousal wide screen test",
+  "adb_a_type": "WEBURL",
+  "adb_uri": "https://www.adobe.com",
+  "adb_items": "[{\"img\":\"https://picsum.photos/800/418\",\"txt\":\"1.91:1\"},{\"img\":\"https://picsum.photos/300/200\",\"txt\":\"3:2\",\"uri\":\"https://firefly.adobe.com/red_jersey\"},{\"img\":\"https://picsum.photos/300/169\",\"txt\":\"16:9\"}]",
+  "adb_small_icon": "chat_bubble",
+  "adb_large_icon": "https://cdn.icon-icons.com/icons2/2248/PNG/64/adobe_icon_137987.png",
+  "adb_sticky": "true",
+  "adb_tag": "auto_wide",
+  "adb_channel_id": "2024",
+  "adb_ticker": "new for 2024",
+  "adb_n_visibility": "PRIVATE",
+  "adb_n_priority": "PRIORITY_DEFAULT",
+  "adb_n_count": "1"
+}

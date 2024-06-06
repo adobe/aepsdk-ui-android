@@ -18,7 +18,6 @@ import android.os.Build
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import com.adobe.marketing.mobile.notificationbuilder.NotificationConstructionFailedException
-import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants
 import com.adobe.marketing.mobile.notificationbuilder.R
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setNotificationBackgroundColor
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setNotificationBodyTextColor
@@ -103,8 +102,7 @@ internal object AEPPushNotificationBuilder {
                 context,
                 trackerActivityClass,
                 pushTemplate.actionUri,
-                pushTemplate.tag,
-                pushTemplate.isNotificationSticky ?: false
+                pushTemplate.data.getBundle()
             )
             .setNotificationDeleteAction(context, trackerActivityClass)
 
@@ -127,72 +125,7 @@ internal object AEPPushNotificationBuilder {
     internal fun createIntent(action: String, template: AEPPushTemplate): Intent {
         val intent = Intent(action)
         intent.flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
-
-        // add the notification payload version
-        intent.putExtra(PushTemplateConstants.PushPayloadKeys.VERSION, template.payloadVersion)
-
-        // add the notification text information
-        intent.putExtra(PushTemplateConstants.PushPayloadKeys.TITLE, template.title)
-        intent.putExtra(PushTemplateConstants.PushPayloadKeys.BODY, template.body)
-        intent.putExtra(
-            PushTemplateConstants.PushPayloadKeys.EXPANDED_BODY_TEXT,
-            template.expandedBodyText
-        )
-        intent.putExtra(PushTemplateConstants.PushPayloadKeys.TICKER, template.ticker)
-
-        // add the template type
-        intent.putExtra(
-            PushTemplateConstants.PushPayloadKeys.TEMPLATE_TYPE,
-            template.templateType?.value
-        )
-
-        // add the basic media information
-        intent.putExtra(PushTemplateConstants.PushPayloadKeys.IMAGE_URL, template.imageUrl)
-
-        // add the notification action information
-        intent.putExtra(PushTemplateConstants.PushPayloadKeys.ACTION_URI, template.actionUri)
-        intent.putExtra(
-            PushTemplateConstants.PushPayloadKeys.ACTION_TYPE,
-            template.actionType?.name
-        )
-
-        // add the notification icon information
-        intent.putExtra(PushTemplateConstants.PushPayloadKeys.SMALL_ICON, template.smallIcon)
-        intent.putExtra(PushTemplateConstants.PushPayloadKeys.LARGE_ICON, template.largeIcon)
-
-        // add the notification color data
-        intent.putExtra(
-            PushTemplateConstants.PushPayloadKeys.TITLE_TEXT_COLOR,
-            template.titleTextColor
-        )
-        intent.putExtra(
-            PushTemplateConstants.PushPayloadKeys.BODY_TEXT_COLOR,
-            template.bodyTextColor
-        )
-        intent.putExtra(
-            PushTemplateConstants.PushPayloadKeys.BACKGROUND_COLOR,
-            template.backgroundColor
-        )
-        intent.putExtra(
-            PushTemplateConstants.PushPayloadKeys.SMALL_ICON_COLOR,
-            template.smallIconColor
-        )
-
-        // add other notification properties
-        intent.putExtra(PushTemplateConstants.PushPayloadKeys.TAG, template.tag)
-        intent.putExtra(PushTemplateConstants.PushPayloadKeys.SOUND, template.sound)
-        intent.putExtra(
-            PushTemplateConstants.PushPayloadKeys.BADGE_COUNT,
-            template.badgeCount.toString()
-        )
-        intent.putExtra(
-            PushTemplateConstants.PushPayloadKeys.STICKY,
-            template.isNotificationSticky.toString()
-        )
-
-        // add notification priority and visibility
-        intent.putExtra(PushTemplateConstants.PushPayloadKeys.PRIORITY, template.priority.stringValue)
-        intent.putExtra(PushTemplateConstants.PushPayloadKeys.VISIBILITY, template.visibility.stringValue)
+        intent.putExtras(template.data.getBundle())
         return intent
     }
 }

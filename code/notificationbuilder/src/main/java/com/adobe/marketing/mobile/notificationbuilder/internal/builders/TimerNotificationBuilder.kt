@@ -14,7 +14,6 @@ package com.adobe.marketing.mobile.notificationbuilder.internal.builders
 import android.app.Activity
 import android.app.AlarmManager
 import android.app.NotificationManager
-import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -27,6 +26,7 @@ import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants
 import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.LOG_TAG
 import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.PushPayloadKeys.TimerKeys
 import com.adobe.marketing.mobile.notificationbuilder.R
+import com.adobe.marketing.mobile.notificationbuilder.internal.PendingIntentUtils
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.createNotificationChannelIfRequired
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setRemoteViewImage
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setTimerTextColor
@@ -58,11 +58,15 @@ internal object TimerNotificationBuilder {
         broadcastReceiverClass: Class<out BroadcastReceiver>?
     ): NotificationCompat.Builder {
 
-        Log.trace(LOG_TAG, TAG, "Building a timer template push notification.")
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+            throw NotificationConstructionFailedException("Timer push notification on devices below Android N is not supported.")
+        }
 
         if (!isExactAlarmsAllowed(context)) {
-            throw NotificationConstructionFailedException("Exact alarms are not allowed on this device.")
+            throw NotificationConstructionFailedException("Exact alarms are not allowed on this device. Ignoring to build Timer template push notifications.")
         }
+
+        Log.trace(LOG_TAG, TAG, "Building a timer template push notification.")
 
         val notificationManager =
             context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -106,15 +110,20 @@ internal object TimerNotificationBuilder {
             }
 
             // create the pending intent for the timer expiry
-            val pendingIntent = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_MUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
-
-            // todo replace this with PendingIntentUtils.createPendingIntentForScheduledNotifications
-            // set the alarm manager to trigger the intent at the expiry time
-            val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-            val triggerTime = TimeUtils.getUnixTimeInSeconds() + remainingTimeInSeconds
-            val triggerTimeAtMillis = triggerTime * 1000
-            alarmManager.setExact(AlarmManager.RTC_WAKEUP, triggerTimeAtMillis, pendingIntent)
+            PendingIntentUtils.scheduleNotification(context, intent, broadcastReceiverClass, TimeUtils.getUnixTimeInSeconds() + remainingTimeInSeconds)
+        } else {
+            // Before displaying the expired view, check if the notification is still active
+            val notification = notificationManager.activeNotifications.find { it.id == template.tag?.hashCode() }
+            if (notification == null) {
+                Log.debug(
+                    LOG_TAG, TAG,
+                    "Notification with tag '${template.tag}' is not present in the system tray. " +
+                        "The timer notification has already been dismissed. The expired view will not be displayed."
+                )
+                throw NotificationConstructionFailedException("Timer Notification cancelled. Expired view will not be displayed.")
+            }
         }
+
         return notificationBuilder
     }
 
@@ -165,12 +174,10 @@ internal object TimerNotificationBuilder {
      */
     private fun createIntent(template: TimerPushTemplate): Intent {
         val intent = AEPPushNotificationBuilder.createIntent(PushTemplateConstants.IntentActions.TIMER_EXPIRED, template)
-        intent.putExtra(PushTemplateConstants.PushPayloadKeys.TEMPLATE_TYPE, template.templateType?.value)
-        intent.putExtra(TimerKeys.ALTERNATE_TITLE, template.alternateTitle)
-        intent.putExtra(TimerKeys.ALTERNATE_BODY, template.alternateBody)
-        intent.putExtra(TimerKeys.ALTERNATE_EXPANDED_BODY, template.alternateExpandedBody)
-        intent.putExtra(TimerKeys.ALTERNATE_IMAGE, template.alternateImage)
-        intent.putExtra(TimerKeys.TIMER_COLOR, template.timerColor)
+
+        // remove timer to prevent countdown from being recreated
+        intent.removeExtra(TimerKeys.TIMER_DURATION)
+        intent.removeExtra(TimerKeys.TIMER_END_TIME)
         return intent
     }
 

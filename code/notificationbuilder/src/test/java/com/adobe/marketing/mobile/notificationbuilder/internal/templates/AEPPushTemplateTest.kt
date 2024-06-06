@@ -83,7 +83,7 @@ class AEPPushTemplateTest {
         assertEquals(PushTemplateConstants.ActionType.NONE, aepPushTemplate.actionType)
         assertEquals(5, aepPushTemplate.badgeCount)
         assertEquals(MOCKED_BASIC_TEMPLATE_BODY, aepPushTemplate.body)
-        assertEquals("2024", aepPushTemplate.channelId)
+        assertEquals(MOCKED_CHANNEL_ID, aepPushTemplate.channelId)
         assertEquals(MOCKED_BASIC_TEMPLATE_BODY_EXPANDED, aepPushTemplate.expandedBodyText)
         assertEquals("FFD966", aepPushTemplate.bodyTextColor)
         assertEquals(MOCKED_IMAGE_URI, aepPushTemplate.imageUrl)

@@ -1,18 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" >
 
-    Copyright 2024 Adobe. All rights reserved.
-    This file is licensed to you under the Apache License, Version 2.0 (the "License");
-    you may not use this file except in compliance with the License. You may obtain a copy
-    of the License at http://www.apache.org/licenses/LICENSE-2.0
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
 
-    Unless required by applicable law or agreed to in writing, software distributed under
-    the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
-    OF ANY KIND, either express or implied. See the License for the specific language
-    governing permissions and limitations under the License.
-
--->
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <application
         android:name=".MyApp"
         android:allowBackup="true"
@@ -20,18 +11,26 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Aepsdkandroid">
+        android:theme="@style/Theme.Aepsdkandroid" >
+        <receiver android:name=".notificationBuilder.NotificationBroadcastReceiver" />
+        <activity
+            android:name=".notificationBuilder.NotificationTrackerActivity"
+            android:exported="false"
+            android:launchMode="singleInstance"
+            android:theme="@style/Messaging.Style.Transparent" />
         <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:label="@string/app_name"
             android:theme="@style/Theme.Aepsdkandroid">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".notificationBuilder.UINotificationBuilderActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Aepsdkandroid" />
     </application>
 
 </manifest>

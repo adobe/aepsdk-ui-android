@@ -13,4 +13,5 @@
 -->
 <resources>
     <string name="app_name">TestApp</string>
+    <string name="title_activity_uinotification_builder">UINotificationBuilderActivity</string>
 </resources>

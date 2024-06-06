@@ -27,6 +27,7 @@ import com.adobe.marketing.mobile.notificationbuilder.internal.builders.BasicNot
 import com.adobe.marketing.mobile.notificationbuilder.internal.builders.InputBoxNotificationBuilder
 import com.adobe.marketing.mobile.notificationbuilder.internal.builders.LegacyNotificationBuilder
 import com.adobe.marketing.mobile.notificationbuilder.internal.builders.ManualCarouselNotificationBuilder
+import com.adobe.marketing.mobile.notificationbuilder.internal.builders.MultiIconNotificationBuilder
 import com.adobe.marketing.mobile.notificationbuilder.internal.builders.ProductCatalogNotificationBuilder
 import com.adobe.marketing.mobile.notificationbuilder.internal.builders.ProductRatingNotificationBuilder
 import com.adobe.marketing.mobile.notificationbuilder.internal.builders.TimerNotificationBuilder
@@ -37,6 +38,7 @@ import com.adobe.marketing.mobile.notificationbuilder.internal.templates.BasicPu
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.CarouselPushTemplate
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.InputBoxPushTemplate
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.ManualCarouselPushTemplate
+import com.adobe.marketing.mobile.notificationbuilder.internal.templates.MultiIconPushTemplate
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.ProductCatalogPushTemplate
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.ProductRatingPushTemplate
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.TimerPushTemplate
@@ -159,11 +161,10 @@ object NotificationBuilder {
 
         // schedule a pending intent to be broadcast at the specified timestamp
         if (broadcastReceiverClass == null) {
-            Log.trace(
+            Log.warning(
                 LOG_TAG,
                 SELF_TAG,
-                "Broadcast receiver class is null, will not schedule a notification from the received" +
-                    " intent with action ${remindLaterIntent.action}"
+                "Broadcast receiver class is null, cannot schedule notification for later."
             )
             tag?.let { notificationManager.cancel(tag.hashCode()) }
             return
@@ -171,7 +172,7 @@ object NotificationBuilder {
         val scheduledIntent = Intent(PushTemplateConstants.IntentActions.SCHEDULED_NOTIFICATION_BROADCAST)
         scheduledIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
         scheduledIntent.putExtras(intentExtras)
-        PendingIntentUtils.createPendingIntentForScheduledNotifications(context, scheduledIntent, broadcastReceiverClass, triggerTimeInSeconds)
+        PendingIntentUtils.scheduleNotification(context, scheduledIntent, broadcastReceiverClass, triggerTimeInSeconds)
 
         // cancel the displayed notification
         tag?.let { notificationManager.cancel(tag.hashCode()) }
@@ -222,7 +223,7 @@ object NotificationBuilder {
                     }
 
                     else -> {
-                        Log.trace(
+                        Log.warning(
                             LOG_TAG,
                             SELF_TAG,
                             "Unknown carousel push template type, creating a legacy style notification."
@@ -278,6 +279,14 @@ object NotificationBuilder {
                     TimerPushTemplate(notificationData),
                     trackerActivityClass,
                     broadcastReceiverClass
+                )
+            }
+
+            PushTemplateType.MULTI_ICON -> {
+                return MultiIconNotificationBuilder.construct(
+                    context,
+                    MultiIconPushTemplate(notificationData),
+                    trackerActivityClass,
                 )
             }
 

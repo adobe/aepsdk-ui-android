@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:id="@+id/basic_small_layout"
+    android:padding="0dp"
+    android:layout_height="@dimen/multi_icon_layout_height"
+    android:theme="@style/DayNightTheme">
+
+    <ImageView
+        android:id="@+id/five_icon_close_button"
+        android:layout_width="@dimen/multi_icon_close_button_height"
+        android:layout_height="@dimen/multi_icon_close_button_height"
+        android:contentDescription="@string/multi_icon_close_btn_content_description"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:padding="@dimen/multi_icon_item_padding"
+        android:src="@drawable/cross"
+        android:foreground="?selectableItemBackground"
+        android:scaleType="fitCenter" />
+
+    <LinearLayout
+        android:id="@+id/icons_layout_linear"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:weightSum="5"
+        android:layout_centerVertical="true"
+        android:gravity="center_vertical"
+        android:layout_toStartOf="@+id/five_icon_close_button"/>
+
+</RelativeLayout>

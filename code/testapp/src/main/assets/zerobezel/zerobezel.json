@@ -1,0 +1,19 @@
+{
+  "adb_version": "1",
+  "adb_title": "game request",
+  "adb_body": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam auctor luctus libero, molestie posuere massa vestibulum at. Mauris consectetur mi lorem, vitae aliquet sem tristique in. Curabitur imperdiet tortor vitae nunc aliquet tincidunt. Ut pellentesque lectus sagittis dolor egestas, sit amet pretium libero lacinia.",
+  "adb_sound": "bingBong",
+  "adb_icon": "chat_bubble",
+  "adb_n_count": "1",
+  "adb_n_priority": "PRIORITY_LOW",
+  "adb_image": "https://www.pngall.com/wp-content/uploads/8/Sample-PNG-Image.png",
+  "adb_uri": "instabiz://opensecond",
+  "adb_a_type": "DEEPLINK",
+  "adb_template_type": "zb",
+  "adb_body_ex": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam auctor luctus libero, molestie posuere massa vestibulum at. Mauris consectetur mi lorem, vitae aliquet sem tristique in. Curabitur imperdiet tortor vitae nunc aliquet tincidunt. Ut pellentesque lectus sagittis dolor egestas, sit amet pretium libero lacinia.",
+  "adb_col_style": "txt",
+  "adb_channel_id": "2024",
+  "adb_sticky": "true",
+  "adb_ticker": "Ticker text",
+  "customKey": "custom data"
+}

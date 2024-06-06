@@ -1,0 +1,18 @@
+{
+  "adb_version": "1",
+  "adb_template_type": "icon",
+  "adb_title": "Game request",
+  "adb_body": "Shall we play a game?",
+  "adb_sound": "bells",
+  "adb_n_count": "1",
+  "adb_n_priority": "PRIORITY_HIGH",
+  "adb_image": "https://images.pexels.com/photos/260024/pexels-photo-260024.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
+  "adb_uri": "https://chess.com/games",
+  "adb_a_type": "WEBURL",
+  "adb_body_ex": "Basic push template with remind later button.",
+  "adb_tag" : "multi_icon",
+  "customKey": "custom data",
+  "adb_channel_id": "2024",
+  "adb_items": "[{\"img\":\"walk\",\"uri\":\"myapp://chooseShoeType/shoe1\",\"type\":\"DEEPLINK\"},{\"img\":\"drive\",\"uri\":\"myapp://chooseShoeType/bus\",\"type\":\"DEEPLINK\"},{\"img\":\"bus\",\"uri\":\"myapp://chooseShoeType/shoe3\",\"type\":\"DEEPLINK\"},{\"img\":\"taxi\",\"uri\":\"myapp://chooseShoeType/shoe4\",\"type\":\"DEEPLINK\"},{\"img\":\"fly\",\"uri\":\"myapp://chooseShoeType/shoe5\",\"type\":\"DEEPLINK\"}]",
+  "adb_sticky": "true"
+}

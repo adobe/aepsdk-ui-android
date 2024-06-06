@@ -16,17 +16,17 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
-import android.view.View
 import android.widget.RemoteViews
+import androidx.annotation.VisibleForTesting
 import androidx.core.app.NotificationCompat
 import com.adobe.marketing.mobile.notificationbuilder.NotificationConstructionFailedException
 import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants
 import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.LOG_TAG
 import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.PushPayloadKeys
 import com.adobe.marketing.mobile.notificationbuilder.R
-import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateImageUtils
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.addActionButtons
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.createNotificationChannelIfRequired
+import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setRemoteImage
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.BasicPushTemplate
 import com.adobe.marketing.mobile.notificationbuilder.internal.util.NotificationData
 import com.adobe.marketing.mobile.services.Log
@@ -66,26 +66,17 @@ internal object BasicNotificationBuilder {
         )
 
         // set the image on the notification
-        val imageUri = pushTemplate.imageUrl
-        val downloadedImageCount = PushTemplateImageUtils.cacheImages(listOf(imageUri))
-
-        if (downloadedImageCount == 0) {
-            Log.trace(LOG_TAG, SELF_TAG, "No image found for basic push template.")
-            expandedLayout.setViewVisibility(R.id.expanded_template_image, View.GONE)
-        } else {
-            expandedLayout.setImageViewBitmap(
-                R.id.expanded_template_image,
-                PushTemplateImageUtils.getCachedImage(imageUri)
-            )
-        }
+        expandedLayout.setRemoteImage(
+            pushTemplate.imageUrl,
+            R.id.expanded_template_image,
+        )
 
         // add any action buttons defined for the notification
         notificationBuilder.addActionButtons(
             context,
             trackerActivityClass,
             pushTemplate.actionButtonsList,
-            pushTemplate.tag,
-            pushTemplate.isNotificationSticky ?: false
+            pushTemplate.data.getBundle()
         )
 
         // add a remind later button if we have a label and an epoch or delay timestamp
@@ -131,7 +122,8 @@ internal object BasicNotificationBuilder {
      * @param pushTemplate the [BasicPushTemplate] object containing the basic push template data
      * @return the created remind later [PendingIntent]
      */
-    private fun createRemindPendingIntent(
+    @VisibleForTesting
+    internal fun createRemindPendingIntent(
         context: Context,
         broadcastReceiverClass: Class<out BroadcastReceiver>?,
         channelId: String,
@@ -150,16 +142,6 @@ internal object BasicNotificationBuilder {
             PushTemplateConstants.IntentActions.REMIND_LATER_CLICKED,
             pushTemplate
         )
-        remindIntent.putExtra(PushPayloadKeys.REMIND_LATER_TEXT, pushTemplate.remindLaterText)
-        remindIntent.putExtra(
-            PushPayloadKeys.REMIND_LATER_TIMESTAMP,
-            pushTemplate.remindLaterTimestamp.toString()
-        )
-        remindIntent.putExtra(
-            PushPayloadKeys.REMIND_LATER_DURATION,
-            pushTemplate.remindLaterDuration.toString()
-        )
-        remindIntent.putExtra(PushPayloadKeys.ACTION_BUTTONS, pushTemplate.actionButtonsString)
         remindIntent.putExtra(PushPayloadKeys.CHANNEL_ID, channelId)
 
         broadcastReceiverClass.let {

@@ -17,6 +17,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.media.RingtoneManager
+import android.os.Bundle
 import androidx.core.app.NotificationCompat
 import com.adobe.marketing.mobile.MobileCore
 import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants
@@ -92,7 +93,7 @@ private fun NotificationCompat.Builder.setSmallIconColor(
         // sets the icon color if provided
         setColorized(true).color = Color.parseColor("#$iconColorHex")
     } catch (exception: IllegalArgumentException) {
-        Log.trace(
+        Log.warning(
             LOG_TAG,
             SELF_TAG,
             "Unrecognized hex string passed to Color.parseColor(), custom color will not be applied to the notification icon."
@@ -215,23 +216,20 @@ internal fun NotificationCompat.Builder.setLargeIcon(
  * @param context the application [Context]
  * @param trackerActivityClass the [Class] of the activity to set in the created pending intent for tracking purposes
  * @param actionUri `String` containing the action uri
- * @param tag `String` containing the tag to use when scheduling the notification
- * @param stickyNotification `boolean` if false, remove the notification after the `RemoteViews` is pressed
+ * @param intentExtras the [Bundle] containing the extras to be added to the intent
  */
 internal fun NotificationCompat.Builder.setNotificationClickAction(
     context: Context,
     trackerActivityClass: Class<out Activity>?,
     actionUri: String?,
-    tag: String?,
-    stickyNotification: Boolean
+    intentExtras: Bundle?
 ): NotificationCompat.Builder {
     val pendingIntent: PendingIntent? = PendingIntentUtils.createPendingIntentForTrackerActivity(
         context,
         trackerActivityClass,
         actionUri,
         null,
-        tag,
-        stickyNotification
+        intentExtras
     )
     setContentIntent(pendingIntent)
     return this
@@ -270,16 +268,13 @@ internal fun NotificationCompat.Builder.setNotificationDeleteAction(
  * @param trackerActivityClass the [Activity] class to use as the tracker activity
  * @param actionButtons list of [BasicPushTemplate.ActionButton] containing action buttons to attach
  * to the notification
- * @param tag `String` containing the tag to use when scheduling the notification
- * @param stickyNotification [Boolean]  if false, remove the notification after the action
- * button is pressed
+ * @param intentExtras the [Bundle] containing the extras to be added to the intent
  */
 internal fun NotificationCompat.Builder.addActionButtons(
     context: Context,
     trackerActivityClass: Class<out Activity>?,
     actionButtons: List<BasicPushTemplate.ActionButton>?,
-    tag: String?,
-    stickyNotification: Boolean
+    intentExtras: Bundle?
 ): NotificationCompat.Builder {
     if (actionButtons.isNullOrEmpty()) {
         return this
@@ -294,8 +289,7 @@ internal fun NotificationCompat.Builder.addActionButtons(
                     trackerActivityClass,
                     eachButton.link,
                     eachButton.label,
-                    tag,
-                    stickyNotification
+                    intentExtras
                 )
             } else {
                 PendingIntentUtils.createPendingIntentForTrackerActivity(
@@ -303,8 +297,7 @@ internal fun NotificationCompat.Builder.addActionButtons(
                     trackerActivityClass,
                     null,
                     eachButton.label,
-                    tag,
-                    stickyNotification
+                    intentExtras
                 )
             }
         addAction(0, eachButton.label, pendingIntent)

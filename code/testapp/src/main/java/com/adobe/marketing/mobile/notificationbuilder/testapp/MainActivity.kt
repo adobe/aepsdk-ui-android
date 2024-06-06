@@ -10,55 +10,72 @@
  */
 package com.adobe.marketing.mobile.notificationbuilder.testapp
 
+import android.Manifest
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
-import androidx.compose.runtime.Composable
+import androidx.compose.material.Button
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
+import androidx.compose.material.Text
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.core.app.ActivityCompat
+import com.adobe.marketing.mobile.notificationbuilder.testapp.notificationBuilder.UINotificationBuilderActivity
 import com.adobe.marketing.mobile.notificationbuilder.testapp.ui.theme.AepsdkTheme
 
 class MainActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             AepsdkTheme {
-                // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    Input()
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = "AEP SDK \n UI Components",
+                            modifier = Modifier.padding(16.dp),
+                            fontSize = 30.sp,
+                            textAlign = TextAlign.Center,
+                            fontWeight = FontWeight.Bold,
+                        )
+                        Spacer(modifier = Modifier.height(40.dp))
+                        Button(onClick = {
+                            startActivity(Intent(this@MainActivity, UINotificationBuilderActivity::class.java))
+                        }) {
+                            Text("Notification Builder")
+                        }
+                    }
                 }
             }
         }
+        requestNotificationPermission()
     }
-}
 
-@Composable
-fun Input() {
-        Spacer(modifier = Modifier.height(10.dp))
-        Row {
-            Button(onClick = {
-                triggerNotification()
-            }) {
-                Text("Trigger Notification")
+    private fun requestNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                    1
+                )
             }
-            Spacer(modifier = Modifier.width(2.dp))
         }
-}
-
-fun triggerNotification() {
-}
-
-
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview() {
-    AepsdkTheme {
-        Input()
     }
 }

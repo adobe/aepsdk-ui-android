@@ -98,7 +98,7 @@ internal sealed class AEPPushTemplate(val data: NotificationData) {
     // Optional, when set to false or unset, the notification is automatically dismissed when the
     // user clicks it in the panel. When set to true, the notification persists even when the user
     // clicks it.
-    internal val isNotificationSticky: Boolean?
+    internal val isNotificationSticky: Boolean
 
     // flag to denote if the PushTemplate was built from an intent
     internal val isFromIntent: Boolean
@@ -144,7 +144,7 @@ internal sealed class AEPPushTemplate(val data: NotificationData) {
         sound = data.getString(PushPayloadKeys.SOUND)
         channelId = data.getString(PushPayloadKeys.CHANNEL_ID)
         badgeCount = data.getInteger(PushPayloadKeys.BADGE_COUNT) ?: 0
-        isNotificationSticky = data.getBoolean(PushPayloadKeys.STICKY)
+        isNotificationSticky = data.getBoolean(PushPayloadKeys.STICKY) ?: false
 
         // extract notification priority and visibility
         priority = NotificationPriority.fromString(data.getString(PushPayloadKeys.PRIORITY))

@@ -8,4 +8,5 @@
     <string name="product_thumbnail_3">product thumbnail 3</string>
     <string name="big_product_image">big product image</string>
     <string name="product_rating_confirm">Confirm</string>
+    <string name="multi_icon_close_btn_content_description">Close</string>
 </resources>

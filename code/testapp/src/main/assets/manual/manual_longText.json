@@ -1,0 +1,21 @@
+{
+  "adb_version": "1",
+  "adb_template_type": "car",
+  "adb_car_mode": "manual",
+  "adb_car_layout": "default",
+  "adb_title": "Adobe Sporting Goods",
+  "adb_body": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam auctor luctus libero, molestie posuere massa vestibulum at. Mauris consectetur mi lorem, vitae aliquet sem tristique in. Curabitur imperdiet tortor vitae nunc aliquet tincidunt. Ut pellentesque lectus sagittis dolor egestas, sit amet pretium libero lacinia.",
+  "adb_body_ex": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam auctor luctus libero, molestie posuere massa vestibulum at. Mauris consectetur mi lorem, vitae aliquet sem tristique in. Curabitur imperdiet tortor vitae nunc aliquet tincidunt. Ut pellentesque lectus sagittis dolor egestas, sit amet pretium libero lacinia.",
+  "adb_a_type": "WEBURL",
+  "adb_uri": "https://www.adobe.com",
+  "adb_items": "[ { \"img\": \"https://i.imgur.com/7ZolaOv.jpeg\", \"txt\": \"One\" }, { \"img\": \"https://i.imgur.com/mZvLuzU.jpg\", \"txt\": \"two\", \"uri\": \"https://firefly.adobe.com/red_jersey\" }, { \"img\": \"https://i.imgur.com/X5yjy09.jpg\", \"txt\": \"three\", \"uri\": \"https://firefly.adobe.com/volleyball\" }]",
+  "adb_small_icon": "chat_bubble",
+  "adb_large_icon": "https://cdn.icon-icons.com/icons2/2248/PNG/64/adobe_icon_137987.png",
+  "adb_tag": "manual_long_text",
+  "adb_channel_id": "2024",
+  "adb_ticker": "new for 2024",
+  "adb_n_visibility": "PRIVATE",
+  "adb_n_priority": "PRIORITY_DEFAULT",
+  "adb_n_count": "1",
+  "adb_sticky": "true"
+}

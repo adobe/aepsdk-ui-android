@@ -14,8 +14,6 @@ package com.adobe.marketing.mobile.notificationbuilder.internal.templates
 import android.os.Bundle
 import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants
 import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateType
-import org.mockito.Mockito
-import org.mockito.kotlin.mock
 
 object MockAEPPushTemplateDataProvider {
     fun getMockedDataMapWithRequiredData(): MutableMap<String, String> {
@@ -29,13 +27,10 @@ object MockAEPPushTemplateDataProvider {
      * Returns a mocked data bundle with basic data.
      */
     fun getMockedBundleWithRequiredData(): Bundle {
-        val mockBundle = mock<Bundle>()
-        Mockito.`when`(mockBundle.getString(PushTemplateConstants.PushPayloadKeys.TITLE))
-            .thenReturn(MOCKED_TITLE)
-        Mockito.`when`(mockBundle.getString(PushTemplateConstants.PushPayloadKeys.BODY))
-            .thenReturn(MOCKED_BODY)
-        Mockito.`when`(mockBundle.getString(PushTemplateConstants.PushPayloadKeys.VERSION))
-            .thenReturn(MOCKED_PAYLOAD_VERSION)
+        val mockBundle = Bundle()
+        mockBundle.putString(PushTemplateConstants.PushPayloadKeys.TITLE, MOCKED_TITLE)
+        mockBundle.putString(PushTemplateConstants.PushPayloadKeys.BODY, MOCKED_BODY)
+        mockBundle.putString(PushTemplateConstants.PushPayloadKeys.VERSION, MOCKED_PAYLOAD_VERSION)
         return mockBundle
     }
 
@@ -49,7 +44,7 @@ object MockAEPPushTemplateDataProvider {
             PushTemplateConstants.PushPayloadKeys.ACTION_BUTTONS to MOCKED_ACTION_BUTTON_DATA,
             PushTemplateConstants.PushPayloadKeys.BADGE_COUNT to "5",
             PushTemplateConstants.PushPayloadKeys.BODY to MOCKED_BASIC_TEMPLATE_BODY,
-            PushTemplateConstants.PushPayloadKeys.CHANNEL_ID to "2024",
+            PushTemplateConstants.PushPayloadKeys.CHANNEL_ID to MOCKED_CHANNEL_ID,
             PushTemplateConstants.PushPayloadKeys.EXPANDED_BODY_TEXT to MOCKED_BASIC_TEMPLATE_BODY_EXPANDED,
             PushTemplateConstants.PushPayloadKeys.BODY_TEXT_COLOR to "FFD966",
             PushTemplateConstants.PushPayloadKeys.IMAGE_URL to MOCKED_IMAGE_URI,
@@ -70,57 +65,35 @@ object MockAEPPushTemplateDataProvider {
     }
 
     fun getMockedAEPBundleWithAllKeys(): Bundle {
-        val mockBundle = mock<Bundle>()
-        Mockito.`when`(mockBundle.getString(PushTemplateConstants.PushPayloadKeys.TAG))
-            .thenReturn(MOCKED_TAG)
-        Mockito.`when`(mockBundle.getString(PushTemplateConstants.PushPayloadKeys.TITLE))
-            .thenReturn(MOCKED_TITLE)
-        Mockito.`when`(mockBundle.getString(PushTemplateConstants.PushPayloadKeys.TEMPLATE_TYPE))
-            .thenReturn(PushTemplateType.BASIC.value)
-        Mockito.`when`(mockBundle.getString(PushTemplateConstants.PushPayloadKeys.ACTION_URI))
-            .thenReturn(MOCKED_ACTION_URI)
-        Mockito.`when`(mockBundle.getString(PushTemplateConstants.PushPayloadKeys.ACTION_TYPE))
-            .thenReturn(PushTemplateConstants.ActionType.NONE.name)
-        Mockito.`when`(mockBundle.getString(PushTemplateConstants.PushPayloadKeys.ACTION_BUTTONS))
-            .thenReturn(MOCKED_ACTION_BUTTON_DATA)
-        Mockito.`when`(mockBundle.getString(PushTemplateConstants.PushPayloadKeys.BADGE_COUNT))
-            .thenReturn("5")
-        Mockito.`when`(mockBundle.getString(PushTemplateConstants.PushPayloadKeys.BODY))
-            .thenReturn(MOCKED_BASIC_TEMPLATE_BODY)
-        Mockito.`when`(mockBundle.getString(PushTemplateConstants.PushPayloadKeys.CHANNEL_ID))
-            .thenReturn("2024")
-        Mockito.`when`(mockBundle.getString(PushTemplateConstants.PushPayloadKeys.EXPANDED_BODY_TEXT))
-            .thenReturn(MOCKED_BASIC_TEMPLATE_BODY_EXPANDED)
-        Mockito.`when`(mockBundle.getString(PushTemplateConstants.PushPayloadKeys.BODY_TEXT_COLOR))
-            .thenReturn("FFD966")
-        Mockito.`when`(mockBundle.getString(PushTemplateConstants.PushPayloadKeys.IMAGE_URL))
-            .thenReturn(MOCKED_IMAGE_URI)
-        Mockito.`when`(mockBundle.getString(PushTemplateConstants.PushPayloadKeys.LARGE_ICON))
-            .thenReturn(MOCKED_LARGE_ICON)
-        Mockito.`when`(mockBundle.getString(PushTemplateConstants.PushPayloadKeys.BACKGROUND_COLOR))
-            .thenReturn("FFD966")
-        Mockito.`when`(mockBundle.getString(PushTemplateConstants.PushPayloadKeys.PRIORITY))
-            .thenReturn((MOCKED_PRIORITY))
-        Mockito.`when`(mockBundle.getString(PushTemplateConstants.PushPayloadKeys.VISIBILITY))
-            .thenReturn(MOCKED_VISIBILITY)
-        Mockito.`when`(mockBundle.getString(PushTemplateConstants.PushPayloadKeys.REMIND_LATER_TEXT))
-            .thenReturn(MOCK_REMIND_LATER_TEXT)
-        Mockito.`when`(mockBundle.getString(PushTemplateConstants.PushPayloadKeys.REMIND_LATER_TIMESTAMP))
-            .thenReturn(MOCK_REMIND_LATER_TIME)
-        Mockito.`when`(mockBundle.getString(PushTemplateConstants.PushPayloadKeys.REMIND_LATER_DURATION))
-            .thenReturn(MOCK_REMIND_LATER_DURATION)
-        Mockito.`when`(mockBundle.getString(PushTemplateConstants.PushPayloadKeys.SOUND))
-            .thenReturn("bell")
-        Mockito.`when`(mockBundle.getString(PushTemplateConstants.PushPayloadKeys.SMALL_ICON))
-            .thenReturn(MOCKED_SMALL_ICON)
-        Mockito.`when`(mockBundle.getString(PushTemplateConstants.PushPayloadKeys.TITLE_TEXT_COLOR))
-            .thenReturn("FFD966")
-        Mockito.`when`(mockBundle.getString(PushTemplateConstants.PushPayloadKeys.TICKER))
-            .thenReturn(MOCKED_TICKER)
-        Mockito.`when`(mockBundle.getString(PushTemplateConstants.PushPayloadKeys.VERSION))
-            .thenReturn(MOCKED_PAYLOAD_VERSION)
-        Mockito.`when`(mockBundle.getString(PushTemplateConstants.PushPayloadKeys.STICKY))
-            .thenReturn("true")
+        val mockBundle = Bundle()
+        mockBundle.putString(PushTemplateConstants.PushPayloadKeys.VERSION, MOCKED_PAYLOAD_VERSION)
+        mockBundle.putString(PushTemplateConstants.PushPayloadKeys.TITLE, MOCKED_TITLE)
+        mockBundle.putString(PushTemplateConstants.PushPayloadKeys.BODY, MOCKED_BODY)
+        mockBundle.putString(PushTemplateConstants.PushPayloadKeys.TAG, MOCKED_TAG)
+        mockBundle.putString(PushTemplateConstants.PushPayloadKeys.TITLE, MOCKED_TITLE)
+        mockBundle.putString(PushTemplateConstants.PushPayloadKeys.TEMPLATE_TYPE, PushTemplateType.BASIC.value)
+        mockBundle.putString(PushTemplateConstants.PushPayloadKeys.ACTION_URI, MOCKED_ACTION_URI)
+        mockBundle.putString(PushTemplateConstants.PushPayloadKeys.ACTION_TYPE, PushTemplateConstants.ActionType.NONE.name)
+        mockBundle.putString(PushTemplateConstants.PushPayloadKeys.ACTION_BUTTONS, MOCKED_ACTION_BUTTON_DATA)
+        mockBundle.putString(PushTemplateConstants.PushPayloadKeys.BADGE_COUNT, "5")
+        mockBundle.putString(PushTemplateConstants.PushPayloadKeys.BODY, MOCKED_BASIC_TEMPLATE_BODY)
+        mockBundle.putString(PushTemplateConstants.PushPayloadKeys.CHANNEL_ID, "2024")
+        mockBundle.putString(PushTemplateConstants.PushPayloadKeys.EXPANDED_BODY_TEXT, MOCKED_BASIC_TEMPLATE_BODY_EXPANDED)
+        mockBundle.putString(PushTemplateConstants.PushPayloadKeys.BODY_TEXT_COLOR, "FFD966")
+        mockBundle.putString(PushTemplateConstants.PushPayloadKeys.IMAGE_URL, MOCKED_IMAGE_URI)
+        mockBundle.putString(PushTemplateConstants.PushPayloadKeys.LARGE_ICON, MOCKED_LARGE_ICON)
+        mockBundle.putString(PushTemplateConstants.PushPayloadKeys.BACKGROUND_COLOR, "FFD966")
+        mockBundle.putString(PushTemplateConstants.PushPayloadKeys.PRIORITY, (MOCKED_PRIORITY))
+        mockBundle.putString(PushTemplateConstants.PushPayloadKeys.VISIBILITY, MOCKED_VISIBILITY)
+        mockBundle.putString(PushTemplateConstants.PushPayloadKeys.REMIND_LATER_TEXT, MOCK_REMIND_LATER_TEXT)
+        mockBundle.putString(PushTemplateConstants.PushPayloadKeys.REMIND_LATER_TIMESTAMP, MOCK_REMIND_LATER_TIME)
+        mockBundle.putString(PushTemplateConstants.PushPayloadKeys.REMIND_LATER_DURATION, MOCK_REMIND_LATER_DURATION)
+        mockBundle.putString(PushTemplateConstants.PushPayloadKeys.SOUND, "bell")
+        mockBundle.putString(PushTemplateConstants.PushPayloadKeys.SMALL_ICON, MOCKED_SMALL_ICON)
+        mockBundle.putString(PushTemplateConstants.PushPayloadKeys.TITLE_TEXT_COLOR, "FFD966")
+        mockBundle.putString(PushTemplateConstants.PushPayloadKeys.TICKER, MOCKED_TICKER)
+        mockBundle.putString(PushTemplateConstants.PushPayloadKeys.VERSION, MOCKED_PAYLOAD_VERSION)
+        mockBundle.putString(PushTemplateConstants.PushPayloadKeys.STICKY, "true")
         return mockBundle
     }
 }

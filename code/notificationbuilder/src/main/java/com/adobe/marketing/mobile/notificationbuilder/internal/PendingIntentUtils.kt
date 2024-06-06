@@ -18,6 +18,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import android.os.Bundle
 import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants
 import com.adobe.marketing.mobile.services.Log
 import java.util.Random
@@ -26,7 +27,7 @@ internal object PendingIntentUtils {
 
     private const val SELF_TAG = "PendingIntentUtils"
 
-    internal fun createPendingIntentForScheduledNotifications(
+    internal fun scheduleNotification(
         context: Context,
         scheduledIntent: Intent,
         broadcastReceiverClass: Class<out BroadcastReceiver>?,
@@ -88,7 +89,7 @@ internal object PendingIntentUtils {
      * notification
      * @param actionUri the action uri
      * @param actionID the action ID
-     * @param stickyNotification [Boolean] if false, remove the notification after it is interacted with
+     * @param intentExtras the [Bundle] containing the extras to be added to the intent
      * @return the created [PendingIntent]
      */
     internal fun createPendingIntentForTrackerActivity(
@@ -96,16 +97,15 @@ internal object PendingIntentUtils {
         trackerActivityClass: Class<out Activity>?,
         actionUri: String?,
         actionID: String?,
-        tag: String?,
-        stickyNotification: Boolean
+        intentExtras: Bundle?
     ): PendingIntent? {
         val intent = Intent(PushTemplateConstants.NotificationAction.CLICKED)
         trackerActivityClass?.let {
             intent.setClass(context.applicationContext, trackerActivityClass)
         }
         intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP)
-        intent.putExtra(PushTemplateConstants.PushPayloadKeys.TAG, tag)
-        intent.putExtra(PushTemplateConstants.PushPayloadKeys.STICKY, stickyNotification.toString())
+        // todo revisit if all data is needed for click actions
+        intentExtras?.let { intent.putExtras(intentExtras) }
         addActionDetailsToIntent(
             intent,
             actionUri,

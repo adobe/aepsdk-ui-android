@@ -1,0 +1,23 @@
+{
+  "adb_version": "1",
+  "adb_title": "Game day 🏀",
+  "adb_body": "Don't miss the thrilling action tonight. Grab last-minute tickets now!",
+  "adb_a_type": "WEBURL",
+  "adb_uri": "https://www.adobe.com",
+  "adb_tmr_dur": "60",
+  "adb_body_ex": "Save big on tonight's basketball game. Get your tickets ASAP!",
+  "adb_title_alt": "Missed out this time?",
+  "adb_body_alt": "Don't worry, more amazing offers are coming your way.",
+  "adb_body_ex_alt" :  "Keep an eye out for more great offers soon",
+  "adb_image_alt": "https://i.ibb.co/HFK4Bcr/timer-alt.jpg",
+  "adb_template_type": "timer",
+  "adb_small_icon": "chat_bubble",
+  "adb_large_icon": "https://cdn.icon-icons.com/icons2/2248/PNG/64/adobe_icon_137987.png",
+  "adb_tag": "timer",
+  "adb_channel_id": "2024",
+  "adb_ticker": "new for 2024",
+  "adb_n_visibility": "PRIVATE",
+  "adb_n_priority": "PRIORITY_DEFAULT",
+  "adb_n_count": "1",
+  "adb_image": "https://i.ibb.co/QN078XB/Resize-image-project.jpg"
+}

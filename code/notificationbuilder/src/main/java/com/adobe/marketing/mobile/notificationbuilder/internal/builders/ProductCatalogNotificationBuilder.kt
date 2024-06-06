@@ -155,8 +155,7 @@ internal object ProductCatalogNotificationBuilder {
                 trackerActivityClass,
                 pushTemplate.catalogItems[pushTemplate.currentIndex].uri,
                 PushTemplateConstants.CatalogActionIds.PRODUCT_IMAGE_CLICKED,
-                pushTemplate.tag,
-                pushTemplate.isNotificationSticky ?: false
+                pushTemplate.data.getBundle()
             )
         )
     }
@@ -249,8 +248,7 @@ internal object ProductCatalogNotificationBuilder {
                 trackerActivityClass,
                 pushTemplate.ctaButtonUri,
                 PushTemplateConstants.CatalogActionIds.CTA_BUTTON_CLICKED,
-                pushTemplate.tag,
-                pushTemplate.isNotificationSticky ?: false
+                pushTemplate.data.getBundle()
             )
         )
     }
@@ -324,30 +322,6 @@ internal object ProductCatalogNotificationBuilder {
         ).apply {
             setClass(context.applicationContext, broadcastReceiverClass)
             putExtra(PushTemplateConstants.PushPayloadKeys.CHANNEL_ID, channelId)
-            putExtra(
-                PushTemplateConstants.PushPayloadKeys.CATALOG_CTA_BUTTON_TEXT,
-                pushTemplate.ctaButtonText
-            )
-            putExtra(
-                PushTemplateConstants.PushPayloadKeys.CATALOG_CTA_BUTTON_COLOR,
-                pushTemplate.ctaButtonColor
-            )
-            putExtra(
-                PushTemplateConstants.PushPayloadKeys.CATALOG_CTA_BUTTON_TEXT_COLOR,
-                pushTemplate.ctaButtonTextColor
-            )
-            putExtra(
-                PushTemplateConstants.PushPayloadKeys.CATALOG_CTA_BUTTON_URI,
-                pushTemplate.ctaButtonUri
-            )
-            putExtra(
-                PushTemplateConstants.PushPayloadKeys.CATALOG_LAYOUT,
-                pushTemplate.displayLayout
-            )
-            putExtra(
-                PushTemplateConstants.PushPayloadKeys.CATALOG_ITEMS,
-                pushTemplate.rawCatalogItems
-            )
             putExtra(
                 PushTemplateConstants.IntentKeys.CATALOG_ITEM_INDEX,
                 currentIndex.toString()

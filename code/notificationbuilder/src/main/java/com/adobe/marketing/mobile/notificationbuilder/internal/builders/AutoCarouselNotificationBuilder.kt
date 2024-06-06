@@ -53,7 +53,7 @@ internal object AutoCarouselNotificationBuilder {
 
         // fallback to a basic push template notification builder if less than 3 images were able to be downloaded
         if (downloadedImageCount < PushTemplateConstants.DefaultValues.CAROUSEL_MINIMUM_IMAGE_COUNT) {
-            Log.trace(LOG_TAG, SELF_TAG, "Less than 3 images are available for the auto carousel push template, falling back to a basic push template.")
+            Log.warning(LOG_TAG, SELF_TAG, "Less than 3 images are available for the auto carousel push template, falling back to a basic push template.")
             return BasicNotificationBuilder.fallbackToBasicNotification(
                 context,
                 trackerActivityClass,
@@ -136,8 +136,7 @@ internal object AutoCarouselNotificationBuilder {
                     R.id.carousel_item_image_view,
                     interactionUri,
                     null,
-                    pushTemplate.tag,
-                    pushTemplate.isNotificationSticky ?: false
+                    pushTemplate.data.getBundle()
                 )
             }
 
