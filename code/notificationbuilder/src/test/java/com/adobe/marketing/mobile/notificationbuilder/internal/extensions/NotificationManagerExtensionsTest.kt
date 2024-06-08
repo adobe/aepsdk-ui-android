@@ -87,4 +87,14 @@ class NotificationManagerExtensionsTest {
 
         assertEquals(notificationChannel.sound, RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
     }
+
+    @Test
+    fun `createNotificationChannelIfRequired should create a silent notification channel when template is created from intent`() {
+        val template = provideMockedBasicPushTemplateWithRequiredData(true)
+
+        val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val notificationChannelId = notificationManager.createNotificationChannelIfRequired(context, template)
+
+        assertEquals(PushTemplateConstants.DefaultValues.SILENT_NOTIFICATION_CHANNEL_ID, notificationChannelId)
+    }
 }
