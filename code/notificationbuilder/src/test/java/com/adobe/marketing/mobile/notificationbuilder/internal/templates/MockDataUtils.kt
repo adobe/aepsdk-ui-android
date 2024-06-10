@@ -45,6 +45,10 @@ const val MOCKED_MALFORMED_JSON_ACTION_BUTTON = "[" +
     "{\"label\":\"Open the app\",\"uri\":\"\",\"type\":\"GO_TO_WEB_PAGE\"}," +
     "{\"label\":\"Go to chess.com\",\"uri\":\"https://chess.com/games/552\",\"type\":\"DEEPLINK\"}]"
 const val MOCKED_CHANNEL_ID = "AEPSDKPushChannel1"
+const val MOCKED_RECEIVER_NAME = "receiverName"
+const val MOCKED_HINT = "hint"
+const val MOCKED_FEEDBACK_TEXT = "feedbackText"
+const val MOCKED_FEEDBACK_IMAGE = "https://i.imgur.com/7ZolaOv.jpeg"
 
 fun <K, V> MutableMap<K, V>.removeKeysFromMap(listOfKeys: List<K>) {
     for (key in listOfKeys) {
@@ -115,4 +119,26 @@ internal fun provideMockedAutoCarousalTemplate(isFromIntent: Boolean = false): A
         data = MapData(dataMap)
     }
     return CarouselPushTemplate(data) as AutoCarouselPushTemplate
+}
+
+internal fun provideMockedInputBoxPushTemplateWithAllKeys(isFromIntent: Boolean = false): InputBoxPushTemplate {
+    val data: NotificationData = if (isFromIntent) {
+        val mockBundle = MockInputBoxPushTemplateDataProvider.getMockedInputBoxBundleWithAllKeys()
+        IntentData(mockBundle, null)
+    } else {
+        val dataMap = MockInputBoxPushTemplateDataProvider.getMockedInputBoxDataMapWithAllKeys()
+        MapData(dataMap)
+    }
+    return InputBoxPushTemplate(data)
+}
+
+internal fun provideMockedInputBoxPushTemplateWithRequiredData(isFromIntent: Boolean = false): InputBoxPushTemplate {
+    val data: NotificationData = if (isFromIntent) {
+        val mockBundle = MockInputBoxPushTemplateDataProvider.getMockedInputBoxBundleWithRequiredData()
+        IntentData(mockBundle, null)
+    } else {
+        val dataMap = MockInputBoxPushTemplateDataProvider.getMockedInputBoxDataMapWithRequiredData()
+        MapData(dataMap)
+    }
+    return InputBoxPushTemplate(data)
 }
