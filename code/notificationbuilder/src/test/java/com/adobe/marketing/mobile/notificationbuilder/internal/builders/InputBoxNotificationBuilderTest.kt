@@ -17,11 +17,17 @@ import android.content.Context
 import androidx.core.app.NotificationCompat
 import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.InputBoxPushTemplate
+import com.adobe.marketing.mobile.notificationbuilder.internal.templates.MOCKED_BODY
+import com.adobe.marketing.mobile.notificationbuilder.internal.templates.MOCKED_FEEDBACK_IMAGE
+import com.adobe.marketing.mobile.notificationbuilder.internal.templates.MOCKED_FEEDBACK_TEXT
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.MOCKED_HINT
+import com.adobe.marketing.mobile.notificationbuilder.internal.templates.MOCKED_RECEIVER_NAME
+import com.adobe.marketing.mobile.notificationbuilder.internal.templates.MOCKED_TITLE
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.MockInputBoxPushTemplateDataProvider
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.provideMockedInputBoxPushTemplateWithRequiredData
+import com.adobe.marketing.mobile.notificationbuilder.internal.templates.removeKeysFromMap
+import com.adobe.marketing.mobile.notificationbuilder.internal.templates.replaceValueInMap
 import com.adobe.marketing.mobile.notificationbuilder.internal.util.MapData
-import junit.framework.TestCase
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -61,8 +67,9 @@ class InputBoxNotificationBuilderTest {
             trackerActivityClass,
             broadcastReceiverClass
         )
-        TestCase.assertEquals(NotificationCompat.Builder::class.java, notificationBuilder.javaClass)
+
         assertNotNull(notificationBuilder)
+        assertEquals(NotificationCompat.Builder::class.java, notificationBuilder.javaClass)
     }
 
     @Test
@@ -75,6 +82,7 @@ class InputBoxNotificationBuilderTest {
             broadcastReceiverClass
         )
 
+        assertNotNull(notificationBuilder)
         assertEquals(0, notificationBuilder.mActions.size)
     }
 
@@ -88,8 +96,9 @@ class InputBoxNotificationBuilderTest {
             broadcastReceiverClass
         )
 
-        assertEquals(1, notificationBuilder.mActions.size)
         assertNotNull(notificationBuilder)
+        assertEquals(1, notificationBuilder.mActions.size)
+        assertNotNull(notificationBuilder.mActions.find { it.title == MOCKED_HINT })
     }
 
     @Test
@@ -112,7 +121,7 @@ class InputBoxNotificationBuilderTest {
     }
 
     @Test
-    fun `createInputReceivedPendingIntent should set class when trackerActivityClass parameter is null`() {
+    fun `createInputReceivedPendingIntent should set class when trackerActivityClass parameter is not null`() {
         val pushTemplate = provideMockedInputBoxPushTemplateWithRequiredData()
         val notificationBuilder = InputBoxNotificationBuilder.construct(
             context,
@@ -131,9 +140,33 @@ class InputBoxNotificationBuilderTest {
     }
 
     @Test
+    fun `createInputReceivedPendingIntent should set intent extras correctly`() {
+        val pushTemplate = provideMockedInputBoxPushTemplateWithRequiredData()
+        val notificationBuilder = InputBoxNotificationBuilder.construct(
+            context,
+            pushTemplate,
+            trackerActivityClass,
+            broadcastReceiverClass
+        )
+
+        val notification = notificationBuilder.build()
+        val pendingIntent = notification.contentIntent
+        val shadowPendingIntent = Shadows.shadowOf(pendingIntent)
+        val intent = shadowPendingIntent.savedIntent
+
+        assertNotNull(intent)
+        assertEquals(MOCKED_TITLE, intent.getStringExtra(PushTemplateConstants.PushPayloadKeys.TITLE))
+        assertEquals(MOCKED_BODY, intent.getStringExtra(PushTemplateConstants.PushPayloadKeys.BODY))
+        assertEquals(MOCKED_RECEIVER_NAME, intent.getStringExtra(PushTemplateConstants.PushPayloadKeys.INPUT_BOX_RECEIVER_NAME))
+        assertEquals(MOCKED_FEEDBACK_IMAGE, intent.getStringExtra(PushTemplateConstants.PushPayloadKeys.INPUT_BOX_FEEDBACK_IMAGE))
+        assertEquals(MOCKED_FEEDBACK_TEXT, intent.getStringExtra(PushTemplateConstants.PushPayloadKeys.INPUT_BOX_FEEDBACK_TEXT))
+        assertEquals(MOCKED_HINT, intent.getStringExtra(PushTemplateConstants.PushPayloadKeys.INPUT_BOX_HINT))
+    }
+
+    @Test
     fun `Action with default hint text should be created when inputTextHint field is empty`() {
         val dataMap = MockInputBoxPushTemplateDataProvider.getMockedInputBoxDataMapWithRequiredData()
-        dataMap[PushTemplateConstants.PushPayloadKeys.INPUT_BOX_HINT] = ""
+        dataMap.replaceValueInMap(PushTemplateConstants.PushPayloadKeys.INPUT_BOX_HINT, "")
 
         val pushTemplate = InputBoxPushTemplate(MapData(dataMap))
         val notificationBuilder = InputBoxNotificationBuilder.construct(
@@ -142,6 +175,8 @@ class InputBoxNotificationBuilderTest {
             trackerActivityClass,
             broadcastReceiverClass
         )
+
+        assertNotNull(notificationBuilder)
 
         val actions = notificationBuilder.mActions
         assertEquals(PushTemplateConstants.DefaultValues.INPUT_BOX_DEFAULT_REPLY_TEXT, actions[0].title)
@@ -150,7 +185,7 @@ class InputBoxNotificationBuilderTest {
     @Test
     fun `Action with default hint text should be created when inputTextHint field is null`() {
         val dataMap = MockInputBoxPushTemplateDataProvider.getMockedInputBoxDataMapWithRequiredData()
-        dataMap.remove(PushTemplateConstants.PushPayloadKeys.INPUT_BOX_HINT)
+        dataMap.removeKeysFromMap(PushTemplateConstants.PushPayloadKeys.INPUT_BOX_HINT)
 
         val pushTemplate = InputBoxPushTemplate(MapData(dataMap))
         val notificationBuilder = InputBoxNotificationBuilder.construct(
@@ -159,6 +194,8 @@ class InputBoxNotificationBuilderTest {
             trackerActivityClass,
             broadcastReceiverClass
         )
+
+        assertNotNull(notificationBuilder)
 
         val actions = notificationBuilder.mActions
         assertEquals(PushTemplateConstants.DefaultValues.INPUT_BOX_DEFAULT_REPLY_TEXT, actions[0].title)
@@ -173,6 +210,8 @@ class InputBoxNotificationBuilderTest {
             trackerActivityClass,
             broadcastReceiverClass
         )
+
+        assertNotNull(notificationBuilder)
 
         val actions = notificationBuilder.mActions
         assertEquals(MOCKED_HINT, actions[0].title)
