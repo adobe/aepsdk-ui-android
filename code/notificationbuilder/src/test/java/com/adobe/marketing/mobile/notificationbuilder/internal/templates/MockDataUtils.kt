@@ -28,7 +28,8 @@ const val MOCKED_PRIORITY = "PRIORITY_HIGH"
 const val MOCKED_TICKER = "ticker"
 const val MOCKED_TAG = "tag"
 const val MOCKED_URI = "https://www.adobe.com"
-const val MOCKED_CAROUSEL_LAYOUT_DATA = "[{\"img\":\"https://i.imgur.com/7ZolaOv.jpeg\",\"txt\":\"Basketball Shoes\"},{\"img\":\"https://i.imgur.com/mZvLuzU.jpg\",\"txt\":\"Red Jersey\",\"uri\":\"https://firefly.adobe.com/red_jersey\"},{\"img\":\"https://i.imgur.com/X5yjy09.jpg\",\"txt\":\"Volleyball\", \"uri\":\"https://firefly.adobe.com/volleyball\"},{\"img\":\"https://i.imgur.com/35B0mkh.jpg\",\"txt\":\"Basketball\",\"uri\":\"https://firefly.adobe.com/basketball\"},{\"img\":\"https://i.imgur.com/Cs5hmfb.jpg\",\"txt\":\"Black Batting Helmet\",\"uri\":\"https://firefly.adobe.com/black_helmet\"}]"
+const val MOCKED_CAROUSEL_LAYOUT_DATA =
+    "[{\"img\":\"https://i.imgur.com/7ZolaOv.jpeg\",\"txt\":\"Basketball Shoes\"},{\"img\":\"https://i.imgur.com/mZvLuzU.jpg\",\"txt\":\"Red Jersey\",\"uri\":\"https://firefly.adobe.com/red_jersey\"},{\"img\":\"https://i.imgur.com/X5yjy09.jpg\",\"txt\":\"Volleyball\", \"uri\":\"https://firefly.adobe.com/volleyball\"},{\"img\":\"https://i.imgur.com/35B0mkh.jpg\",\"txt\":\"Basketball\",\"uri\":\"https://firefly.adobe.com/basketball\"},{\"img\":\"https://i.imgur.com/Cs5hmfb.jpg\",\"txt\":\"Black Batting Helmet\",\"uri\":\"https://firefly.adobe.com/black_helmet\"}]"
 const val MOCKED_IMAGE_URI =
     "https://images.pexels.com/photos/260024/pexels-photo-260024.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
 const val MOCKED_ACTION_URI = "https://chess.com/games"
@@ -44,7 +45,28 @@ const val MOCKED_MALFORMED_JSON_ACTION_BUTTON = "[" +
     "{}," +
     "{\"label\":\"Open the app\",\"uri\":\"\",\"type\":\"GO_TO_WEB_PAGE\"}," +
     "{\"label\":\"Go to chess.com\",\"uri\":\"https://chess.com/games/552\",\"type\":\"DEEPLINK\"}]"
-const val MOCKED_CHANNEL_ID = "AEPSDKPushChannel"
+const val MOCKED_CHANNEL_ID = "AEPSDKPushChannel1"
+
+const val MOCK_MULTI_ICON_ITEM_PAYLOAD = "[" +
+    "{\"img\":\"train\",\"uri\":\"myapp://chooseShoeType/shoe1\",\"type\":\"DEEPLINK\"}," +
+    "{\"img\":\"bus\",\"uri\":\"myapp://chooseShoeType/shoe2\",\"type\":\"DEEPLINK\"}," +
+    "{\"img\":\"car\",\"uri\":\"myapp://chooseShoeType/shoe3\",\"type\":\"DEEPLINK\"}," +
+    "{\"img\":\"tempo\",\"uri\":\"myapp://chooseShoeType/shoe4\",\"type\":\"DEEPLINK\"}," +
+    "{\"img\":\"airplane\",\"uri\":\"myapp://chooseShoeType/shoe5\",\"type\":\"DEEPLINK\"}" +
+    "]"
+const val MOCK_MULTI_ICON_ITEM_PAYLOAD_INVALID_IMAGE = "[" +
+    "{\"img\":\"\",\"uri\":\"myapp://chooseShoeType/shoe1\",\"type\":\"DEEPLINK\"}," +
+    "{\"img\":\"bus\",\"uri\":\"myapp://chooseShoeType/shoe2\",\"type\":\"\"}," +
+    "{\"img\":\"\",\"uri\":\"myapp://chooseShoeType/shoe3\",\"type\":\"DEEPLINK\"}," +
+    "{\"img\":\"tempo\",\"uri\":\"myapp://chooseShoeType/shoe4\",\"type\":\"DEEPLINK\"}," +
+    "{\"img\":\"airplane\",\"uri\":\"myapp://chooseShoeType/shoe5\",\"type\":\"DEEPLINK\"}" +
+    "]"
+const val MOCK_MULTI_ICON_ITEM_PAYLOAD_INCOMPLETE_JSON = "[" +
+    "{\"img\":\"train\",\"uri\":\"\",\"type\":\"DEEPLINK\"}," +
+    "{\"img\":\"bus\",\"uri\":\"myapp://chooseShoeType/shoe2\",\"type\":\"DEEPLINK\"}," +
+    "{\"img\":\"tempo\",\"uri\":\"myapp://chooseShoeType/shoe4\",\"type\":\"DEEPLINK\"}," +
+    "{\"img\":\"airplane\",\"uri\":\"myapp://chooseShoeType/shoe5\",\"type\":\"DEEPLINK\"}" +
+    "]"
 
 fun <K, V> MutableMap<K, V>.removeKeysFromMap(listOfKeys: List<K>) {
     for (key in listOfKeys) {
@@ -57,6 +79,7 @@ fun <K, V> MutableMap<K, V>.removeKeysFromMap(vararg keys: K) {
         this.remove(key)
     }
 }
+
 fun <K, V> MutableMap<K, V>.replaceValueInMap(mapOfNewKeySet: Map<K, V>) {
     for ((key, value) in mapOfNewKeySet) {
         this[key] = value
@@ -67,6 +90,10 @@ fun <K, V> MutableMap<K, V>.replaceValueInMap(vararg keyValues: Pair<K, V>) {
     for ((key, value) in keyValues) {
         this[key] = value
     }
+}
+
+fun <K, V> MutableMap<K, V>.replaceValueInMap(key: K, value: V) {
+    this[key] = value
 }
 
 internal fun provideMockedBasicPushTemplateWithRequiredData(isFromIntent: Boolean = false): BasicPushTemplate {
@@ -115,4 +142,11 @@ internal fun provideMockedAutoCarousalTemplate(isFromIntent: Boolean = false): A
         data = MapData(dataMap)
     }
     return CarouselPushTemplate(data) as AutoCarouselPushTemplate
+}
+
+internal fun provideMockedMultiIconTemplateWithAllKeys(): MultiIconPushTemplate {
+    val data: NotificationData
+    val dataMap = MockMultiIconTemplateDataProvider.getMockedDataMapWithForMultiIcon()
+    data = MapData(dataMap)
+    return MultiIconPushTemplate(data)
 }
