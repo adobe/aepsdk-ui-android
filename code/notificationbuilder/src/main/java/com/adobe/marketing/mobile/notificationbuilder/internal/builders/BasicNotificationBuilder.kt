@@ -26,7 +26,7 @@ import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.Push
 import com.adobe.marketing.mobile.notificationbuilder.R
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.addActionButtons
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.createNotificationChannelIfRequired
-import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setRemoteImage
+import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setRemoteViewImage
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.BasicPushTemplate
 import com.adobe.marketing.mobile.notificationbuilder.internal.util.NotificationData
 import com.adobe.marketing.mobile.services.Log
@@ -66,7 +66,7 @@ internal object BasicNotificationBuilder {
         )
 
         // set the image on the notification
-        expandedLayout.setRemoteImage(
+        expandedLayout.setRemoteViewImage(
             pushTemplate.imageUrl,
             R.id.expanded_template_image,
         )
