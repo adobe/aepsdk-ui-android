@@ -17,6 +17,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.graphics.Bitmap
 import android.widget.RemoteViews
+import androidx.annotation.VisibleForTesting
 import androidx.core.app.NotificationCompat
 import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants
 import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.LOG_TAG
@@ -102,7 +103,8 @@ internal object AutoCarouselNotificationBuilder {
      * @param packageName the `String` name of the application package used to locate the layout resources
      * @return a [List] of downloaded image URIs
      */
-    private fun populateAutoCarouselImages(
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    internal fun populateAutoCarouselImages(
         context: Context,
         trackerActivityClass: Class<out Activity>?,
         expandedLayout: RemoteViews,
