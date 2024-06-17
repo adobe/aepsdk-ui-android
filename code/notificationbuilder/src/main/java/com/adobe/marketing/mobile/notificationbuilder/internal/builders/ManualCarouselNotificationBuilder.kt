@@ -19,6 +19,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.widget.RemoteViews
+import androidx.annotation.VisibleForTesting
 import androidx.core.app.NotificationCompat
 import com.adobe.marketing.mobile.notificationbuilder.NotificationConstructionFailedException
 import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants
@@ -52,8 +53,6 @@ internal object ManualCarouselNotificationBuilder {
             pushTemplate.carouselItems.map { it.imageUri }
         )
 
-        val validCarouselItems = downloadCarouselItems(pushTemplate.carouselItems)
-
         // fallback to a basic push template notification builder if less than 3 images were able
         // to be downloaded
         if (downloadedImagesCount < PushTemplateConstants.DefaultValues.CAROUSEL_MINIMUM_IMAGE_COUNT) {
@@ -76,13 +75,10 @@ internal object ManualCarouselNotificationBuilder {
                     R.layout.push_template_filmstrip_carousel
                 ) else RemoteViews(packageName, R.layout.push_template_manual_carousel)
 
-        // extract image uris, captions, and interaction uris from the validated carousel items
-        val imageUris = validCarouselItems.map { it.imageUri }
-        val captions = validCarouselItems.map { it.captionText }
-        val interactionUris = validCarouselItems.map { it.interactionUri }
+        val validCarouselItems = downloadCarouselItems(pushTemplate.carouselItems)
 
         // get the indices for the carousel
-        val carouselIndices = getCarouselIndices(pushTemplate, imageUris)
+        val carouselIndices = getCarouselIndices(pushTemplate, validCarouselItems.size)
 
         // store the updated center image index
         pushTemplate.centerImageIndex = carouselIndices.second
@@ -90,8 +86,6 @@ internal object ManualCarouselNotificationBuilder {
         // populate the images for the manual carousel
         setupCarouselImages(
             context,
-            captions,
-            interactionUris,
             carouselIndices,
             pushTemplate,
             trackerActivityClass,
@@ -136,7 +130,8 @@ internal object ManualCarouselNotificationBuilder {
      * @param items the list of [CarouselPushTemplate.CarouselItem] objects to be displayed in the filmstrip carousel
      * @return a list of `CarouselPushTemplate.CarouselItem` objects that were successfully downloaded
      */
-    private fun downloadCarouselItems(
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    internal fun downloadCarouselItems(
         items: List<CarouselPushTemplate.CarouselItem>
     ): List<CarouselPushTemplate.CarouselItem> {
         val validCarouselItems = mutableListOf<CarouselPushTemplate.CarouselItem>()
@@ -156,17 +151,18 @@ internal object ManualCarouselNotificationBuilder {
         return validCarouselItems
     }
 
-    private fun getCarouselIndices(
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    internal fun getCarouselIndices(
         pushTemplate: ManualCarouselPushTemplate,
-        imageUris: List<String?>
+        carouselSize: Int
     ): Triple<Int, Int, Int> {
         val carouselIndices: Triple<Int, Int, Int>
         if (pushTemplate.intentAction?.isNotEmpty() == true) {
             carouselIndices =
                 if (pushTemplate.intentAction == PushTemplateConstants.IntentActions.MANUAL_CAROUSEL_LEFT_CLICKED || pushTemplate.intentAction == PushTemplateConstants.IntentActions.FILMSTRIP_LEFT_CLICKED) {
-                    getNewIndicesForNavigateLeft(pushTemplate.centerImageIndex, imageUris.size)
+                    getNewIndicesForNavigateLeft(pushTemplate.centerImageIndex, carouselSize)
                 } else {
-                    getNewIndicesForNavigateRight(pushTemplate.centerImageIndex, imageUris.size)
+                    getNewIndicesForNavigateRight(pushTemplate.centerImageIndex, carouselSize)
                 }
         } else { // setup default indices if not building the notification from an intent
             carouselIndices =
@@ -178,7 +174,7 @@ internal object ManualCarouselNotificationBuilder {
                     )
                 } else {
                     Triple(
-                        imageUris.size - 1,
+                        carouselSize - 1,
                         PushTemplateConstants.DefaultValues.MANUAL_CAROUSEL_START_INDEX,
                         PushTemplateConstants.DefaultValues.MANUAL_CAROUSEL_START_INDEX + 1
                     )
@@ -190,8 +186,6 @@ internal object ManualCarouselNotificationBuilder {
 
     private fun setupCarouselImages(
         context: Context,
-        captions: List<String?>,
-        interactionUris: List<String?>,
         newIndices: Triple<Int, Int, Int>,
         pushTemplate: ManualCarouselPushTemplate,
         trackerActivityClass: Class<out Activity>?,
@@ -202,8 +196,7 @@ internal object ManualCarouselNotificationBuilder {
         if (pushTemplate.carouselLayout == PushTemplateConstants.DefaultValues.FILMSTRIP_CAROUSEL_MODE) {
             populateFilmstripCarouselImages(
                 context,
-                captions,
-                interactionUris,
+                validCarouselItems,
                 newIndices,
                 pushTemplate,
                 trackerActivityClass,
@@ -273,7 +266,8 @@ internal object ManualCarouselNotificationBuilder {
      * @param trackerActivityClass the [Class] of the activity that will be used for tracking interactions with the carousel item
      * @param expandedLayout the [RemoteViews] containing the expanded layout of the notification
      */
-    private fun populateManualCarouselImages(
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    internal fun populateManualCarouselImages(
         context: Context,
         items: List<CarouselPushTemplate.CarouselItem>,
         packageName: String?,
@@ -334,17 +328,17 @@ internal object ManualCarouselNotificationBuilder {
      * @param trackerActivityClass the [Class] of the activity that will be used for tracking interactions with the carousel item
      * @param expandedLayout the [RemoteViews] containing the expanded layout of the notification
      */
-    private fun populateFilmstripCarouselImages(
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    internal fun populateFilmstripCarouselImages(
         context: Context,
-        imageCaptions: List<String?>,
-        imageClickActions: List<String?>,
+        validCarouselItems: List<CarouselPushTemplate.CarouselItem>,
         newIndices: Triple<Int, Int, Int>,
         pushTemplate: ManualCarouselPushTemplate,
         trackerActivityClass: Class<out Activity>?,
         expandedLayout: RemoteViews
     ) {
         // get all captions present then set center caption text
-        val centerCaptionText = imageCaptions[newIndices.second]
+        val centerCaptionText = validCarouselItems[newIndices.second].captionText
         expandedLayout.setTextViewText(
             R.id.manual_carousel_filmstrip_caption,
             centerCaptionText
@@ -362,21 +356,21 @@ internal object ManualCarouselNotificationBuilder {
         }
 
         val newLeftImage = PushTemplateImageUtils.getCachedImage(
-            pushTemplate.carouselItems[newIndices.first].imageUri
+            validCarouselItems[newIndices.first].imageUri
         )
         expandedLayout.setImageViewBitmap(
             R.id.manual_carousel_filmstrip_left, newLeftImage
         )
 
         val newCenterImage = PushTemplateImageUtils.getCachedImage(
-            pushTemplate.carouselItems[newIndices.second].imageUri
+            validCarouselItems[newIndices.second].imageUri
         )
         expandedLayout.setImageViewBitmap(
             R.id.manual_carousel_filmstrip_center, newCenterImage
         )
 
         val newRightImage = PushTemplateImageUtils.getCachedImage(
-            pushTemplate.carouselItems[newIndices.third].imageUri
+            validCarouselItems[newIndices.third].imageUri
         )
         expandedLayout.setImageViewBitmap(
             R.id.manual_carousel_filmstrip_right, newRightImage
@@ -384,7 +378,8 @@ internal object ManualCarouselNotificationBuilder {
 
         // assign a click action pending intent to the center image view
         val interactionUri =
-            if (!imageClickActions[newIndices.second].isNullOrEmpty()) imageClickActions[newIndices.second] else pushTemplate.actionUri
+            if (!validCarouselItems[newIndices.second].interactionUri.isNullOrEmpty()) validCarouselItems[newIndices.second].interactionUri
+            else pushTemplate.actionUri
         expandedLayout.setRemoteViewClickAction(
             context,
             trackerActivityClass,
