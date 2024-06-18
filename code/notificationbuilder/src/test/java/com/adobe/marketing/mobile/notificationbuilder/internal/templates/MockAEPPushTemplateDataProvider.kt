@@ -60,7 +60,8 @@ object MockAEPPushTemplateDataProvider {
             PushTemplateConstants.PushPayloadKeys.TITLE_TEXT_COLOR to "FFD966",
             PushTemplateConstants.PushPayloadKeys.TICKER to MOCKED_TICKER,
             PushTemplateConstants.PushPayloadKeys.VERSION to MOCKED_PAYLOAD_VERSION,
-            PushTemplateConstants.PushPayloadKeys.STICKY to "true"
+            PushTemplateConstants.PushPayloadKeys.STICKY to "true",
+            PushTemplateConstants.PushPayloadKeys.ZERO_BEZEL_COLLAPSED_STYLE to "img"
         )
     }
 
@@ -94,6 +95,7 @@ object MockAEPPushTemplateDataProvider {
         mockBundle.putString(PushTemplateConstants.PushPayloadKeys.TICKER, MOCKED_TICKER)
         mockBundle.putString(PushTemplateConstants.PushPayloadKeys.VERSION, MOCKED_PAYLOAD_VERSION)
         mockBundle.putString(PushTemplateConstants.PushPayloadKeys.STICKY, "true")
+        mockBundle.putString(PushTemplateConstants.PushPayloadKeys.ZERO_BEZEL_COLLAPSED_STYLE, "img")
         return mockBundle
     }
 }

@@ -1,20 +1,35 @@
+/*
+  Copyright 2024 Adobe. All rights reserved.
+  This file is licensed to you under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License. You may obtain a copy
+  of the License at http://www.apache.org/licenses/LICENSE-2.0
+  Unless required by applicable law or agreed to in writing, software distributed under
+  the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
+  OF ANY KIND, either express or implied. See the License for the specific language
+  governing permissions and limitations under the License.
+*/
+
 package com.adobe.marketing.mobile.notificationbuilder.internal.builders
 
-import android.app.NotificationManager
+import android.app.Activity
 import android.content.Context
 import android.graphics.Bitmap
+import android.view.View
 import android.widget.RemoteViews
+import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants
 import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateImageUtils
 import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateImageUtils.cacheImages
 import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateImageUtils.getCachedImage
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.MockAEPPushTemplateDataProvider
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.ZeroBezelPushTemplate
+import com.adobe.marketing.mobile.notificationbuilder.internal.templates.replaceValueInMap
 import com.adobe.marketing.mobile.notificationbuilder.internal.util.MapData
 import io.mockk.MockKAnnotations
+import io.mockk.Runs
 import io.mockk.every
-import io.mockk.impl.annotations.MockK
+import io.mockk.just
 import io.mockk.mockk
-import io.mockk.mockkClass
+import io.mockk.mockkConstructor
 import io.mockk.mockkObject
 import io.mockk.verify
 import org.junit.Before
@@ -29,149 +44,80 @@ import org.robolectric.annotation.Config
 class ZeroBezelNotificationBuilderTest {
 
     private lateinit var context: Context
-
-    @MockK
-    private lateinit var notificationManager: NotificationManager
-
     private lateinit var dataMap: MutableMap<String, String>
-    private lateinit var expandedLayout: RemoteViews
-    //    private lateinit var smallLayout: RemoteViews
-    private val trackerActivityClass = DummyActivity::class.java
-    private val channelIdToUse = "channel_id"
+    private lateinit var mockBitmap: Bitmap
+    private lateinit var trackerActivityClass: Class<out Activity>
 
     @Before
     fun setup() {
         MockKAnnotations.init(this)
         context = RuntimeEnvironment.getApplication()
-        notificationManager = mockk()
         dataMap = MockAEPPushTemplateDataProvider.getMockedAEPDataMapWithAllKeys()
         mockkObject(PushTemplateImageUtils)
-        expandedLayout = mockkClass(RemoteViews::class)
-//        smallLayout = mockkClass(RemoteViews::class)
+        mockkConstructor(RemoteViews::class)
+        mockBitmap = mockk<Bitmap>()
+        trackerActivityClass = DummyActivity::class.java
+        every { getCachedImage(any()) } answers { mockBitmap }
     }
 
     @Test
-    fun `construct with image downloaded and style is IMAGE`() {
+    fun `verify construct with image downloaded and collapsedStyle is img`() {
         val pushTemplate = ZeroBezelPushTemplate(MapData(dataMap))
+
         every { cacheImages(any()) } answers { 2 }
-        val mockBitmap = mockkClass(Bitmap::class)
-        every { getCachedImage(any()) } answers { mockBitmap }
-//        every {
-//            notificationManager.createNotificationChannelIfRequired(
-//                context,
-//                pushTemplate
-//            )
-//        } answers { channelIdToUse }
+        every { anyConstructed<RemoteViews>().setImageViewBitmap(any(), mockBitmap) } just Runs
 
-
-        every {
-            expandedLayout.setImageViewBitmap(any(), mockBitmap)
-        }
-
-        // Call the method under test
-        val builder = ZeroBezelNotificationBuilder.construct(
+        ZeroBezelNotificationBuilder.construct(
             context,
             pushTemplate,
             trackerActivityClass
         )
 
-        // Verify behavior
-//        assertNotNull(builder)
-//        verify { PushTemplateImageUtils.cacheImages(listOf(pushTemplate.imageUrl)) }
-//        verify { PushTemplateImageUtils.getCachedImage(pushTemplate.imageUrl) }
-//
-
-        verify {
-            expandedLayout.setImageViewBitmap(any(), mockBitmap)
-        }
+        verify { cacheImages(listOf(pushTemplate.imageUrl)) }
+        verify { getCachedImage(pushTemplate.imageUrl) }
+        verify { anyConstructed<RemoteViews>().setImageViewBitmap(any(), mockBitmap) }
     }
 
-//    @Test
-//    fun `construct with image downloaded and style is not IMAGE`() {
-//        // Mocking image download
-//        dataMap.replaceValueInMap(
-//            Pair(
-//                PushTemplateConstants.PushPayloadKeys.ZERO_BEZEL_COLLAPSED_STYLE,
-//                "txt"
-//            )
-//        )
-//        val pushTemplate = ZeroBezelPushTemplate(MapData(dataMap))
-//        every { cacheImages(any()) } answers { 2 }
-//
-//        val mockBitmap = mockk<Bitmap>()
-//        every { getCachedImage(any()) } answers { mockBitmap }
-//
-//        every {
-//            notificationManager.createNotificationChannelIfRequired(
-//                context,
-//                pushTemplate
-//            )
-//        } returns channelIdToUse
-//
-//        // Call the method under test
-//        val builder = ZeroBezelNotificationBuilder.construct(
-//            context,
-//            pushTemplate,
-//            trackerActivityClass
-//        )
-//
-//        // Verify behavior
-//        assertNotNull(builder)
-//        verify { PushTemplateImageUtils.cacheImages(listOf(pushTemplate.imageUrl)) }
-//        verify { PushTemplateImageUtils.getCachedImage(pushTemplate.imageUrl) }
-//        verify { notificationManager.createNotificationChannelIfRequired(context, pushTemplate) }
-//
-//        // Verify RemoteViews interactions
-//        val smallLayout =
-//            RemoteViews(context.packageName, R.layout.push_template_zero_bezel_collapsed)
-//        val expandedLayout =
-//            RemoteViews(context.packageName, R.layout.push_template_zero_bezel_expanded)
-//
-//        // Verify the image is set on the expanded layout
-//        verify {
-//            expandedLayout.setImageViewBitmap(R.id.expanded_template_image, mockBitmap)
-//        }
-//        // Verify the image views are hidden on the small layout
-//        verify {
-//            smallLayout.setViewVisibility(R.id.collapsed_template_image, View.GONE)
-//            smallLayout.setViewVisibility(R.id.gradient_template_image, View.GONE)
-//        }
-//    }
+    @Test
+    fun `verify construct with image downloaded and collapsedStyle is txt`() {
+        dataMap.replaceValueInMap(
+            Pair(
+                PushTemplateConstants.PushPayloadKeys.ZERO_BEZEL_COLLAPSED_STYLE,
+                "txt"
+            )
+        )
+        val pushTemplate = ZeroBezelPushTemplate(MapData(dataMap))
 
-//    @Test
-//    fun `construct with no image downloaded`() {
-//        // Mocking image download
-//        val pushTemplate = ZeroBezelPushTemplate(MapData(dataMap))
-//
-//        every { PushTemplateImageUtils.cacheImages(listOf(pushTemplate.imageUrl)) } returns 0
-//        every { notificationManager.createNotificationChannelIfRequired(context, pushTemplate) } returns channelIdToUse
-//
-//        // Call the method under test
-//        val builder = ZeroBezelNotificationBuilder.construct(
-//            context,
-//            pushTemplate,
-//            trackerActivityClass
-//        )
-//
-//        // Verify behavior
-//        assertNotNull(builder)
-//        verify { PushTemplateImageUtils.cacheImages(listOf(pushTemplate.imageUrl)) }
-//        verify { notificationManager.createNotificationChannelIfRequired(context, pushTemplate) }
-//
-//        // Verify RemoteViews interactions
-//        val smallLayout = RemoteViews(context.packageName, R.layout.push_template_zero_bezel_collapsed)
-//        val expandedLayout = RemoteViews(context.packageName, R.layout.push_template_zero_bezel_expanded)
-//
-//        // Verify the image views are hidden on the expanded layout
-//        verify {
-//            expandedLayout.setViewVisibility(R.id.expanded_template_image, View.GONE)
-//            expandedLayout.setViewVisibility(R.id.gradient_template_image, View.GONE)
-//        }
-//        // Verify the image views are hidden on the small layout
-//        verify {
-//            smallLayout.setViewVisibility(R.id.collapsed_template_image, View.GONE)
-//            smallLayout.setViewVisibility(R.id.gradient_template_image, View.GONE)
-//        }
-//    }
+        every { cacheImages(any()) } answers { 2 }
+        every { anyConstructed<RemoteViews>().setImageViewBitmap(any(), mockBitmap) } just Runs
+        every { anyConstructed<RemoteViews>().setViewVisibility(any(), View.GONE) } just Runs
 
+        ZeroBezelNotificationBuilder.construct(
+            context,
+            pushTemplate,
+            trackerActivityClass
+        )
+
+        verify { cacheImages(listOf(pushTemplate.imageUrl)) }
+        verify { getCachedImage(pushTemplate.imageUrl) }
+        verify { anyConstructed<RemoteViews>().setImageViewBitmap(any(), mockBitmap) }
+        verify { anyConstructed<RemoteViews>().setViewVisibility(any(), View.GONE) }
+    }
+
+    @Test
+    fun `verify construct with no image downloaded`() {
+        val pushTemplate = ZeroBezelPushTemplate(MapData(dataMap))
+
+        every { cacheImages(listOf(pushTemplate.imageUrl)) } returns 0
+        every { anyConstructed<RemoteViews>().setViewVisibility(any(), View.GONE) } just Runs
+
+        ZeroBezelNotificationBuilder.construct(
+            context,
+            pushTemplate,
+            trackerActivityClass
+        )
+
+        verify { cacheImages(listOf(pushTemplate.imageUrl)) }
+        verify { anyConstructed<RemoteViews>().setViewVisibility(any(), View.GONE) }
+    }
 }
