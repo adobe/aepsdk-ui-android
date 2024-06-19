@@ -75,10 +75,6 @@ class LegacyNotificationBuilderTest {
             pushTemplate.body,
             notification.extras.getString(NotificationCompat.EXTRA_TEXT)
         )
-        assertEquals(
-            pushTemplate.body,
-            notification.extras.getString(NotificationCompat.EXTRA_TEXT)
-        )
         assertEquals(pushTemplate.channelId, notification.channelId)
         assertNotNull(notification.smallIcon)
         assertEquals(
