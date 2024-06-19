@@ -173,6 +173,25 @@ class AEPPushNotificationBuilderTest {
         }
     }
 
+    @Test
+    @Config(sdk = [25])
+    fun `construct should set sound on Notification Builder for API level 25 and below`() {
+        val pushTemplate = BasicPushTemplate(MapData(dataMap))
+        val notification =
+            AEPPushNotificationBuilder.construct(
+                context,
+                pushTemplate,
+                CHANNEL_ID_TO_USE,
+                trackerActivityClass,
+                smallLayout,
+                expandedLayout,
+                CONTAINER_LAYOUT_VIEW_ID
+            ).build()
+        val soundUri =
+            "android.resource://com.adobe.marketing.mobile.notificationbuilder.test/raw/${pushTemplate.sound}"
+        assertEquals(soundUri, notification.sound.toString())
+    }
+
     private fun verifyNotificationDataFields(
         notification: Notification,
         pushTemplate: AEPPushTemplate
@@ -183,6 +202,9 @@ class AEPPushNotificationBuilderTest {
 
         assertEquals(Notification::class.java, notification.javaClass)
         assertEquals(pushTemplate.ticker, notification.tickerText)
+        assertEquals(notification.channelId, CHANNEL_ID_TO_USE)
+        assertEquals(pushTemplate.badgeCount, notification.number)
+        assertEquals(pushTemplate.visibility.value, notification.visibility)
         assertNotNull(notification.smallIcon)
         assertNotNull(notification.deleteIntent)
         assertEquals(
