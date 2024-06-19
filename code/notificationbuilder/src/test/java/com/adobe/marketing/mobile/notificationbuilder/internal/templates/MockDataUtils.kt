@@ -150,3 +150,14 @@ internal fun provideMockedMultiIconTemplateWithAllKeys(): MultiIconPushTemplate 
     data = MapData(dataMap)
     return MultiIconPushTemplate(data)
 }
+
+internal fun provideMockedProductCatalogTemplate(isFromIntent: Boolean = false): ProductCatalogPushTemplate {
+    val data: NotificationData
+    if (isFromIntent) {
+        val mockBundle = MockProductCatalogTemplateDataProvider.getMockedBundleWithProductCatalogData()
+        data = IntentData(mockBundle, null)
+    } else {
+        data = MapData(MockProductCatalogTemplateDataProvider.getMockedMapWithProductCatalogData())
+    }
+    return ProductCatalogPushTemplate(data)
+}
