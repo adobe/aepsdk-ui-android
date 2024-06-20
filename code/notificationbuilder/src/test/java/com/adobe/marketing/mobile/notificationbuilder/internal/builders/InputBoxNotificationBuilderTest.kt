@@ -14,20 +14,33 @@ package com.adobe.marketing.mobile.notificationbuilder.internal.builders
 import android.app.Activity
 import android.content.BroadcastReceiver
 import android.content.Context
+import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants
+import com.adobe.marketing.mobile.notificationbuilder.R
+import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setRemoteImage
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.InputBoxPushTemplate
+import com.adobe.marketing.mobile.notificationbuilder.internal.templates.MOCKED_BASIC_TEMPLATE_BODY
+import com.adobe.marketing.mobile.notificationbuilder.internal.templates.MOCKED_BASIC_TEMPLATE_BODY_EXPANDED
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.MOCKED_BODY
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.MOCKED_FEEDBACK_IMAGE
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.MOCKED_FEEDBACK_TEXT
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.MOCKED_HINT
+import com.adobe.marketing.mobile.notificationbuilder.internal.templates.MOCKED_IMAGE_URI
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.MOCKED_RECEIVER_NAME
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.MOCKED_TITLE
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.MockInputBoxPushTemplateDataProvider
+import com.adobe.marketing.mobile.notificationbuilder.internal.templates.provideMockedInputBoxPushTemplateWithAllKeys
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.provideMockedInputBoxPushTemplateWithRequiredData
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.removeKeysFromMap
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.replaceValueInMap
 import com.adobe.marketing.mobile.notificationbuilder.internal.util.MapData
+import com.google.common.base.Verify.verify
+import io.mockk.Runs
+import io.mockk.every
+import io.mockk.just
+import io.mockk.mockkConstructor
+import io.mockk.verify
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -56,6 +69,7 @@ class InputBoxNotificationBuilderTest {
         context = RuntimeEnvironment.getApplication()
         trackerActivityClass = DummyActivity::class.java
         broadcastReceiverClass = DummyBroadcastReceiver::class.java
+        mockkConstructor(RemoteViews::class)
     }
 
     @Test
@@ -215,5 +229,39 @@ class InputBoxNotificationBuilderTest {
 
         val actions = notificationBuilder.mActions
         assertEquals(MOCKED_HINT, actions[0].title)
+    }
+
+    @Test
+    fun `Validate notification content when push template is created from intent`() {
+        val pushTemplate = provideMockedInputBoxPushTemplateWithAllKeys(true)
+        every { anyConstructed<RemoteViews>().setTextViewText(any(), any()) } just Runs
+
+        val notificationBuilder = InputBoxNotificationBuilder.construct(
+            context,
+            pushTemplate,
+            trackerActivityClass,
+            broadcastReceiverClass
+        )
+
+        verify { anyConstructed<RemoteViews>().setRemoteImage(MOCKED_FEEDBACK_IMAGE, R.id.expanded_template_image) }
+        verify { anyConstructed<RemoteViews>().setTextViewText(R.id.notification_body, MOCKED_FEEDBACK_TEXT) }
+        verify { anyConstructed<RemoteViews>().setTextViewText(R.id.notification_body_expanded, MOCKED_FEEDBACK_TEXT) }
+    }
+
+    @Test
+    fun `Validate notification content when push template is not created from intent`() {
+        val pushTemplate = provideMockedInputBoxPushTemplateWithAllKeys()
+        every { anyConstructed<RemoteViews>().setTextViewText(any(), any()) } just Runs
+
+        val notificationBuilder = InputBoxNotificationBuilder.construct(
+            context,
+            pushTemplate,
+            trackerActivityClass,
+            broadcastReceiverClass
+        )
+
+        verify { anyConstructed<RemoteViews>().setRemoteImage(MOCKED_IMAGE_URI, R.id.expanded_template_image) }
+        verify { anyConstructed<RemoteViews>().setTextViewText(R.id.notification_body, MOCKED_BASIC_TEMPLATE_BODY) }
+        verify { anyConstructed<RemoteViews>().setTextViewText(R.id.notification_body_expanded, MOCKED_BASIC_TEMPLATE_BODY_EXPANDED) }
     }
 }
