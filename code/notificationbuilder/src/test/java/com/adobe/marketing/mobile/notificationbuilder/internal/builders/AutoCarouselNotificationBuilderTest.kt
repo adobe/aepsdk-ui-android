@@ -29,7 +29,9 @@ import io.mockk.just
 import io.mockk.mockkClass
 import io.mockk.mockkConstructor
 import io.mockk.mockkObject
+import io.mockk.unmockkAll
 import io.mockk.verify
+import org.junit.After
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
@@ -94,7 +96,7 @@ class AutoCarouselNotificationBuilderTest {
     }
 
     @Test
-    fun `construct returns BasicNotificationBuilder if greater than equal to 3 images were downloaded`() {
+    fun `construct does not fallback to BasicNotificationBuilder if greater than or equal to 3 images were downloaded`() {
         every { cacheImages(any()) } answers { 3 }
         AutoCarouselNotificationBuilder.construct(
             context,
@@ -173,5 +175,10 @@ class AutoCarouselNotificationBuilderTest {
         verify(exactly = 0) { anyConstructed<RemoteViews>().setImageViewBitmap(any(), any()) }
         verify(exactly = 0) { anyConstructed<RemoteViews>().setRemoteViewClickAction(context, trackerActivityClass, any(), any(), null, any()) }
         verify(exactly = 0) { anyConstructed<RemoteViews>().setTextViewText(any(), any()) }
+    }
+
+    @After
+    fun teardown() {
+        unmockkAll()
     }
 }
