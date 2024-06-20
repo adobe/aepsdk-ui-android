@@ -28,9 +28,11 @@ import com.adobe.marketing.mobile.notificationbuilder.internal.templates.Product
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.provideMockedProductCatalogTemplate
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.replaceValueInMap
 import com.adobe.marketing.mobile.notificationbuilder.internal.util.MapData
+import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockkClass
 import io.mockk.mockkObject
+import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -55,9 +57,14 @@ class ProductCatalogNotificationBuilderTest {
         MockitoAnnotations.openMocks(this)
 
         context = RuntimeEnvironment.getApplication()
-        trackerActivityClass = DummyActivity::class.java
-        broadcastReceiverClass = DummyBroadcastReceiver::class.java
+        trackerActivityClass = mockkClass(Activity::class, relaxed = true).javaClass
+        broadcastReceiverClass = mockkClass(BroadcastReceiver::class, relaxed = true).javaClass
         mockkObject(PushTemplateImageUtils)
+    }
+
+    @After
+    fun cleanup() {
+        clearAllMocks()
     }
 
     @Test
@@ -68,6 +75,60 @@ class ProductCatalogNotificationBuilderTest {
             exceptionClass = NotificationConstructionFailedException::class,
             message = "Failed to download all images for the product catalog notification.",
             block = {
+                ProductCatalogNotificationBuilder.construct(context, pushTemplate, trackerActivityClass, broadcastReceiverClass)
+            }
+        )
+    }
+
+    @Test
+    fun `construct should throw IllegalArgumentException if downloaded image count is more than 3`() {
+        val dataMap = getMockedMapWithProductCatalogData()
+        dataMap.replaceValueInMap(
+            PushTemplateConstants.PushPayloadKeys.CATALOG_ITEMS,
+            "[" +
+                "{\"title\":\"title1\",\"body\":\"body1\",\"img\":\"img1\",\"price\":\"price1\",\"uri\":\"uri1\"}," +
+                "{\"title\":\"title2\",\"body\":\"body2\",\"img\":\"img2\",\"price\":\"price2\",\"uri\":\"uri2\"}," +
+                "{\"title\":\"title3\",\"body\":\"body3\",\"img\":\"img3\",\"price\":\"price3\",\"uri\":\"uri3\"}," +
+                "{\"title\":\"title4\",\"body\":\"body4\",\"img\":\"img4\",\"price\":\"price4\",\"uri\":\"uri4\"}" +
+                "]"
+        ) // 4 items in the catalog
+
+        assertFailsWith(
+            exceptionClass = IllegalArgumentException::class,
+            message = "3 catalog items are required for a Product Catalog notification.",
+            block = {
+                val pushTemplate = ProductCatalogPushTemplate(MapData(dataMap))
+                val cachedItem = mockkClass(Bitmap::class)
+
+                // product catalog template requires 3 catalog items
+                every { cacheImages(any()) } answers { 4 }
+                every { getCachedImage(any()) } answers { cachedItem }
+                ProductCatalogNotificationBuilder.construct(context, pushTemplate, trackerActivityClass, broadcastReceiverClass)
+            }
+        )
+    }
+
+    @Test
+    fun `construct should throw IllegalArgumentException if downloaded image count is less than 3`() {
+        val dataMap = getMockedMapWithProductCatalogData()
+        dataMap.replaceValueInMap(
+            PushTemplateConstants.PushPayloadKeys.CATALOG_ITEMS,
+            "[" +
+                "{\"title\":\"title1\",\"body\":\"body1\",\"img\":\"img1\",\"price\":\"price1\",\"uri\":\"uri1\"}," +
+                "{\"title\":\"title2\",\"body\":\"body2\",\"img\":\"img2\",\"price\":\"price2\",\"uri\":\"uri2\"}," +
+                "]"
+        ) // 2 items in the catalog
+
+        assertFailsWith(
+            exceptionClass = IllegalArgumentException::class,
+            message = "3 catalog items are required for a Product Catalog notification.",
+            block = {
+                val pushTemplate = ProductCatalogPushTemplate(MapData(dataMap))
+                val cachedItem = mockkClass(Bitmap::class)
+
+                // product catalog template requires 3 catalog items
+                every { cacheImages(any()) } answers { 2 }
+                every { getCachedImage(any()) } answers { cachedItem }
                 ProductCatalogNotificationBuilder.construct(context, pushTemplate, trackerActivityClass, broadcastReceiverClass)
             }
         )
@@ -104,7 +165,7 @@ class ProductCatalogNotificationBuilderTest {
     }
 
     @Test
-    fun `construct should return a valid NotificationCompat Builder Broadcast Receiver is not provided`() {
+    fun `construct should return a valid NotificationCompat Builder if Broadcast Receiver is not provided`() {
         val pushTemplate = provideMockedProductCatalogTemplate()
         val cachedItem = mockkClass(Bitmap::class)
 
