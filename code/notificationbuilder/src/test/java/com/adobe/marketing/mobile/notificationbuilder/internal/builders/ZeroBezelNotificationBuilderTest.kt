@@ -27,7 +27,6 @@ import com.adobe.marketing.mobile.notificationbuilder.internal.templates.ZeroBez
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.replaceValueInMap
 import com.adobe.marketing.mobile.notificationbuilder.internal.util.IntentData
 import com.adobe.marketing.mobile.notificationbuilder.internal.util.MapData
-import io.mockk.MockKAnnotations
 import io.mockk.Runs
 import io.mockk.every
 import io.mockk.just
@@ -57,7 +56,6 @@ class ZeroBezelNotificationBuilderTest {
 
     @Before
     fun setup() {
-        MockKAnnotations.init(this)
         context = RuntimeEnvironment.getApplication()
         dataMap = MockAEPPushTemplateDataProvider.getMockedAEPDataMapWithAllKeys()
         mockkObject(PushTemplateImageUtils)
