@@ -58,8 +58,6 @@ class ProductRatingNotificationBuilderTest {
 
     @Before
     fun setUp() {
-//        MockitoAnnotations.openMocks(this)
-
         context = RuntimeEnvironment.getApplication()
         trackerActivityClass = DummyActivity::class.java
         broadcastReceiverClass = DummyBroadcastReceiver::class.java
@@ -85,7 +83,7 @@ class ProductRatingNotificationBuilderTest {
     }
 
     @Test
-    fun `construct should set visibility of expanded layout as GONE if no images are downloaded`() {
+    fun `construct should set visibility of expanded layout image view as GONE if no images are downloaded`() {
         every { cacheImages(any()) } answers { 0 }
         every { any<RemoteViews>().setRemoteViewImage(any(), any()) } returns true
         every { anyConstructed<RemoteViews>().setViewVisibility(any(), View.GONE) } just Runs
@@ -108,7 +106,7 @@ class ProductRatingNotificationBuilderTest {
         val pushTemplate = provideMockedProductRatingTemplate()
         val notificationBuilder = ProductRatingNotificationBuilder.construct(context, pushTemplate, trackerActivityClass, broadcastReceiverClass)
 
-        verify(exactly = 1) { anyConstructed<RemoteViews>().setImageViewBitmap(R.id.expanded_template_image, any()) }
+        verify(exactly = 1) { anyConstructed<RemoteViews>().setImageViewBitmap(R.id.expanded_template_image, cachedItem) }
     }
 
     @Test
@@ -133,11 +131,17 @@ class ProductRatingNotificationBuilderTest {
         val notificationBuilder = ProductRatingNotificationBuilder.construct(context, pushTemplate, trackerActivityClass, broadcastReceiverClass)
 
         verify(exactly = 1) { anyConstructed<RemoteViews>().setViewVisibility(R.id.rating_confirm, View.VISIBLE) }
+        verify(exactly = 1) { any<RemoteViews>().setRemoteViewClickAction(any(), trackerActivityClass, R.id.rating_confirm, any(), "3", any()) }
     }
 
     @Test
     fun `construct should throw NotificationConstructionFailedException if image for unselected rating icon is invalid`() {
-        val pushTemplate = provideMockedProductRatingTemplate()
+        every { any<RemoteViews>().setRemoteViewImage("rating_star_outline", any()) } returns false
+        every { any<RemoteViews>().setRemoteViewImage("rating_star_filled", any()) } returns true
+
+        val dataMap = getMockedDataMapForRatingTemplate()
+        dataMap[PushTemplateConstants.IntentKeys.RATING_SELECTED] = "3"
+        val pushTemplate = ProductRatingPushTemplate(MapData(dataMap))
 
         assertFailsWith(
             exceptionClass = NotificationConstructionFailedException::class,
