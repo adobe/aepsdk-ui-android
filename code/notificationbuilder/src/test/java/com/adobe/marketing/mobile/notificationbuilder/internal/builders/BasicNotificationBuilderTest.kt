@@ -15,10 +15,15 @@ import android.app.Activity
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants
+import com.adobe.marketing.mobile.notificationbuilder.R
+import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateImageUtils
+import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setRemoteViewImage
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.BasicPushTemplate
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.MOCKED_CHANNEL_ID
+import com.adobe.marketing.mobile.notificationbuilder.internal.templates.MOCKED_IMAGE_URI
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.MOCKED_TAG
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.MOCKED_TICKER
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.MOCK_REMIND_LATER_DURATION
@@ -28,7 +33,15 @@ import com.adobe.marketing.mobile.notificationbuilder.internal.templates.MockAEP
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.provideMockedBasicPushTemplateWithAllKeys
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.provideMockedBasicPushTemplateWithRequiredData
 import com.adobe.marketing.mobile.notificationbuilder.internal.util.MapData
+import com.google.common.base.Verify.verify
+import io.mockk.every
+import io.mockk.mockkConstructor
+import io.mockk.mockkObject
+import io.mockk.mockkStatic
+import io.mockk.unmockkAll
+import io.mockk.verify
 import junit.framework.TestCase.assertEquals
+import org.junit.After
 import org.junit.Assert.assertNull
 import org.junit.Before
 import org.junit.Test
@@ -57,10 +70,21 @@ class BasicNotificationBuilderTest {
         context = RuntimeEnvironment.getApplication()
         trackerActivityClass = DummyActivity::class.java
         broadcastReceiverClass = DummyBroadcastReceiver::class.java
+
+        mockkConstructor(RemoteViews::class)
+        mockkStatic(RemoteViews::setRemoteViewImage)
+        mockkObject(PushTemplateImageUtils)
+    }
+
+    @After
+    fun teardown() {
+        unmockkAll()
     }
 
     @Test
     fun `construct should return a NotificationCompat Builder`() {
+        every { any<RemoteViews>().setRemoteViewImage(any(), any()) } returns true
+
         val pushTemplate = provideMockedBasicPushTemplateWithAllKeys()
         val notificationBuilder = BasicNotificationBuilder.construct(
             context,
@@ -70,6 +94,7 @@ class BasicNotificationBuilderTest {
         )
 
         assertEquals(NotificationCompat.Builder::class.java, notificationBuilder.javaClass)
+        verify(exactly = 1) { any<RemoteViews>().setRemoteViewImage(MOCKED_IMAGE_URI, R.id.expanded_template_image) }
     }
 
     @Test
