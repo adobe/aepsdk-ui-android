@@ -75,10 +75,13 @@ class ProductRatingNotificationBuilderTest {
     @Test
     fun `construct should return a NotificationCompat Builder`() {
         every { any<RemoteViews>().setRemoteViewImage(any(), any()) } returns true
+        every { anyConstructed<RemoteViews>().setOnClickPendingIntent(any(), any()) } just Runs
 
         val pushTemplate = provideMockedProductRatingTemplate()
         val notificationBuilder = ProductRatingNotificationBuilder.construct(context, pushTemplate, trackerActivityClass, broadcastReceiverClass)
 
+        // 4 rating icons + 1 setting view visibility for rating confirmation
+        verify(exactly = 5) { anyConstructed<RemoteViews>().setOnClickPendingIntent(R.id.rating_icon_image, any()) }
         assertEquals(NotificationCompat.Builder::class.java, notificationBuilder::class.java)
     }
 
