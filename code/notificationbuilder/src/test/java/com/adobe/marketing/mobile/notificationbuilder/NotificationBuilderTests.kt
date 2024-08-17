@@ -20,7 +20,6 @@ import android.content.Context
 import android.content.Intent
 import androidx.core.app.NotificationManagerCompat
 import com.adobe.marketing.mobile.notificationbuilder.internal.PendingIntentUtils
-import com.adobe.ui_utils.PushTemplateImageUtils
 import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateType
 import com.adobe.marketing.mobile.notificationbuilder.internal.builders.AutoCarouselNotificationBuilder
 import com.adobe.marketing.mobile.notificationbuilder.internal.builders.BasicNotificationBuilder
@@ -38,6 +37,8 @@ import com.adobe.marketing.mobile.notificationbuilder.internal.templates.MockPro
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.MockTimerTemplateDataProvider
 import com.adobe.marketing.mobile.services.AppContextService
 import com.adobe.marketing.mobile.services.ServiceProvider
+import com.adobe.ui_utils.PushTemplateConstants
+import com.adobe.ui_utils.PushTemplateImageUtils
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkClass
@@ -76,7 +77,7 @@ class NotificationBuilderTests {
         trackerActivityClass = mockkClass(Activity::class, relaxed = true).javaClass
         broadcastReceiverClass = mockkClass(BroadcastReceiver::class, relaxed = true).javaClass
         mockkObject(PendingIntentUtils)
-        mockkObject(com.adobe.ui_utils.PushTemplateImageUtils)
+        mockkObject(PushTemplateImageUtils)
     }
 
     @After
@@ -205,7 +206,7 @@ class NotificationBuilderTests {
     @Test
     fun `verify private createNotificationBuilder calls LegacyNotificationBuilder construct`() {
         val mapData = MockAEPPushTemplateDataProvider.getMockedAEPDataMapWithAllKeys()
-        mapData[com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.TEMPLATE_TYPE] = "some unknown type"
+        mapData[PushTemplateConstants.PushPayloadKeys.TEMPLATE_TYPE] = "some unknown type"
         NotificationBuilder.constructNotificationBuilder(mapData, trackerActivityClass, broadcastReceiverClass)
         verify(exactly = 1) { LegacyNotificationBuilder.construct(any(Context::class), any(), trackerActivityClass) }
     }
@@ -234,8 +235,8 @@ class NotificationBuilderTests {
     @Test
     fun `verify private createNotificationBuilder calls InputBoxNotificationBuilder construct`() {
         val mapData = MockAEPPushTemplateDataProvider.getMockedAEPDataMapWithAllKeys()
-        mapData[com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.TEMPLATE_TYPE] = PushTemplateType.INPUT_BOX.value
-        mapData[com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.INPUT_BOX_RECEIVER_NAME] = "receiverName"
+        mapData[PushTemplateConstants.PushPayloadKeys.TEMPLATE_TYPE] = PushTemplateType.INPUT_BOX.value
+        mapData[PushTemplateConstants.PushPayloadKeys.INPUT_BOX_RECEIVER_NAME] = "receiverName"
         NotificationBuilder.constructNotificationBuilder(mapData, trackerActivityClass, broadcastReceiverClass)
         verify(exactly = 1) { InputBoxNotificationBuilder.construct(any(Context::class), any(), trackerActivityClass, broadcastReceiverClass) }
     }
@@ -243,40 +244,40 @@ class NotificationBuilderTests {
     @Test
     fun `verify private createNotificationBuilder calls ZeroBezelNotificationBuilder construct`() {
         val mapData = MockAEPPushTemplateDataProvider.getMockedAEPDataMapWithAllKeys()
-        mapData[com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.TEMPLATE_TYPE] = PushTemplateType.ZERO_BEZEL.value
+        mapData[PushTemplateConstants.PushPayloadKeys.TEMPLATE_TYPE] = PushTemplateType.ZERO_BEZEL.value
         NotificationBuilder.constructNotificationBuilder(mapData, trackerActivityClass, broadcastReceiverClass)
         verify(exactly = 1) { ZeroBezelNotificationBuilder.construct(any(Context::class), any(), trackerActivityClass) }
     }
 
     @Test
     fun `verify private createNotificationBuilder calls ProductRatingNotificationBuilder construct`() {
-        every { com.adobe.ui_utils.PushTemplateImageUtils.cacheImages(any()) } answers { 1 }
+        every { PushTemplateImageUtils.cacheImages(any()) } answers { 1 }
         val mapData = MockAEPPushTemplateDataProvider.getMockedAEPDataMapWithAllKeys()
-        mapData[com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.TEMPLATE_TYPE] = PushTemplateType.PRODUCT_RATING.value
-        mapData[com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.RATING_UNSELECTED_ICON] = "https://i.imgur.com/unselected.png"
-        mapData[com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.RATING_SELECTED_ICON] = "https://i.imgur.com/selected.png"
-        mapData[com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.RATING_ACTIONS] = "[{\"uri\":\"https://www.adobe.com\", \"type\":\"WEBURL\"},{\"type\":\"OPENAPP\"},{\"type\":\"DISMISS\"},{\"uri\": \"https://www.adobe.com\", \"type\":\"WEBURL\"},{\"uri\":\"instabiz://opensecond\", \"type\":\"DEEPLINK\"}]"
+        mapData[PushTemplateConstants.PushPayloadKeys.TEMPLATE_TYPE] = PushTemplateType.PRODUCT_RATING.value
+        mapData[PushTemplateConstants.PushPayloadKeys.RATING_UNSELECTED_ICON] = "https://i.imgur.com/unselected.png"
+        mapData[PushTemplateConstants.PushPayloadKeys.RATING_SELECTED_ICON] = "https://i.imgur.com/selected.png"
+        mapData[PushTemplateConstants.PushPayloadKeys.RATING_ACTIONS] = "[{\"uri\":\"https://www.adobe.com\", \"type\":\"WEBURL\"},{\"type\":\"OPENAPP\"},{\"type\":\"DISMISS\"},{\"uri\": \"https://www.adobe.com\", \"type\":\"WEBURL\"},{\"uri\":\"instabiz://opensecond\", \"type\":\"DEEPLINK\"}]"
         NotificationBuilder.constructNotificationBuilder(mapData, trackerActivityClass, broadcastReceiverClass)
         verify(exactly = 1) { ProductRatingNotificationBuilder.construct(any(Context::class), any(), trackerActivityClass, broadcastReceiverClass) }
     }
 
     @Test
     fun `verify private createNotificationBuilder calls ProductCatalogNotificationBuilder construct`() {
-        every { com.adobe.ui_utils.PushTemplateImageUtils.cacheImages(any()) } answers { 3 }
-        every { com.adobe.ui_utils.PushTemplateImageUtils.getCachedImage(any()) } answers { mockk() }
+        every { PushTemplateImageUtils.cacheImages(any()) } answers { 3 }
+        every { PushTemplateImageUtils.getCachedImage(any()) } answers { mockk() }
         val mapData = MockProductCatalogTemplateDataProvider.getMockedMapWithProductCatalogData()
-        mapData[com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.TEMPLATE_TYPE] = PushTemplateType.PRODUCT_CATALOG.value
+        mapData[PushTemplateConstants.PushPayloadKeys.TEMPLATE_TYPE] = PushTemplateType.PRODUCT_CATALOG.value
         NotificationBuilder.constructNotificationBuilder(mapData, trackerActivityClass, broadcastReceiverClass)
         verify(exactly = 1) { ProductCatalogNotificationBuilder.construct(any(Context::class), any(), trackerActivityClass, broadcastReceiverClass) }
     }
 
     @Test
     fun `verify private createNotificationBuilder calls MultiIconNotificationBuilder construct`() {
-        every { com.adobe.ui_utils.PushTemplateImageUtils.cacheImages(any()) } answers { 3 }
-        every { com.adobe.ui_utils.PushTemplateImageUtils.getCachedImage(any()) } answers { mockk() }
+        every { PushTemplateImageUtils.cacheImages(any()) } answers { 3 }
+        every { PushTemplateImageUtils.getCachedImage(any()) } answers { mockk() }
         val mapData = MockAEPPushTemplateDataProvider.getMockedAEPDataMapWithAllKeys()
-        mapData[com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.TEMPLATE_TYPE] = PushTemplateType.MULTI_ICON.value
-        mapData[com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.MULTI_ICON_ITEMS] = "[{\"img\":\"https://sneakerland.com/products/assets/shoe1.png\",\"uri\":\"myapp://chooseShoeType/shoe1\",\"type\":\"DEEPLINK\"},{\"img\":\"https://sneakerland.com/products/assets/shoe2.png\",\"uri\":\"myapp://chooseShoeType/shoe2\",\"type\":\"DEEPLINK\"},{\"img\":\"https://sneakerland.com/products/assets/shoe3.png\",\"uri\":\"myapp://chooseShoeType/shoe3\",\"type\":\"DEEPLINK\"},{\"img\":\"https://sneakerland.com/products/assets/shoe4.png\",\"uri\":\"myapp://chooseShoeType/shoe4\",\"type\":\"DEEPLINK\"},{\"img\":\"https://sneakerland.com/products/assets/shoe5.png\",\"uri\":\"myapp://chooseShoeType/shoe5\",\"type\":\"DEEPLINK\"}]"
+        mapData[PushTemplateConstants.PushPayloadKeys.TEMPLATE_TYPE] = PushTemplateType.MULTI_ICON.value
+        mapData[PushTemplateConstants.PushPayloadKeys.MULTI_ICON_ITEMS] = "[{\"img\":\"https://sneakerland.com/products/assets/shoe1.png\",\"uri\":\"myapp://chooseShoeType/shoe1\",\"type\":\"DEEPLINK\"},{\"img\":\"https://sneakerland.com/products/assets/shoe2.png\",\"uri\":\"myapp://chooseShoeType/shoe2\",\"type\":\"DEEPLINK\"},{\"img\":\"https://sneakerland.com/products/assets/shoe3.png\",\"uri\":\"myapp://chooseShoeType/shoe3\",\"type\":\"DEEPLINK\"},{\"img\":\"https://sneakerland.com/products/assets/shoe4.png\",\"uri\":\"myapp://chooseShoeType/shoe4\",\"type\":\"DEEPLINK\"},{\"img\":\"https://sneakerland.com/products/assets/shoe5.png\",\"uri\":\"myapp://chooseShoeType/shoe5\",\"type\":\"DEEPLINK\"}]"
         NotificationBuilder.constructNotificationBuilder(mapData, trackerActivityClass, broadcastReceiverClass)
         verify(exactly = 1) { MultiIconNotificationBuilder.construct(any(Context::class), any(), trackerActivityClass) }
     }
@@ -284,7 +285,7 @@ class NotificationBuilderTests {
     @Test
     fun `verify private createNotificationBuilder calls TimerNotificationBuilder construct`() {
         val mapData = MockTimerTemplateDataProvider.getMockedMapWithTimerData(true, "10")
-        mapData[com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.TEMPLATE_TYPE] = PushTemplateType.TIMER.value
+        mapData[PushTemplateConstants.PushPayloadKeys.TEMPLATE_TYPE] = PushTemplateType.TIMER.value
         NotificationBuilder.constructNotificationBuilder(mapData, trackerActivityClass, broadcastReceiverClass)
         verify(exactly = 1) { TimerNotificationBuilder.construct(any(Context::class), any(), trackerActivityClass, broadcastReceiverClass) }
     }

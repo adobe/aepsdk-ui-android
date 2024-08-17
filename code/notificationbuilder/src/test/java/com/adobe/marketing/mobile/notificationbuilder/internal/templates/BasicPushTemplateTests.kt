@@ -11,8 +11,8 @@
 
 package com.adobe.marketing.mobile.notificationbuilder.internal.templates
 
-import com.adobe.ui_utils.PushTemplateConstants
 import com.adobe.marketing.mobile.notificationbuilder.internal.util.MapData
+import com.adobe.ui_utils.PushTemplateConstants
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.runner.RunWith
@@ -31,12 +31,12 @@ class BasicPushTemplateTests {
         val actionButton1 = basicPushTemplate.actionButtonsList?.get(0)
         assertEquals("Go to chess.com", actionButton1?.label)
         assertEquals("https://chess.com/games/552", actionButton1?.link)
-        assertEquals(com.adobe.ui_utils.PushTemplateConstants.ActionType.DEEPLINK, actionButton1?.type)
+        assertEquals(PushTemplateConstants.ActionType.DEEPLINK, actionButton1?.type)
 
         val actionButton2 = basicPushTemplate.actionButtonsList?.get(1)
         assertEquals("Open the app", actionButton2?.label)
         assertNull(actionButton2?.link)
-        assertEquals(com.adobe.ui_utils.PushTemplateConstants.ActionType.OPENAPP, actionButton2?.type)
+        assertEquals(PushTemplateConstants.ActionType.OPENAPP, actionButton2?.type)
 
         assertEquals(MOCK_REMIND_LATER_TIME, basicPushTemplate.remindLaterTimestamp.toString())
         assertEquals(MOCK_REMIND_LATER_DURATION, basicPushTemplate.remindLaterDuration.toString())
@@ -47,7 +47,7 @@ class BasicPushTemplateTests {
     @Test
     fun `Test BasicPushTemplate initialization with invalid JSON`() {
         val dataMap = MockAEPPushTemplateDataProvider.getMockedAEPDataMapWithAllKeys()
-        dataMap[com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.ACTION_BUTTONS] = ""
+        dataMap[PushTemplateConstants.PushPayloadKeys.ACTION_BUTTONS] = ""
         val basicPushTemplate = BasicPushTemplate(MapData(dataMap))
         assertEquals(null, basicPushTemplate.actionButtonsList)
     }
@@ -55,13 +55,13 @@ class BasicPushTemplateTests {
     @Test
     fun `Test BasicPushTemplate initialization with malformed JSON`() {
         val dataMap = MockAEPPushTemplateDataProvider.getMockedAEPDataMapWithAllKeys()
-        dataMap[com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.ACTION_BUTTONS] = MOCKED_MALFORMED_JSON_ACTION_BUTTON
+        dataMap[PushTemplateConstants.PushPayloadKeys.ACTION_BUTTONS] = MOCKED_MALFORMED_JSON_ACTION_BUTTON
         val basicPushTemplate = BasicPushTemplate(MapData(dataMap))
         // Two wrong JSON objects are ignored out of 4
         assertEquals(2, basicPushTemplate.actionButtonsList?.size)
 
         val actionButton1 = basicPushTemplate.actionButtonsList?.get(0)
         // Wrong Action type in JSON is converted to NONE
-        assertEquals(com.adobe.ui_utils.PushTemplateConstants.ActionType.NONE, actionButton1?.type)
+        assertEquals(PushTemplateConstants.ActionType.NONE, actionButton1?.type)
     }
 }

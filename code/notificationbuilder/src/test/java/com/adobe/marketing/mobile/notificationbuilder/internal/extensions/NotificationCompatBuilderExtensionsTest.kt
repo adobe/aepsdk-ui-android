@@ -21,10 +21,10 @@ import android.net.Uri
 import android.os.Bundle
 import androidx.core.app.NotificationCompat
 import com.adobe.marketing.mobile.MobileCore
-import com.adobe.ui_utils.PushTemplateConstants
-import com.adobe.ui_utils.PushTemplateImageUtils
 import com.adobe.marketing.mobile.notificationbuilder.internal.builders.DummyActivity
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.BasicPushTemplate
+import com.adobe.ui_utils.PushTemplateConstants
+import com.adobe.ui_utils.PushTemplateImageUtils
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject
@@ -59,7 +59,7 @@ class NotificationCompatBuilderExtensionsTest {
         mockContext = mockk<Context>(relaxed = true)
         mockkStatic(Context::getIconWithResourceName)
         mockkStatic(MobileCore::class)
-        mockkObject(com.adobe.ui_utils.PushTemplateImageUtils)
+        mockkObject(PushTemplateImageUtils)
         mockBitmap = mockk<Bitmap>(relaxed = true)
         trackerActivityClass = DummyActivity::class.java
     }
@@ -197,8 +197,8 @@ class NotificationCompatBuilderExtensionsTest {
 
     @Test
     fun `setLargeIcon with valid imageUrl`() {
-        every { com.adobe.ui_utils.PushTemplateImageUtils.cacheImages(listOf("valid_image_url")) } returns 1
-        every { com.adobe.ui_utils.PushTemplateImageUtils.getCachedImage("valid_image_url") } returns mockBitmap
+        every { PushTemplateImageUtils.cacheImages(listOf("valid_image_url")) } returns 1
+        every { PushTemplateImageUtils.getCachedImage("valid_image_url") } returns mockBitmap
 
         val spyBuilder = spyk(NotificationCompat.Builder(mockContext, "mockChannelId"))
 
@@ -210,7 +210,7 @@ class NotificationCompatBuilderExtensionsTest {
 
     @Test
     fun `setLargeIcon with imageUrl that cannot be downloaded`() {
-        every { com.adobe.ui_utils.PushTemplateImageUtils.cacheImages(listOf("invalid_image_url")) } returns 0
+        every { PushTemplateImageUtils.cacheImages(listOf("invalid_image_url")) } returns 0
 
         val spyBuilder = spyk(NotificationCompat.Builder(mockContext, "mockChannelId"))
 
@@ -262,12 +262,12 @@ class NotificationCompatBuilderExtensionsTest {
 
         val intent = shadowPendingIntent.savedIntent
         assertNotNull(intent)
-        assertEquals(com.adobe.ui_utils.PushTemplateConstants.NotificationAction.CLICKED, intent.action)
+        assertEquals(PushTemplateConstants.NotificationAction.CLICKED, intent.action)
         assertEquals(trackerActivityClass.name, intent.component?.className)
         assertEquals(Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP, intent.flags)
         assertEquals("testValue", intent.getStringExtra("testKey"))
-        assertEquals(testActionUri, intent.getStringExtra(com.adobe.ui_utils.PushTemplateConstants.TrackingKeys.ACTION_URI))
-        assertEquals(null, intent.getStringExtra(com.adobe.ui_utils.PushTemplateConstants.TrackingKeys.ACTION_ID))
+        assertEquals(testActionUri, intent.getStringExtra(PushTemplateConstants.TrackingKeys.ACTION_URI))
+        assertEquals(null, intent.getStringExtra(PushTemplateConstants.TrackingKeys.ACTION_ID))
     }
 
     @Test
@@ -289,7 +289,7 @@ class NotificationCompatBuilderExtensionsTest {
 
         val intent = shadowPendingIntent.savedIntent
         assertNotNull(intent)
-        assertEquals(com.adobe.ui_utils.PushTemplateConstants.NotificationAction.CLICKED, intent.action)
+        assertEquals(PushTemplateConstants.NotificationAction.CLICKED, intent.action)
         assertEquals(null, intent.component?.className)
         assertEquals(Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP, intent.flags)
         assertEquals(null, intent.extras)
@@ -314,7 +314,7 @@ class NotificationCompatBuilderExtensionsTest {
 
         val intent = shadowPendingIntent.savedIntent
         assertNotNull(intent)
-        assertEquals(com.adobe.ui_utils.PushTemplateConstants.NotificationAction.DISMISSED, intent.action)
+        assertEquals(PushTemplateConstants.NotificationAction.DISMISSED, intent.action)
         assertEquals(trackerActivityClass.name, intent.component?.className)
         assertEquals(Intent.FLAG_ACTIVITY_SINGLE_TOP, intent.flags)
         assertNull(intent.extras)
@@ -339,7 +339,7 @@ class NotificationCompatBuilderExtensionsTest {
 
         val intent = shadowPendingIntent.savedIntent
         assertNotNull(intent)
-        assertEquals(com.adobe.ui_utils.PushTemplateConstants.NotificationAction.DISMISSED, intent.action)
+        assertEquals(PushTemplateConstants.NotificationAction.DISMISSED, intent.action)
         assertNull(intent.component?.className)
         assertEquals(Intent.FLAG_ACTIVITY_SINGLE_TOP, intent.flags)
         assertNull(intent.extras)
@@ -356,7 +356,7 @@ class NotificationCompatBuilderExtensionsTest {
         mockBuilder.addActionButtons(
             mockContext, trackerActivityClass,
             listOf(
-                BasicPushTemplate.ActionButton("testLabel", "testLink", com.adobe.ui_utils.PushTemplateConstants.ActionType.DEEPLINK.name)
+                BasicPushTemplate.ActionButton("testLabel", "testLink", PushTemplateConstants.ActionType.DEEPLINK.name)
             ),
             testIntentExtras
         )
@@ -374,12 +374,12 @@ class NotificationCompatBuilderExtensionsTest {
 
         val intent = shadowPendingIntent.savedIntent
         assertNotNull(intent)
-        assertEquals(com.adobe.ui_utils.PushTemplateConstants.NotificationAction.CLICKED, intent.action)
+        assertEquals(PushTemplateConstants.NotificationAction.CLICKED, intent.action)
         assertEquals(trackerActivityClass.name, intent.component?.className)
         assertEquals(Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP, intent.flags)
         assertEquals("testValue", intent.getStringExtra("testKey"))
-        assertEquals("testLink", intent.getStringExtra(com.adobe.ui_utils.PushTemplateConstants.TrackingKeys.ACTION_URI))
-        assertEquals("testLabel", intent.getStringExtra(com.adobe.ui_utils.PushTemplateConstants.TrackingKeys.ACTION_ID))
+        assertEquals("testLink", intent.getStringExtra(PushTemplateConstants.TrackingKeys.ACTION_URI))
+        assertEquals("testLabel", intent.getStringExtra(PushTemplateConstants.TrackingKeys.ACTION_ID))
     }
 
     @Test
@@ -393,7 +393,7 @@ class NotificationCompatBuilderExtensionsTest {
         mockBuilder.addActionButtons(
             mockContext, trackerActivityClass,
             listOf(
-                BasicPushTemplate.ActionButton("testLabel", "testLink", com.adobe.ui_utils.PushTemplateConstants.ActionType.WEBURL.name)
+                BasicPushTemplate.ActionButton("testLabel", "testLink", PushTemplateConstants.ActionType.WEBURL.name)
             ),
             testIntentExtras
         )
@@ -411,12 +411,12 @@ class NotificationCompatBuilderExtensionsTest {
 
         val intent = shadowPendingIntent.savedIntent
         assertNotNull(intent)
-        assertEquals(com.adobe.ui_utils.PushTemplateConstants.NotificationAction.CLICKED, intent.action)
+        assertEquals(PushTemplateConstants.NotificationAction.CLICKED, intent.action)
         assertEquals(trackerActivityClass.name, intent.component?.className)
         assertEquals(Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP, intent.flags)
         assertEquals("testValue", intent.getStringExtra("testKey"))
-        assertEquals("testLink", intent.getStringExtra(com.adobe.ui_utils.PushTemplateConstants.TrackingKeys.ACTION_URI))
-        assertEquals("testLabel", intent.getStringExtra(com.adobe.ui_utils.PushTemplateConstants.TrackingKeys.ACTION_ID))
+        assertEquals("testLink", intent.getStringExtra(PushTemplateConstants.TrackingKeys.ACTION_URI))
+        assertEquals("testLabel", intent.getStringExtra(PushTemplateConstants.TrackingKeys.ACTION_ID))
     }
 
     @Test
@@ -430,7 +430,7 @@ class NotificationCompatBuilderExtensionsTest {
         mockBuilder.addActionButtons(
             mockContext, trackerActivityClass,
             listOf(
-                BasicPushTemplate.ActionButton("testLabel", null, com.adobe.ui_utils.PushTemplateConstants.ActionType.OPENAPP.name)
+                BasicPushTemplate.ActionButton("testLabel", null, PushTemplateConstants.ActionType.OPENAPP.name)
             ),
             testIntentExtras
         )
@@ -448,12 +448,12 @@ class NotificationCompatBuilderExtensionsTest {
 
         val intent = shadowPendingIntent.savedIntent
         assertNotNull(intent)
-        assertEquals(com.adobe.ui_utils.PushTemplateConstants.NotificationAction.CLICKED, intent.action)
+        assertEquals(PushTemplateConstants.NotificationAction.CLICKED, intent.action)
         assertEquals(trackerActivityClass.name, intent.component?.className)
         assertEquals(Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP, intent.flags)
         assertEquals("testValue", intent.getStringExtra("testKey"))
-        assertEquals(null, intent.getStringExtra(com.adobe.ui_utils.PushTemplateConstants.TrackingKeys.ACTION_URI))
-        assertEquals("testLabel", intent.getStringExtra(com.adobe.ui_utils.PushTemplateConstants.TrackingKeys.ACTION_ID))
+        assertEquals(null, intent.getStringExtra(PushTemplateConstants.TrackingKeys.ACTION_URI))
+        assertEquals("testLabel", intent.getStringExtra(PushTemplateConstants.TrackingKeys.ACTION_ID))
     }
 
     @Test
@@ -467,7 +467,7 @@ class NotificationCompatBuilderExtensionsTest {
         mockBuilder.addActionButtons(
             mockContext, trackerActivityClass,
             listOf(
-                BasicPushTemplate.ActionButton("testLabel", "testLink", com.adobe.ui_utils.PushTemplateConstants.ActionType.NONE.name)
+                BasicPushTemplate.ActionButton("testLabel", "testLink", PushTemplateConstants.ActionType.NONE.name)
             ),
             testIntentExtras
         )
@@ -485,12 +485,12 @@ class NotificationCompatBuilderExtensionsTest {
 
         val intent = shadowPendingIntent.savedIntent
         assertNotNull(intent)
-        assertEquals(com.adobe.ui_utils.PushTemplateConstants.NotificationAction.CLICKED, intent.action)
+        assertEquals(PushTemplateConstants.NotificationAction.CLICKED, intent.action)
         assertEquals(trackerActivityClass.name, intent.component?.className)
         assertEquals(Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP, intent.flags)
         assertEquals("testValue", intent.getStringExtra("testKey"))
-        assertEquals(null, intent.getStringExtra(com.adobe.ui_utils.PushTemplateConstants.TrackingKeys.ACTION_URI))
-        assertEquals("testLabel", intent.getStringExtra(com.adobe.ui_utils.PushTemplateConstants.TrackingKeys.ACTION_ID))
+        assertEquals(null, intent.getStringExtra(PushTemplateConstants.TrackingKeys.ACTION_URI))
+        assertEquals("testLabel", intent.getStringExtra(PushTemplateConstants.TrackingKeys.ACTION_ID))
     }
 
     @Test

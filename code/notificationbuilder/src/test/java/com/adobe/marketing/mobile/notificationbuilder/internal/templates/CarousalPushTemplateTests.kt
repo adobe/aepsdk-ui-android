@@ -11,7 +11,6 @@
 
 package com.adobe.marketing.mobile.notificationbuilder.internal.templates
 
-import com.adobe.ui_utils.PushTemplateConstants
 import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateType
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.MockCarousalTemplateDataProvider.getMockedBundleWithAutoCarouselData
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.MockCarousalTemplateDataProvider.getMockedBundleWithManualCarouselData
@@ -19,6 +18,7 @@ import com.adobe.marketing.mobile.notificationbuilder.internal.templates.MockCar
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.MockCarousalTemplateDataProvider.getMockedMapWithManualCarouselData
 import com.adobe.marketing.mobile.notificationbuilder.internal.util.IntentData
 import com.adobe.marketing.mobile.notificationbuilder.internal.util.MapData
+import com.adobe.ui_utils.PushTemplateConstants
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.runner.RunWith
@@ -68,29 +68,29 @@ class CarousalPushTemplateTests {
     @Test
     fun `Test CarouselPushTemplate initialization with missing carouselLayout`() {
         val mockedMap = getMockedMapWithAutoCarouselData().apply {
-            remove(com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.CAROUSEL_LAYOUT)
+            remove(PushTemplateConstants.PushPayloadKeys.CAROUSEL_LAYOUT)
         }
         val exception = assertFailsWith<IllegalArgumentException> {
             CarouselPushTemplate(MapData(mockedMap))
         }
-        assertEquals("Required push template key ${com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.CAROUSEL_LAYOUT} not found or null", exception.message)
+        assertEquals("Required push template key ${PushTemplateConstants.PushPayloadKeys.CAROUSEL_LAYOUT} not found or null", exception.message)
     }
 
     @Test
     fun `Test CarouselPushTemplate initialization with missing rawCarouselItems`() {
         val mockedMap = getMockedMapWithAutoCarouselData().apply {
-            remove(com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.CAROUSEL_ITEMS)
+            remove(PushTemplateConstants.PushPayloadKeys.CAROUSEL_ITEMS)
         }
         val exception = assertFailsWith<IllegalArgumentException> {
             CarouselPushTemplate(MapData(mockedMap))
         }
-        assertEquals("Required push template key ${com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.CAROUSEL_ITEMS} not found or null", exception.message)
+        assertEquals("Required push template key ${PushTemplateConstants.PushPayloadKeys.CAROUSEL_ITEMS} not found or null", exception.message)
     }
 
     @Test
     fun `Test CarouselPushTemplate initialization with empty rawCarouselItems`() {
         val mockedMap = getMockedMapWithAutoCarouselData().apply {
-            put(com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.CAROUSEL_ITEMS, "")
+            put(PushTemplateConstants.PushPayloadKeys.CAROUSEL_ITEMS, "")
         }
         val template = CarouselPushTemplate(MapData(mockedMap))
         assertEquals(PushTemplateType.CAROUSEL, template.templateType)
@@ -100,7 +100,7 @@ class CarousalPushTemplateTests {
     @Test
     fun `Test CarouselPushTemplate initialization with malformed rawCarouselItems`() {
         val mockedMap = getMockedMapWithAutoCarouselData().apply {
-            put(com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.CAROUSEL_ITEMS, "malformed_json_string")
+            put(PushTemplateConstants.PushPayloadKeys.CAROUSEL_ITEMS, "malformed_json_string")
         }
         val template = CarouselPushTemplate(MapData(mockedMap))
         assertEquals(PushTemplateType.CAROUSEL, template.templateType)

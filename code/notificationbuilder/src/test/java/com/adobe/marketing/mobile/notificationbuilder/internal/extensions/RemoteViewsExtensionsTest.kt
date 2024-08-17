@@ -20,11 +20,11 @@ import android.graphics.Color
 import android.os.Bundle
 import android.view.View
 import android.widget.RemoteViews
-import com.adobe.ui_utils.PushTemplateConstants
-import com.adobe.ui_utils.PushTemplateImageUtils
 import com.adobe.marketing.mobile.notificationbuilder.internal.builders.DummyActivity
 import com.adobe.marketing.mobile.services.Logging
 import com.adobe.marketing.mobile.services.ServiceProvider
+import com.adobe.ui_utils.PushTemplateConstants
+import com.adobe.ui_utils.PushTemplateImageUtils
 import io.mockk.Runs
 import io.mockk.every
 import io.mockk.just
@@ -59,7 +59,7 @@ class RemoteViewsExtensionsTest {
     @Before
     fun setup() {
         remoteViews = mockk<RemoteViews>(relaxed = true)
-        mockkObject(com.adobe.ui_utils.PushTemplateImageUtils)
+        mockkObject(PushTemplateImageUtils)
         mockBitmap = mockk<Bitmap>(relaxed = true)
         trackerActivityClass = DummyActivity::class.java
     }
@@ -125,8 +125,8 @@ class RemoteViewsExtensionsTest {
             remoteViews.setElementColor(
                 1,
                 "#$colorHex",
-                com.adobe.ui_utils.PushTemplateConstants.MethodNames.SET_BACKGROUND_COLOR,
-                com.adobe.ui_utils.PushTemplateConstants.FriendlyViewNames.NOTIFICATION_BACKGROUND
+                PushTemplateConstants.MethodNames.SET_BACKGROUND_COLOR,
+                PushTemplateConstants.FriendlyViewNames.NOTIFICATION_BACKGROUND
             )
         }
     }
@@ -141,8 +141,8 @@ class RemoteViewsExtensionsTest {
             remoteViews.setElementColor(
                 1,
                 "#$colorHex",
-                com.adobe.ui_utils.PushTemplateConstants.MethodNames.SET_TEXT_COLOR,
-                com.adobe.ui_utils.PushTemplateConstants.FriendlyViewNames.TIMER_TEXT
+                PushTemplateConstants.MethodNames.SET_TEXT_COLOR,
+                PushTemplateConstants.FriendlyViewNames.TIMER_TEXT
             )
         }
     }
@@ -157,8 +157,8 @@ class RemoteViewsExtensionsTest {
             remoteViews.setElementColor(
                 1,
                 "#$colorHex",
-                com.adobe.ui_utils.PushTemplateConstants.MethodNames.SET_TEXT_COLOR,
-                com.adobe.ui_utils.PushTemplateConstants.FriendlyViewNames.NOTIFICATION_TITLE
+                PushTemplateConstants.MethodNames.SET_TEXT_COLOR,
+                PushTemplateConstants.FriendlyViewNames.NOTIFICATION_TITLE
             )
         }
     }
@@ -173,8 +173,8 @@ class RemoteViewsExtensionsTest {
             remoteViews.setElementColor(
                 1,
                 "#$colorHex",
-                com.adobe.ui_utils.PushTemplateConstants.MethodNames.SET_TEXT_COLOR,
-                com.adobe.ui_utils.PushTemplateConstants.FriendlyViewNames.NOTIFICATION_BODY_TEXT
+                PushTemplateConstants.MethodNames.SET_TEXT_COLOR,
+                PushTemplateConstants.FriendlyViewNames.NOTIFICATION_BODY_TEXT
             )
         }
     }
@@ -182,8 +182,8 @@ class RemoteViewsExtensionsTest {
     @Test
     fun `setRemoteViewImage applies image when valid URL provided`() {
         val imageUrl = "http://example.com/image.png"
-        every { com.adobe.ui_utils.PushTemplateImageUtils.cacheImages(listOf(imageUrl)) } returns 1
-        every { com.adobe.ui_utils.PushTemplateImageUtils.getCachedImage(imageUrl) } returns mockBitmap
+        every { PushTemplateImageUtils.cacheImages(listOf(imageUrl)) } returns 1
+        every { PushTemplateImageUtils.getCachedImage(imageUrl) } returns mockBitmap
 
         val result = remoteViews.setRemoteViewImage(imageUrl, 1)
 
@@ -236,7 +236,7 @@ class RemoteViewsExtensionsTest {
     fun `setRemoteViewImage does not apply image when URL is invalid`() {
         val imageUrl = "invalid_url"
         every { remoteViews.setViewVisibility(any(), any()) } just Runs
-        every { com.adobe.ui_utils.PushTemplateImageUtils.cacheImages(listOf(imageUrl)) } returns 0
+        every { PushTemplateImageUtils.cacheImages(listOf(imageUrl)) } returns 0
 
         val result = remoteViews.setRemoteViewImage(imageUrl, 1)
 
@@ -250,7 +250,7 @@ class RemoteViewsExtensionsTest {
     fun `setRemoteViewImage does not apply image URL could not be downloaded`() {
         val imageUrl = "http://example.com/image.png"
         every { remoteViews.setViewVisibility(any(), any()) } just Runs
-        every { com.adobe.ui_utils.PushTemplateImageUtils.cacheImages(listOf(imageUrl)) } returns 0
+        every { PushTemplateImageUtils.cacheImages(listOf(imageUrl)) } returns 0
 
         val result = remoteViews.setRemoteViewImage(imageUrl, 1)
 
@@ -306,7 +306,7 @@ class RemoteViewsExtensionsTest {
 
         val intent = shadowPendingIntent.savedIntent
         assertNotNull(intent)
-        assertEquals(com.adobe.ui_utils.PushTemplateConstants.NotificationAction.CLICKED, intent.action)
+        assertEquals(PushTemplateConstants.NotificationAction.CLICKED, intent.action)
         assertEquals(trackerActivityClass.name, intent.component?.className)
         assertEquals(
             Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP,
@@ -315,11 +315,11 @@ class RemoteViewsExtensionsTest {
         assertEquals("testValue", intent.getStringExtra("testKey"))
         assertEquals(
             testActionUri,
-            intent.getStringExtra(com.adobe.ui_utils.PushTemplateConstants.TrackingKeys.ACTION_URI)
+            intent.getStringExtra(PushTemplateConstants.TrackingKeys.ACTION_URI)
         )
         assertEquals(
             testActionID,
-            intent.getStringExtra(com.adobe.ui_utils.PushTemplateConstants.TrackingKeys.ACTION_ID)
+            intent.getStringExtra(PushTemplateConstants.TrackingKeys.ACTION_ID)
         )
     }
 
@@ -343,7 +343,7 @@ class RemoteViewsExtensionsTest {
 
         val intent = shadowPendingIntent.savedIntent
         assertNotNull(intent)
-        assertEquals(com.adobe.ui_utils.PushTemplateConstants.NotificationAction.CLICKED, intent.action)
+        assertEquals(PushTemplateConstants.NotificationAction.CLICKED, intent.action)
         assertEquals(null, intent.component?.className)
         assertEquals(
             Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP,

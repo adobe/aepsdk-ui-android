@@ -14,9 +14,9 @@ package com.adobe.marketing.mobile.notificationbuilder.internal.templates
 import android.app.NotificationManager
 import com.adobe.marketing.mobile.notificationbuilder.NotificationPriority
 import com.adobe.marketing.mobile.notificationbuilder.NotificationVisibility
-import com.adobe.ui_utils.PushTemplateConstants
 import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateType
 import com.adobe.marketing.mobile.notificationbuilder.internal.util.MapData
+import com.adobe.ui_utils.PushTemplateConstants
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.runner.RunWith
@@ -37,12 +37,12 @@ class AEPPushTemplateTest {
     @Test
     fun `Test exception with missing data adb_title`() {
         val aepPushBasicData = MockAEPPushTemplateDataProvider.getMockedDataMapWithRequiredData()
-        aepPushBasicData.remove(com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.TITLE)
+        aepPushBasicData.remove(PushTemplateConstants.PushPayloadKeys.TITLE)
         val exception = assertFailsWith<IllegalArgumentException> {
             BasicPushTemplate(MapData(aepPushBasicData))
         }
         assertEquals(
-            "Required push template key ${com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.TITLE} not found or null",
+            "Required push template key ${PushTemplateConstants.PushPayloadKeys.TITLE} not found or null",
             exception.message
         )
     }
@@ -50,12 +50,12 @@ class AEPPushTemplateTest {
     @Test
     fun `Test AEPPushTemplate initialization with missing body`() {
         val aepPushData = MockAEPPushTemplateDataProvider.getMockedDataMapWithRequiredData()
-        aepPushData.remove(com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.BODY)
+        aepPushData.remove(PushTemplateConstants.PushPayloadKeys.BODY)
         val exception = assertFailsWith<IllegalArgumentException> {
             BasicPushTemplate(MapData(aepPushData))
         }
         assertEquals(
-            "Required push template key ${com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.BODY} not found or null",
+            "Required push template key ${PushTemplateConstants.PushPayloadKeys.BODY} not found or null",
             exception.message
         )
     }
@@ -63,12 +63,12 @@ class AEPPushTemplateTest {
     @Test
     fun `Test AEPPushTemplate initialization with missing version`() {
         val aepPushData = MockAEPPushTemplateDataProvider.getMockedDataMapWithRequiredData()
-        aepPushData.remove(com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.VERSION)
+        aepPushData.remove(PushTemplateConstants.PushPayloadKeys.VERSION)
         val exception = assertFailsWith<IllegalArgumentException> {
             BasicPushTemplate(MapData(aepPushData))
         }
         assertEquals(
-            "Required push template key ${com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.VERSION} not found or null",
+            "Required push template key ${PushTemplateConstants.PushPayloadKeys.VERSION} not found or null",
             exception.message
         )
     }
@@ -80,7 +80,7 @@ class AEPPushTemplateTest {
         assertEquals(MOCKED_TAG, aepPushTemplate.tag)
         assertFalse(aepPushTemplate.isFromIntent)
         assertEquals(MOCKED_ACTION_URI, aepPushTemplate.actionUri)
-        assertEquals(com.adobe.ui_utils.PushTemplateConstants.ActionType.NONE, aepPushTemplate.actionType)
+        assertEquals(PushTemplateConstants.ActionType.NONE, aepPushTemplate.actionType)
         assertEquals(5, aepPushTemplate.badgeCount)
         assertEquals(MOCKED_BASIC_TEMPLATE_BODY, aepPushTemplate.body)
         assertEquals(MOCKED_CHANNEL_ID, aepPushTemplate.channelId)
@@ -109,7 +109,7 @@ class AEPPushTemplateTest {
     @Test
     fun `Test AEPPushTemplate initialization with null priority`() {
         val data = MockAEPPushTemplateDataProvider.getMockedAEPDataMapWithAllKeys()
-        data.remove(com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.PRIORITY)
+        data.remove(PushTemplateConstants.PushPayloadKeys.PRIORITY)
         val aepPushTemplate = BasicPushTemplate(MapData(data))
         assertEquals("PRIORITY_DEFAULT", aepPushTemplate.priority.stringValue)
     }

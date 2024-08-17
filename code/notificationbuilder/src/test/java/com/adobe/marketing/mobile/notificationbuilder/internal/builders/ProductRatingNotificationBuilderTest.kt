@@ -19,17 +19,17 @@ import android.view.View
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import com.adobe.marketing.mobile.notificationbuilder.NotificationConstructionFailedException
-import com.adobe.ui_utils.PushTemplateConstants
 import com.adobe.marketing.mobile.notificationbuilder.R
-import com.adobe.ui_utils.PushTemplateImageUtils
-import com.adobe.ui_utils.PushTemplateImageUtils.cacheImages
-import com.adobe.ui_utils.PushTemplateImageUtils.getCachedImage
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setRemoteViewClickAction
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setRemoteViewImage
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.MockProductRatingTemplateDataProvider.getMockedDataMapForRatingTemplate
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.ProductRatingPushTemplate
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.provideMockedProductRatingTemplate
 import com.adobe.marketing.mobile.notificationbuilder.internal.util.MapData
+import com.adobe.ui_utils.PushTemplateConstants
+import com.adobe.ui_utils.PushTemplateImageUtils
+import com.adobe.ui_utils.PushTemplateImageUtils.cacheImages
+import com.adobe.ui_utils.PushTemplateImageUtils.getCachedImage
 import io.mockk.Runs
 import io.mockk.every
 import io.mockk.just
@@ -64,7 +64,7 @@ class ProductRatingNotificationBuilderTest {
         mockkConstructor(RemoteViews::class)
         mockkStatic(RemoteViews::setRemoteViewImage)
         mockkStatic(RemoteViews::setRemoteViewClickAction)
-        mockkObject(com.adobe.ui_utils.PushTemplateImageUtils)
+        mockkObject(PushTemplateImageUtils)
     }
 
     @After
@@ -129,7 +129,7 @@ class ProductRatingNotificationBuilderTest {
         every { anyConstructed<RemoteViews>().setViewVisibility(any(), any()) } just Runs
 
         val dataMap = getMockedDataMapForRatingTemplate()
-        dataMap[com.adobe.ui_utils.PushTemplateConstants.IntentKeys.RATING_SELECTED] = "3"
+        dataMap[PushTemplateConstants.IntentKeys.RATING_SELECTED] = "3"
         val pushTemplate = ProductRatingPushTemplate(MapData(dataMap))
         val notificationBuilder = ProductRatingNotificationBuilder.construct(context, pushTemplate, trackerActivityClass, broadcastReceiverClass)
 
@@ -143,7 +143,7 @@ class ProductRatingNotificationBuilderTest {
         every { any<RemoteViews>().setRemoteViewImage("rating_star_filled", any()) } returns true
 
         val dataMap = getMockedDataMapForRatingTemplate()
-        dataMap[com.adobe.ui_utils.PushTemplateConstants.IntentKeys.RATING_SELECTED] = "3"
+        dataMap[PushTemplateConstants.IntentKeys.RATING_SELECTED] = "3"
         val pushTemplate = ProductRatingPushTemplate(MapData(dataMap))
 
         assertFailsWith(
@@ -161,7 +161,7 @@ class ProductRatingNotificationBuilderTest {
         every { any<RemoteViews>().setRemoteViewImage("rating_star_filled", any()) } returns false
 
         val dataMap = getMockedDataMapForRatingTemplate()
-        dataMap[com.adobe.ui_utils.PushTemplateConstants.IntentKeys.RATING_SELECTED] = "3"
+        dataMap[PushTemplateConstants.IntentKeys.RATING_SELECTED] = "3"
         val pushTemplate = ProductRatingPushTemplate(MapData(dataMap))
 
         assertFailsWith(
@@ -188,7 +188,7 @@ class ProductRatingNotificationBuilderTest {
         every { any<RemoteViews>().setRemoteViewImage(any(), any()) } returns true
 
         val dataMap = getMockedDataMapForRatingTemplate()
-        dataMap[com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.TAG] = "tag"
+        dataMap[PushTemplateConstants.PushPayloadKeys.TAG] = "tag"
         val pushTemplate = ProductRatingPushTemplate(MapData(dataMap))
         val notificationBuilder = ProductRatingNotificationBuilder.construct(context, pushTemplate, trackerActivityClass, broadcastReceiverClass)
 

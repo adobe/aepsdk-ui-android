@@ -19,8 +19,6 @@ import android.os.Build
 import android.os.Bundle
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
-import com.adobe.ui_utils.PushTemplateConstants
-import com.adobe.ui_utils.PushTemplateConstants.IntentActions.TIMER_EXPIRED
 import com.adobe.marketing.mobile.notificationbuilder.R
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setNotificationBackgroundColor
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setNotificationBodyTextColor
@@ -31,6 +29,8 @@ import com.adobe.marketing.mobile.notificationbuilder.internal.templates.MockAEP
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.replaceValueInMap
 import com.adobe.marketing.mobile.notificationbuilder.internal.util.IntentData
 import com.adobe.marketing.mobile.notificationbuilder.internal.util.MapData
+import com.adobe.ui_utils.PushTemplateConstants
+import com.adobe.ui_utils.PushTemplateConstants.IntentActions.TIMER_EXPIRED
 import io.mockk.unmockkAll
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertNotNull
@@ -130,7 +130,7 @@ class AEPPushNotificationBuilderTest {
     fun `construct should not set notification sound if pushTemplate sound is invalid`() {
         dataMap.replaceValueInMap(
             Pair(
-                com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.SOUND,
+                PushTemplateConstants.PushPayloadKeys.SOUND,
                 "invalid_sound"
             )
         )
@@ -216,15 +216,15 @@ class AEPPushNotificationBuilderTest {
         assertNotNull(notification.deleteIntent)
         assertEquals(
             pushTemplate.actionUri,
-            intent.getStringExtra(com.adobe.ui_utils.PushTemplateConstants.TrackingKeys.ACTION_URI)
+            intent.getStringExtra(PushTemplateConstants.TrackingKeys.ACTION_URI)
         )
         assertEquals(
             pushTemplate.tag,
-            intent.getStringExtra(com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.TAG)
+            intent.getStringExtra(PushTemplateConstants.PushPayloadKeys.TAG)
         )
         assertEquals(
             pushTemplate.isNotificationSticky.toString(),
-            intent.getStringExtra(com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.STICKY)
+            intent.getStringExtra(PushTemplateConstants.PushPayloadKeys.STICKY)
         )
     }
 

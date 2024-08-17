@@ -17,15 +17,15 @@ import com.adobe.ui_utils.PushTemplateConstants
 object MockProductCatalogTemplateDataProvider {
     fun getMockedMapWithProductCatalogData(): MutableMap<String, String> {
         return mutableMapOf(
-            com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.TITLE to MOCKED_TITLE,
-            com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.BODY to MOCKED_BODY,
-            com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.VERSION to MOCKED_PAYLOAD_VERSION,
-            com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.CATALOG_CTA_BUTTON_TEXT to "ctaButtonText",
-            com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.CATALOG_CTA_BUTTON_COLOR to "ctaButtonColor",
-            com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.CATALOG_CTA_BUTTON_TEXT_COLOR to "ctaButtonTextColor",
-            com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.CATALOG_CTA_BUTTON_URI to "ctaButtonUri",
-            com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.CATALOG_LAYOUT to "horizontal",
-            com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.CATALOG_ITEMS to "[" +
+            PushTemplateConstants.PushPayloadKeys.TITLE to MOCKED_TITLE,
+            PushTemplateConstants.PushPayloadKeys.BODY to MOCKED_BODY,
+            PushTemplateConstants.PushPayloadKeys.VERSION to MOCKED_PAYLOAD_VERSION,
+            PushTemplateConstants.PushPayloadKeys.CATALOG_CTA_BUTTON_TEXT to "ctaButtonText",
+            PushTemplateConstants.PushPayloadKeys.CATALOG_CTA_BUTTON_COLOR to "ctaButtonColor",
+            PushTemplateConstants.PushPayloadKeys.CATALOG_CTA_BUTTON_TEXT_COLOR to "ctaButtonTextColor",
+            PushTemplateConstants.PushPayloadKeys.CATALOG_CTA_BUTTON_URI to "ctaButtonUri",
+            PushTemplateConstants.PushPayloadKeys.CATALOG_LAYOUT to "horizontal",
+            PushTemplateConstants.PushPayloadKeys.CATALOG_ITEMS to "[" +
                 "{\"title\":\"title1\",\"body\":\"body1\",\"img\":\"https://images.pexels.com/photos/260024/pexels-photo-260024.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2\",\"price\":\"price1\",\"uri\":\"uri1\"}," +
                 "{\"title\":\"title2\",\"body\":\"body2\",\"img\":\"https://images.pexels.com/photos/260024/pexels-photo-260024.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2\",\"price\":\"price2\",\"uri\":\"uri2\"}," +
                 "{\"title\":\"title3\",\"body\":\"body3\",\"img\":\"https://images.pexels.com/photos/260024/pexels-photo-260024.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2\",\"price\":\"price3\",\"uri\":\"uri3\"}" +
@@ -35,28 +35,28 @@ object MockProductCatalogTemplateDataProvider {
 
     fun getMockedBundleWithProductCatalogData(): Bundle {
         val mockBundle = Bundle()
-        mockBundle.putString(com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.TITLE, MOCKED_TITLE)
-        mockBundle.putString(com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.BODY, MOCKED_BODY)
-        mockBundle.putString(com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.VERSION, MOCKED_PAYLOAD_VERSION)
+        mockBundle.putString(PushTemplateConstants.PushPayloadKeys.TITLE, MOCKED_TITLE)
+        mockBundle.putString(PushTemplateConstants.PushPayloadKeys.BODY, MOCKED_BODY)
+        mockBundle.putString(PushTemplateConstants.PushPayloadKeys.VERSION, MOCKED_PAYLOAD_VERSION)
         mockBundle.putString(
-            com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.CATALOG_CTA_BUTTON_TEXT,
+            PushTemplateConstants.PushPayloadKeys.CATALOG_CTA_BUTTON_TEXT,
             "ctaButtonText"
         )
         mockBundle.putString(
-            com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.CATALOG_CTA_BUTTON_COLOR,
+            PushTemplateConstants.PushPayloadKeys.CATALOG_CTA_BUTTON_COLOR,
             "ctaButtonColor"
         )
         mockBundle.putString(
-            com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.CATALOG_CTA_BUTTON_TEXT_COLOR,
+            PushTemplateConstants.PushPayloadKeys.CATALOG_CTA_BUTTON_TEXT_COLOR,
             "ctaButtonTextColor"
         )
         mockBundle.putString(
-            com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.CATALOG_CTA_BUTTON_URI,
+            PushTemplateConstants.PushPayloadKeys.CATALOG_CTA_BUTTON_URI,
             "ctaButtonUri"
         )
-        mockBundle.putString(com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.CATALOG_LAYOUT, "horizontal")
+        mockBundle.putString(PushTemplateConstants.PushPayloadKeys.CATALOG_LAYOUT, "horizontal")
         mockBundle.putString(
-            com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.CATALOG_ITEMS,
+            PushTemplateConstants.PushPayloadKeys.CATALOG_ITEMS,
             "[" +
                 "{\"title\":\"title1\",\"body\":\"body1\",\"img\":\"https://images.pexels.com/photos/260024/pexels-photo-260024.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2\",\"price\":\"price1\",\"uri\":\"uri1\"}," +
                 "{\"title\":\"title2\",\"body\":\"body2\",\"img\":\"https://images.pexels.com/photos/260024/pexels-photo-260024.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2\",\"price\":\"price2\",\"uri\":\"uri2\"}," +

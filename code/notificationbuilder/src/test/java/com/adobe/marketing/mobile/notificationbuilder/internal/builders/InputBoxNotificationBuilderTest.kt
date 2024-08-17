@@ -16,7 +16,6 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
-import com.adobe.ui_utils.PushTemplateConstants
 import com.adobe.marketing.mobile.notificationbuilder.R
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setRemoteImage
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.InputBoxPushTemplate
@@ -35,6 +34,7 @@ import com.adobe.marketing.mobile.notificationbuilder.internal.templates.provide
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.removeKeysFromMap
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.replaceValueInMap
 import com.adobe.marketing.mobile.notificationbuilder.internal.util.MapData
+import com.adobe.ui_utils.PushTemplateConstants
 import io.mockk.Runs
 import io.mockk.every
 import io.mockk.just
@@ -175,18 +175,18 @@ class InputBoxNotificationBuilderTest {
         val intent = shadowPendingIntent.savedIntent
 
         assertNotNull(intent)
-        assertEquals(MOCKED_TITLE, intent.getStringExtra(com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.TITLE))
-        assertEquals(MOCKED_BODY, intent.getStringExtra(com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.BODY))
-        assertEquals(MOCKED_RECEIVER_NAME, intent.getStringExtra(com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.INPUT_BOX_RECEIVER_NAME))
-        assertEquals(MOCKED_FEEDBACK_IMAGE, intent.getStringExtra(com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.INPUT_BOX_FEEDBACK_IMAGE))
-        assertEquals(MOCKED_FEEDBACK_TEXT, intent.getStringExtra(com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.INPUT_BOX_FEEDBACK_TEXT))
-        assertEquals(MOCKED_HINT, intent.getStringExtra(com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.INPUT_BOX_HINT))
+        assertEquals(MOCKED_TITLE, intent.getStringExtra(PushTemplateConstants.PushPayloadKeys.TITLE))
+        assertEquals(MOCKED_BODY, intent.getStringExtra(PushTemplateConstants.PushPayloadKeys.BODY))
+        assertEquals(MOCKED_RECEIVER_NAME, intent.getStringExtra(PushTemplateConstants.PushPayloadKeys.INPUT_BOX_RECEIVER_NAME))
+        assertEquals(MOCKED_FEEDBACK_IMAGE, intent.getStringExtra(PushTemplateConstants.PushPayloadKeys.INPUT_BOX_FEEDBACK_IMAGE))
+        assertEquals(MOCKED_FEEDBACK_TEXT, intent.getStringExtra(PushTemplateConstants.PushPayloadKeys.INPUT_BOX_FEEDBACK_TEXT))
+        assertEquals(MOCKED_HINT, intent.getStringExtra(PushTemplateConstants.PushPayloadKeys.INPUT_BOX_HINT))
     }
 
     @Test
     fun `Action with default hint text should be created when inputTextHint field is empty`() {
         val dataMap = MockInputBoxPushTemplateDataProvider.getMockedInputBoxDataMapWithRequiredData()
-        dataMap.replaceValueInMap(com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.INPUT_BOX_HINT, "")
+        dataMap.replaceValueInMap(PushTemplateConstants.PushPayloadKeys.INPUT_BOX_HINT, "")
 
         val pushTemplate = InputBoxPushTemplate(MapData(dataMap))
         val notificationBuilder = InputBoxNotificationBuilder.construct(
@@ -199,13 +199,13 @@ class InputBoxNotificationBuilderTest {
         assertNotNull(notificationBuilder)
 
         val actions = notificationBuilder.mActions
-        assertEquals(com.adobe.ui_utils.PushTemplateConstants.DefaultValues.INPUT_BOX_DEFAULT_REPLY_TEXT, actions[0].title)
+        assertEquals(PushTemplateConstants.DefaultValues.INPUT_BOX_DEFAULT_REPLY_TEXT, actions[0].title)
     }
 
     @Test
     fun `Action with default hint text should be created when inputTextHint field is null`() {
         val dataMap = MockInputBoxPushTemplateDataProvider.getMockedInputBoxDataMapWithRequiredData()
-        dataMap.removeKeysFromMap(com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.INPUT_BOX_HINT)
+        dataMap.removeKeysFromMap(PushTemplateConstants.PushPayloadKeys.INPUT_BOX_HINT)
 
         val pushTemplate = InputBoxPushTemplate(MapData(dataMap))
         val notificationBuilder = InputBoxNotificationBuilder.construct(
@@ -218,7 +218,7 @@ class InputBoxNotificationBuilderTest {
         assertNotNull(notificationBuilder)
 
         val actions = notificationBuilder.mActions
-        assertEquals(com.adobe.ui_utils.PushTemplateConstants.DefaultValues.INPUT_BOX_DEFAULT_REPLY_TEXT, actions[0].title)
+        assertEquals(PushTemplateConstants.DefaultValues.INPUT_BOX_DEFAULT_REPLY_TEXT, actions[0].title)
     }
 
     @Test
