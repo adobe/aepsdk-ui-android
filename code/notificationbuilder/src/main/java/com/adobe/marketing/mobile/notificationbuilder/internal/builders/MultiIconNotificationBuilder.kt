@@ -20,13 +20,13 @@ import android.os.Bundle
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import com.adobe.marketing.mobile.notificationbuilder.NotificationConstructionFailedException
-import com.adobe.ui_utils.PushTemplateConstants
 import com.adobe.marketing.mobile.notificationbuilder.R
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.createNotificationChannelIfRequired
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setRemoteViewClickAction
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setRemoteViewImage
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.MultiIconPushTemplate
 import com.adobe.marketing.mobile.services.Log
+import com.adobe.ui_utils.PushTemplateConstants
 import java.util.Random
 
 internal object MultiIconNotificationBuilder {
@@ -39,7 +39,7 @@ internal object MultiIconNotificationBuilder {
     ): NotificationCompat.Builder {
 
         Log.trace(
-            com.adobe.ui_utils.PushTemplateConstants.LOG_TAG,
+            PushTemplateConstants.LOG_TAG,
             SELF_TAG,
             "Building an icon template push notification."
         )
@@ -69,8 +69,8 @@ internal object MultiIconNotificationBuilder {
         )
 
         val closeButtonIntentExtra = Bundle(pushTemplate.data.getBundle()) // copy the bundle
-        closeButtonIntentExtra.putString(com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.STICKY, "false")
-        val dismissIntent = Intent(com.adobe.ui_utils.PushTemplateConstants.NotificationAction.DISMISSED)
+        closeButtonIntentExtra.putString(PushTemplateConstants.PushPayloadKeys.STICKY, "false")
+        val dismissIntent = Intent(PushTemplateConstants.NotificationAction.DISMISSED)
         trackerActivityClass?.let {
             dismissIntent.setClass(context.applicationContext, trackerActivityClass)
         }
@@ -133,7 +133,7 @@ internal object MultiIconNotificationBuilder {
             }
             notificationLayout.addView(R.id.icons_layout_linear, iconItem)
         }
-        if (validImagesAddedCount < com.adobe.ui_utils.PushTemplateConstants.DefaultValues.ICON_TEMPLATE_MIN_IMAGE_COUNT) {
+        if (validImagesAddedCount < PushTemplateConstants.DefaultValues.ICON_TEMPLATE_MIN_IMAGE_COUNT) {
             throw NotificationConstructionFailedException("Valid icons are less then 3, cannot build a notification.")
         }
     }

@@ -19,8 +19,8 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import com.adobe.ui_utils.PushTemplateConstants
 import com.adobe.marketing.mobile.services.Log
+import com.adobe.ui_utils.PushTemplateConstants
 import java.util.Random
 
 internal object PendingIntentUtils {
@@ -106,7 +106,7 @@ internal object PendingIntentUtils {
         actionID: String?,
         intentExtras: Bundle?
     ): PendingIntent? {
-        val intent = Intent(com.adobe.ui_utils.PushTemplateConstants.NotificationAction.CLICKED)
+        val intent = Intent(PushTemplateConstants.NotificationAction.CLICKED)
         trackerActivityClass?.let {
             intent.setClass(context.applicationContext, trackerActivityClass)
         }
@@ -140,10 +140,10 @@ internal object PendingIntentUtils {
         actionId: String?
     ) {
         if (!actionUri.isNullOrEmpty()) {
-            intent.putExtra(com.adobe.ui_utils.PushTemplateConstants.TrackingKeys.ACTION_URI, actionUri)
+            intent.putExtra(PushTemplateConstants.TrackingKeys.ACTION_URI, actionUri)
         }
         if (!actionId.isNullOrEmpty()) {
-            intent.putExtra(com.adobe.ui_utils.PushTemplateConstants.TrackingKeys.ACTION_ID, actionId)
+            intent.putExtra(PushTemplateConstants.TrackingKeys.ACTION_ID, actionId)
         }
     }
 }

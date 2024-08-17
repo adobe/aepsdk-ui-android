@@ -20,9 +20,6 @@ import android.widget.RemoteViews
 import androidx.annotation.VisibleForTesting
 import androidx.core.app.NotificationCompat
 import com.adobe.marketing.mobile.notificationbuilder.NotificationConstructionFailedException
-import com.adobe.ui_utils.PushTemplateConstants
-import com.adobe.ui_utils.PushTemplateConstants.LOG_TAG
-import com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys
 import com.adobe.marketing.mobile.notificationbuilder.R
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.addActionButtons
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.createNotificationChannelIfRequired
@@ -30,6 +27,9 @@ import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setRem
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.BasicPushTemplate
 import com.adobe.marketing.mobile.notificationbuilder.internal.util.NotificationData
 import com.adobe.marketing.mobile.services.Log
+import com.adobe.ui_utils.PushTemplateConstants
+import com.adobe.ui_utils.PushTemplateConstants.LOG_TAG
+import com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys
 
 /**
  * Object responsible for constructing a [NotificationCompat.Builder] object containing a basic push template notification.
@@ -139,7 +139,7 @@ internal object BasicNotificationBuilder {
         )
 
         val remindIntent = AEPPushNotificationBuilder.createIntent(
-            com.adobe.ui_utils.PushTemplateConstants.IntentActions.REMIND_LATER_CLICKED,
+            PushTemplateConstants.IntentActions.REMIND_LATER_CLICKED,
             pushTemplate
         )
         remindIntent.putExtra(PushPayloadKeys.CHANNEL_ID, channelId)

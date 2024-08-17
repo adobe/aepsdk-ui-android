@@ -19,15 +19,15 @@ import android.graphics.Bitmap
 import android.widget.RemoteViews
 import androidx.annotation.VisibleForTesting
 import androidx.core.app.NotificationCompat
-import com.adobe.ui_utils.PushTemplateConstants
-import com.adobe.ui_utils.PushTemplateConstants.LOG_TAG
 import com.adobe.marketing.mobile.notificationbuilder.R
-import com.adobe.ui_utils.PushTemplateImageUtils
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.createNotificationChannelIfRequired
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setRemoteViewClickAction
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.AutoCarouselPushTemplate
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.CarouselPushTemplate
 import com.adobe.marketing.mobile.services.Log
+import com.adobe.ui_utils.PushTemplateConstants
+import com.adobe.ui_utils.PushTemplateConstants.LOG_TAG
+import com.adobe.ui_utils.PushTemplateImageUtils
 
 /**
  * Object responsible for constructing a [NotificationCompat.Builder] object containing a auto carousel push template notification.
@@ -48,12 +48,12 @@ internal object AutoCarouselNotificationBuilder {
         val expandedLayout = RemoteViews(packageName, R.layout.push_template_auto_carousel)
 
         // load images into the carousel
-        val downloadedImageCount = com.adobe.ui_utils.PushTemplateImageUtils.cacheImages(
+        val downloadedImageCount = PushTemplateImageUtils.cacheImages(
             pushTemplate.carouselItems.map { it.imageUri }
         )
 
         // fallback to a basic push template notification builder if less than 3 images were able to be downloaded
-        if (downloadedImageCount < com.adobe.ui_utils.PushTemplateConstants.DefaultValues.CAROUSEL_MINIMUM_IMAGE_COUNT) {
+        if (downloadedImageCount < PushTemplateConstants.DefaultValues.CAROUSEL_MINIMUM_IMAGE_COUNT) {
             Log.warning(LOG_TAG, SELF_TAG, "Less than 3 images are available for the auto carousel push template, falling back to a basic push template.")
             return BasicNotificationBuilder.fallbackToBasicNotification(
                 context,
@@ -115,7 +115,7 @@ internal object AutoCarouselNotificationBuilder {
         val downloadedImageUris = mutableListOf<String>()
         for (item: CarouselPushTemplate.CarouselItem in items) {
             val imageUri: String = item.imageUri
-            val pushImage: Bitmap? = com.adobe.ui_utils.PushTemplateImageUtils.getCachedImage(imageUri)
+            val pushImage: Bitmap? = PushTemplateImageUtils.getCachedImage(imageUri)
             if (pushImage == null) {
                 Log.trace(
                     LOG_TAG,

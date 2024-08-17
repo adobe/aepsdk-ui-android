@@ -17,7 +17,6 @@ import android.content.Context
 import android.content.Intent
 import androidx.core.app.NotificationCompat
 import com.adobe.marketing.mobile.notificationbuilder.NotificationBuilder.constructNotificationBuilder
-import com.adobe.ui_utils.PushTemplateConstants.LOG_TAG
 import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateType
 import com.adobe.marketing.mobile.notificationbuilder.internal.builders.AutoCarouselNotificationBuilder
 import com.adobe.marketing.mobile.notificationbuilder.internal.builders.BasicNotificationBuilder
@@ -45,6 +44,8 @@ import com.adobe.marketing.mobile.notificationbuilder.internal.util.MapData
 import com.adobe.marketing.mobile.notificationbuilder.internal.util.NotificationData
 import com.adobe.marketing.mobile.services.Log
 import com.adobe.marketing.mobile.services.ServiceProvider
+import com.adobe.ui_utils.PushTemplateConstants
+import com.adobe.ui_utils.PushTemplateConstants.LOG_TAG
 
 /**
  * Public facing object to construct a [NotificationCompat.Builder] object for the specified [PushTemplateType].
@@ -118,7 +119,7 @@ object NotificationBuilder {
     ): NotificationCompat.Builder {
 
         val pushTemplateType =
-            PushTemplateType.fromString(notificationData.getString(com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.TEMPLATE_TYPE))
+            PushTemplateType.fromString(notificationData.getString(PushTemplateConstants.PushPayloadKeys.TEMPLATE_TYPE))
 
         when (pushTemplateType) {
             PushTemplateType.BASIC -> {

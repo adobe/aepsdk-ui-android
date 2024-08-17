@@ -20,6 +20,5 @@ buildscript {
     }
     dependencies {
         classpath("com.github.adobe:aepsdk-commons:gp-3.0.0")
-//        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.8.20")
     }
 }

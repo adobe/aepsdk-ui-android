@@ -15,13 +15,13 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.media.RingtoneManager
-import com.adobe.ui_utils.PushTemplateConstants
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.BasicPushTemplate
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.MOCKED_CHANNEL_ID
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.MockAEPPushTemplateDataProvider
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.provideMockedBasicPushTemplateWithAllKeys
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.provideMockedBasicPushTemplateWithRequiredData
 import com.adobe.marketing.mobile.notificationbuilder.internal.util.MapData
+import com.adobe.ui_utils.PushTemplateConstants
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
@@ -53,7 +53,7 @@ class NotificationManagerExtensionsTest {
         val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         val notificationChannelId = notificationManager.createNotificationChannelIfRequired(context, template)
 
-        assertEquals(com.adobe.ui_utils.PushTemplateConstants.DefaultValues.DEFAULT_CHANNEL_ID, notificationChannelId)
+        assertEquals(PushTemplateConstants.DefaultValues.DEFAULT_CHANNEL_ID, notificationChannelId)
     }
 
     @Test
@@ -79,7 +79,7 @@ class NotificationManagerExtensionsTest {
     @Test
     fun `createNotificationChannelIfRequired should set a default sound if template sound is empty`() {
         val dataMap = MockAEPPushTemplateDataProvider.getMockedAEPDataMapWithAllKeys()
-        dataMap[com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.SOUND] = ""
+        dataMap[PushTemplateConstants.PushPayloadKeys.SOUND] = ""
         val template = BasicPushTemplate(MapData(dataMap))
         val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         val notificationChannelId = notificationManager.createNotificationChannelIfRequired(context, template)
@@ -95,6 +95,6 @@ class NotificationManagerExtensionsTest {
         val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         val notificationChannelId = notificationManager.createNotificationChannelIfRequired(context, template)
 
-        assertEquals(com.adobe.ui_utils.PushTemplateConstants.DefaultValues.SILENT_NOTIFICATION_CHANNEL_ID, notificationChannelId)
+        assertEquals(PushTemplateConstants.DefaultValues.SILENT_NOTIFICATION_CHANNEL_ID, notificationChannelId)
     }
 }
