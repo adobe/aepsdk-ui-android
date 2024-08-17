@@ -11,9 +11,9 @@
 
 package com.adobe.marketing.mobile.notificationbuilder.internal.templates
 
-import com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.TimerKeys
 import com.adobe.marketing.mobile.notificationbuilder.internal.util.NotificationData
 import com.adobe.marketing.mobile.util.TimeUtils
+import com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.TimerKeys
 
 /**
  * Class for parsing the data required to display a Timer notification.

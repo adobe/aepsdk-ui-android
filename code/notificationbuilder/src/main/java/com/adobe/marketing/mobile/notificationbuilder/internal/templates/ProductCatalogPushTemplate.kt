@@ -11,13 +11,12 @@
 
 package com.adobe.marketing.mobile.notificationbuilder.internal.templates
 
-import com.adobe.ui_utils.PushTemplateConstants
+import com.adobe.marketing.mobile.notificationbuilder.internal.util.NotificationData
+import com.adobe.marketing.mobile.services.Log
 import com.adobe.ui_utils.PushTemplateConstants.CatalogItemKeys
 import com.adobe.ui_utils.PushTemplateConstants.DefaultValues
 import com.adobe.ui_utils.PushTemplateConstants.LOG_TAG
 import com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys
-import com.adobe.marketing.mobile.notificationbuilder.internal.util.NotificationData
-import com.adobe.marketing.mobile.services.Log
 import org.json.JSONArray
 import org.json.JSONException
 

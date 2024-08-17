@@ -11,10 +11,9 @@
 
 package com.adobe.marketing.mobile.notificationbuilder.internal.templates
 
-import com.adobe.ui_utils.PushTemplateConstants
-import com.adobe.ui_utils.PushTemplateConstants.DEFAULT_DELETE_ICON_NAME
 import com.adobe.marketing.mobile.notificationbuilder.internal.util.NotificationData
 import com.adobe.marketing.mobile.services.Log
+import com.adobe.ui_utils.PushTemplateConstants.DEFAULT_DELETE_ICON_NAME
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject

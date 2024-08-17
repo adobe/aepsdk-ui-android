@@ -11,7 +11,6 @@
 
 package com.adobe.marketing.mobile.notificationbuilder.internal.templates
 
-import com.adobe.ui_utils.PushTemplateConstants
 import com.adobe.marketing.mobile.notificationbuilder.internal.util.NotificationData
 import com.adobe.marketing.mobile.services.Log
 import org.json.JSONArray
@@ -34,8 +33,11 @@ internal class ProductRatingPushTemplate(data: NotificationData) : AEPPushTempla
             fun from(jsonObject: JSONObject): RatingAction? {
                 return try {
                     var uri: String? = null
-                    val type = com.adobe.ui_utils.PushTemplateConstants.ActionType.valueOf(jsonObject.getString(
-                        com.adobe.ui_utils.PushTemplateConstants.RatingAction.TYPE))
+                    val type = com.adobe.ui_utils.PushTemplateConstants.ActionType.valueOf(
+                        jsonObject.getString(
+                            com.adobe.ui_utils.PushTemplateConstants.RatingAction.TYPE
+                        )
+                    )
                     if (type == com.adobe.ui_utils.PushTemplateConstants.ActionType.WEBURL || type == com.adobe.ui_utils.PushTemplateConstants.ActionType.DEEPLINK) {
                         uri = jsonObject.getString(com.adobe.ui_utils.PushTemplateConstants.RatingAction.URI)
                     }
