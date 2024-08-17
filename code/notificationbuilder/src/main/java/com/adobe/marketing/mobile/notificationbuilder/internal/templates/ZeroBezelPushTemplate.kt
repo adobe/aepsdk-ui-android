@@ -11,7 +11,7 @@
 
 package com.adobe.marketing.mobile.notificationbuilder.internal.templates
 
-import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.PushPayloadKeys
+import com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys
 import com.adobe.marketing.mobile.notificationbuilder.internal.util.NotificationData
 
 internal class ZeroBezelPushTemplate(data: NotificationData) : AEPPushTemplate(data) {

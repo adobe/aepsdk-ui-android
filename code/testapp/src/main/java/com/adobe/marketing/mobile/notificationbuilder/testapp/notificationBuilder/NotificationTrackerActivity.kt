@@ -17,14 +17,14 @@ import android.net.Uri
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationManagerCompat
-import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants
+import com.adobe.ui_utils.PushTemplateConstants
 import com.adobe.marketing.mobile.services.ServiceProvider
 
 class NotificationTrackerActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         when (intent?.action) {
-            PushTemplateConstants.NotificationAction.CLICKED -> executePushAction(intent)
+            com.adobe.ui_utils.PushTemplateConstants.NotificationAction.CLICKED -> executePushAction(intent)
             else -> {}
         }
 
@@ -34,7 +34,7 @@ class NotificationTrackerActivity : AppCompatActivity() {
 
     private fun executePushAction(intent: Intent) {
         val actionUri =
-            intent.getStringExtra(PushTemplateConstants.TrackingKeys.ACTION_URI)
+            intent.getStringExtra(com.adobe.ui_utils.PushTemplateConstants.TrackingKeys.ACTION_URI)
         if (actionUri.isNullOrEmpty()) {
             openApplication()
         } else {
@@ -42,11 +42,11 @@ class NotificationTrackerActivity : AppCompatActivity() {
         }
 
         // remove the notification if sticky notifications are false
-        val isStickyNotification = intent.getStringExtra(PushTemplateConstants.PushPayloadKeys.STICKY)?.toBoolean() ?: false
+        val isStickyNotification = intent.getStringExtra(com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.STICKY)?.toBoolean() ?: false
         if (isStickyNotification) {
             return
         }
-        val tag = intent.getStringExtra(PushTemplateConstants.PushPayloadKeys.TAG)
+        val tag = intent.getStringExtra(com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.TAG)
         val context = ServiceProvider.getInstance().appContextService.applicationContext ?: return
         val notificationManager = NotificationManagerCompat.from(context)
         notificationManager.cancel(tag.hashCode())

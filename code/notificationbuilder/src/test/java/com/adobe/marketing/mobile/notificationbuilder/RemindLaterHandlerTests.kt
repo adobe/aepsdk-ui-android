@@ -94,7 +94,7 @@ class RemindLaterHandlerTests {
     @Test(expected = IllegalArgumentException::class)
     fun `handleRemindIntent should throw IllegalArgumentException when remindLaterDuration is less than or equal to current timestamp`() {
         val remindLaterIntent = getRemindLaterIntentDuration()
-        remindLaterIntent.putExtra(PushTemplateConstants.PushPayloadKeys.REMIND_LATER_DURATION, "-20")
+        remindLaterIntent.putExtra(com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.REMIND_LATER_DURATION, "-20")
 
         RemindLaterHandler.handleRemindIntent(remindLaterIntent, mockBroadcastReceiverClass)
 
@@ -105,7 +105,7 @@ class RemindLaterHandlerTests {
     @Test(expected = IllegalArgumentException::class)
     fun `handleRemindIntent should throw IllegalArgumentException when remindLaterDuration is invalid`() {
         val remindLaterIntent = getRemindLaterIntentDuration()
-        remindLaterIntent.putExtra(PushTemplateConstants.PushPayloadKeys.REMIND_LATER_DURATION, "invalid")
+        remindLaterIntent.putExtra(com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.REMIND_LATER_DURATION, "invalid")
 
         RemindLaterHandler.handleRemindIntent(remindLaterIntent, mockBroadcastReceiverClass)
 
@@ -116,7 +116,7 @@ class RemindLaterHandlerTests {
     @Test(expected = IllegalArgumentException::class)
     fun `handleRemindIntent should schedule notification when valid remindLaterTimestamp is less than or equal to current timestamp`() {
         val remindLaterIntent = getRemindLaterIntentTimestamp()
-        remindLaterIntent.putExtra(PushTemplateConstants.PushPayloadKeys.REMIND_LATER_TIMESTAMP, (System.currentTimeMillis() / 1000L - 10).toString())
+        remindLaterIntent.putExtra(com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.REMIND_LATER_TIMESTAMP, (System.currentTimeMillis() / 1000L - 10).toString())
 
         RemindLaterHandler.handleRemindIntent(remindLaterIntent, mockBroadcastReceiverClass)
 
@@ -127,7 +127,7 @@ class RemindLaterHandlerTests {
     @Test(expected = IllegalArgumentException::class)
     fun `handleRemindIntent should schedule notification when remindLaterTimestamp is invalid`() {
         val remindLaterIntent = getRemindLaterIntentTimestamp()
-        remindLaterIntent.putExtra(PushTemplateConstants.PushPayloadKeys.REMIND_LATER_TIMESTAMP, "invalid")
+        remindLaterIntent.putExtra(com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.REMIND_LATER_TIMESTAMP, "invalid")
 
         RemindLaterHandler.handleRemindIntent(remindLaterIntent, mockBroadcastReceiverClass)
 
@@ -146,7 +146,7 @@ class RemindLaterHandlerTests {
     @Test
     fun `handleRemindIntent should not schedule notification when tag is null`() {
         val remindLaterIntent = getRemindLaterIntentDuration()
-        remindLaterIntent.removeExtra(PushTemplateConstants.PushPayloadKeys.TAG)
+        remindLaterIntent.removeExtra(com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.TAG)
         RemindLaterHandler.handleRemindIntent(remindLaterIntent, mockBroadcastReceiverClass)
 
         verify(atLeast = 1) { PendingIntentUtils.scheduleNotification(any(), any(), any(), any()) }
@@ -155,15 +155,15 @@ class RemindLaterHandlerTests {
 
     private fun getRemindLaterIntentDuration(): Intent {
         val remindLaterIntent = Intent()
-        remindLaterIntent.putExtra(PushTemplateConstants.PushPayloadKeys.REMIND_LATER_DURATION, "20")
-        remindLaterIntent.putExtra(PushTemplateConstants.PushPayloadKeys.TAG, "testTag")
+        remindLaterIntent.putExtra(com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.REMIND_LATER_DURATION, "20")
+        remindLaterIntent.putExtra(com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.TAG, "testTag")
         return remindLaterIntent
     }
 
     private fun getRemindLaterIntentTimestamp(): Intent {
         val remindLaterIntent = Intent()
-        remindLaterIntent.putExtra(PushTemplateConstants.PushPayloadKeys.REMIND_LATER_TIMESTAMP, (System.currentTimeMillis() / 1000L + 10).toString())
-        remindLaterIntent.putExtra(PushTemplateConstants.PushPayloadKeys.TAG, "testTag")
+        remindLaterIntent.putExtra(com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.REMIND_LATER_TIMESTAMP, (System.currentTimeMillis() / 1000L + 10).toString())
+        remindLaterIntent.putExtra(com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.TAG, "testTag")
         return remindLaterIntent
     }
 }

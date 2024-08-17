@@ -21,10 +21,10 @@ import android.view.View
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import com.adobe.marketing.mobile.notificationbuilder.NotificationConstructionFailedException
-import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants
-import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.LOG_TAG
+import com.adobe.ui_utils.PushTemplateConstants
+import com.adobe.ui_utils.PushTemplateConstants.LOG_TAG
 import com.adobe.marketing.mobile.notificationbuilder.R
-import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateImageUtils
+import com.adobe.ui_utils.PushTemplateImageUtils
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.createNotificationChannelIfRequired
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setNotificationTitleTextColor
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setRemoteViewClickAction
@@ -71,7 +71,7 @@ internal object ProductRatingNotificationBuilder {
 
         // set the image on the notification
         val imageUri = pushTemplate.imageUrl
-        val downloadedImageCount = PushTemplateImageUtils.cacheImages(listOf(imageUri))
+        val downloadedImageCount = com.adobe.ui_utils.PushTemplateImageUtils.cacheImages(listOf(imageUri))
 
         if (downloadedImageCount == 0) {
             Log.trace(
@@ -83,7 +83,7 @@ internal object ProductRatingNotificationBuilder {
         } else {
             expandedLayout.setImageViewBitmap(
                 R.id.expanded_template_image,
-                PushTemplateImageUtils.getCachedImage(imageUri)
+                com.adobe.ui_utils.PushTemplateImageUtils.getCachedImage(imageUri)
             )
         }
 
@@ -98,7 +98,7 @@ internal object ProductRatingNotificationBuilder {
         )
 
         // check if confirm button needs to be shown
-        if (pushTemplate.ratingSelected > PushTemplateConstants.ProductRatingKeys.RATING_UNSELECTED) {
+        if (pushTemplate.ratingSelected > com.adobe.ui_utils.PushTemplateConstants.ProductRatingKeys.RATING_UNSELECTED) {
             expandedLayout.setViewVisibility(R.id.rating_confirm, View.VISIBLE)
             expandedLayout.setNotificationTitleTextColor(
                 pushTemplate.titleTextColor,
@@ -108,7 +108,7 @@ internal object ProductRatingNotificationBuilder {
             // add pending intent for confirm click
             // sticky is set to false as the notification will be dismissed after confirm click
             val ratingConfirmedIntentExtras = Bundle(pushTemplate.data.getBundle()) // copy the bundle
-            ratingConfirmedIntentExtras.putString(PushTemplateConstants.PushPayloadKeys.STICKY, "false")
+            ratingConfirmedIntentExtras.putString(com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.STICKY, "false")
             val selectedRatingAction = pushTemplate.ratingActionList[pushTemplate.ratingSelected]
             expandedLayout.setRemoteViewClickAction(
                 context,
@@ -190,16 +190,16 @@ internal object ProductRatingNotificationBuilder {
         }
         Log.trace(LOG_TAG, SELF_TAG, "Creating a rating click pending intent from a push template object.")
 
-        val ratingButtonClickIntent = AEPPushNotificationBuilder.createIntent(PushTemplateConstants.IntentActions.RATING_ICON_CLICKED, pushTemplate)
+        val ratingButtonClickIntent = AEPPushNotificationBuilder.createIntent(com.adobe.ui_utils.PushTemplateConstants.IntentActions.RATING_ICON_CLICKED, pushTemplate)
         broadcastReceiverClass.let {
             ratingButtonClickIntent.setClass(context.applicationContext, broadcastReceiverClass)
         }
         ratingButtonClickIntent.putExtra(
-            PushTemplateConstants.IntentKeys.RATING_SELECTED,
+            com.adobe.ui_utils.PushTemplateConstants.IntentKeys.RATING_SELECTED,
             ratingButtonSelection.toString()
         )
         ratingButtonClickIntent.putExtra(
-            PushTemplateConstants.PushPayloadKeys.CHANNEL_ID,
+            com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.CHANNEL_ID,
             channelId
         )
 

@@ -21,7 +21,7 @@ import android.service.notification.StatusBarNotification
 import android.widget.RemoteViews
 import com.adobe.marketing.mobile.notificationbuilder.NotificationConstructionFailedException
 import com.adobe.marketing.mobile.notificationbuilder.internal.PendingIntentUtils
-import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateImageUtils
+import com.adobe.ui_utils.PushTemplateImageUtils
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setRemoteViewImage
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setTimerTextColor
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.MOCKED_ALT_BODY
@@ -76,7 +76,7 @@ class TimerNotificationBuilderTests {
         pushTemplate = provideMockedTimerTemplate(false, true)
         trackerActivityClass = mockkClass(Activity::class, relaxed = true).javaClass
         broadcastReceiverClass = mockkClass(BroadcastReceiver::class, relaxed = true).javaClass
-        mockkObject(PushTemplateImageUtils)
+        mockkObject(com.adobe.ui_utils.PushTemplateImageUtils)
         mockkObject(PendingIntentUtils)
         mockkConstructor(RemoteViews::class)
         mockkStatic(RemoteViews::setTimerTextColor)

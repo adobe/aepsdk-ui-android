@@ -11,7 +11,7 @@
 
 package com.adobe.marketing.mobile.notificationbuilder.internal.templates
 
-import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.PushPayloadKeys.TimerKeys
+import com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.TimerKeys
 import com.adobe.marketing.mobile.notificationbuilder.internal.util.NotificationData
 import com.adobe.marketing.mobile.util.TimeUtils
 

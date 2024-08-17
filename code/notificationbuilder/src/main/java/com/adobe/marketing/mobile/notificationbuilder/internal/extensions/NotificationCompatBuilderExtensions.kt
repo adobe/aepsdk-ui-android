@@ -20,10 +20,10 @@ import android.media.RingtoneManager
 import android.os.Bundle
 import androidx.core.app.NotificationCompat
 import com.adobe.marketing.mobile.MobileCore
-import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants
-import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.LOG_TAG
+import com.adobe.ui_utils.PushTemplateConstants
+import com.adobe.ui_utils.PushTemplateConstants.LOG_TAG
 import com.adobe.marketing.mobile.notificationbuilder.internal.PendingIntentUtils
-import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateImageUtils
+import com.adobe.ui_utils.PushTemplateImageUtils
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.BasicPushTemplate
 import com.adobe.marketing.mobile.services.Log
 import java.util.Random
@@ -212,7 +212,7 @@ internal fun NotificationCompat.Builder.setNotificationDeleteAction(
     context: Context,
     trackerActivityClass: Class<out Activity>?
 ): NotificationCompat.Builder {
-    val deleteIntent = Intent(PushTemplateConstants.NotificationAction.DISMISSED)
+    val deleteIntent = Intent(com.adobe.ui_utils.PushTemplateConstants.NotificationAction.DISMISSED)
     trackerActivityClass?.let {
         deleteIntent.setClass(context.applicationContext, trackerActivityClass)
     }
@@ -247,8 +247,8 @@ internal fun NotificationCompat.Builder.addActionButtons(
     }
     for (eachButton in actionButtons) {
         val pendingIntent: PendingIntent? =
-            if (eachButton.type === PushTemplateConstants.ActionType.DEEPLINK ||
-                eachButton.type === PushTemplateConstants.ActionType.WEBURL
+            if (eachButton.type === com.adobe.ui_utils.PushTemplateConstants.ActionType.DEEPLINK ||
+                eachButton.type === com.adobe.ui_utils.PushTemplateConstants.ActionType.WEBURL
             ) {
                 PendingIntentUtils.createPendingIntentForTrackerActivity(
                     context,

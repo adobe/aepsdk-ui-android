@@ -16,8 +16,8 @@ import android.app.NotificationManager
 import android.content.Context
 import android.media.RingtoneManager
 import android.os.Build
-import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants
-import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.LOG_TAG
+import com.adobe.ui_utils.PushTemplateConstants
+import com.adobe.ui_utils.PushTemplateConstants.LOG_TAG
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.AEPPushTemplate
 import com.adobe.marketing.mobile.services.Log
 
@@ -39,8 +39,8 @@ internal fun NotificationManager.createNotificationChannelIfRequired(
     // create a silent notification channel if push is from intent
     // if not from intent and channel id is not provided, use the default channel id
     val channelIdToUse =
-        if (template.isFromIntent) PushTemplateConstants.DefaultValues.SILENT_NOTIFICATION_CHANNEL_ID
-        else template.channelId ?: PushTemplateConstants.DefaultValues.DEFAULT_CHANNEL_ID
+        if (template.isFromIntent) com.adobe.ui_utils.PushTemplateConstants.DefaultValues.SILENT_NOTIFICATION_CHANNEL_ID
+        else template.channelId ?: com.adobe.ui_utils.PushTemplateConstants.DefaultValues.DEFAULT_CHANNEL_ID
 
     // No channel creation required.
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
@@ -60,7 +60,7 @@ internal fun NotificationManager.createNotificationChannelIfRequired(
     // Create a channel
     val channel = NotificationChannel(
         channelIdToUse,
-        if (template.isFromIntent) PushTemplateConstants.DefaultValues.SILENT_CHANNEL_NAME else PushTemplateConstants.DefaultValues.DEFAULT_CHANNEL_NAME,
+        if (template.isFromIntent) com.adobe.ui_utils.PushTemplateConstants.DefaultValues.SILENT_CHANNEL_NAME else com.adobe.ui_utils.PushTemplateConstants.DefaultValues.DEFAULT_CHANNEL_NAME,
         template.getNotificationImportance()
     )
 

@@ -12,10 +12,10 @@
 package com.adobe.marketing.mobile.notificationbuilder.internal.templates
 
 import androidx.annotation.VisibleForTesting
-import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.ActionButtons
-import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.ActionType
-import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.LOG_TAG
-import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.PushPayloadKeys
+import com.adobe.ui_utils.PushTemplateConstants.ActionButtons
+import com.adobe.ui_utils.PushTemplateConstants.ActionType
+import com.adobe.ui_utils.PushTemplateConstants.LOG_TAG
+import com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys
 import com.adobe.marketing.mobile.notificationbuilder.internal.util.NotificationData
 import com.adobe.marketing.mobile.services.Log
 import org.json.JSONArray

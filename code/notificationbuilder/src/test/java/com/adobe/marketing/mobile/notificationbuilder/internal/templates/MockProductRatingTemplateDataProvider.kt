@@ -12,41 +12,41 @@
 package com.adobe.marketing.mobile.notificationbuilder.internal.templates
 
 import android.os.Bundle
-import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants
+import com.adobe.ui_utils.PushTemplateConstants
 import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateType
 
 object MockProductRatingTemplateDataProvider {
     fun getMockedDataMapForRatingTemplate(): MutableMap<String, String> {
         return mutableMapOf(
-            PushTemplateConstants.PushPayloadKeys.VERSION to MOCKED_PAYLOAD_VERSION,
-            PushTemplateConstants.PushPayloadKeys.TEMPLATE_TYPE to PushTemplateType.PRODUCT_RATING.value,
-            PushTemplateConstants.PushPayloadKeys.TITLE to MOCKED_TITLE,
-            PushTemplateConstants.PushPayloadKeys.BODY to MOCKED_BODY,
-            PushTemplateConstants.PushPayloadKeys.EXPANDED_BODY_TEXT to MOCKED_BASIC_TEMPLATE_BODY_EXPANDED,
-            PushTemplateConstants.PushPayloadKeys.IMAGE_URL to MOCKED_IMAGE_URI,
-            PushTemplateConstants.PushPayloadKeys.ACTION_TYPE to "WEBURL",
-            PushTemplateConstants.PushPayloadKeys.ACTION_URI to MOCKED_ACTION_URI,
-            PushTemplateConstants.PushPayloadKeys.VERSION to MOCKED_PAYLOAD_VERSION,
-            PushTemplateConstants.PushPayloadKeys.RATING_UNSELECTED_ICON to "rating_star_outline",
-            PushTemplateConstants.PushPayloadKeys.RATING_SELECTED_ICON to "rating_star_filled",
-            PushTemplateConstants.PushPayloadKeys.RATING_ACTIONS to "[{\"uri\":\"https://www.adobe.com\", \"type\":\"WEBURL\"},{\"type\":\"OPENAPP\"},{\"uri\":\"https://www.adobe.com\", \"type\":\"WEBURL\"},{\"uri\": \"https://www.adobe.com\", \"type\":\"WEBURL\"},{\"uri\":\"https://www.adobe.com\", \"type\":\"WEBURL\"}]"
+            com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.VERSION to MOCKED_PAYLOAD_VERSION,
+            com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.TEMPLATE_TYPE to PushTemplateType.PRODUCT_RATING.value,
+            com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.TITLE to MOCKED_TITLE,
+            com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.BODY to MOCKED_BODY,
+            com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.EXPANDED_BODY_TEXT to MOCKED_BASIC_TEMPLATE_BODY_EXPANDED,
+            com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.IMAGE_URL to MOCKED_IMAGE_URI,
+            com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.ACTION_TYPE to "WEBURL",
+            com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.ACTION_URI to MOCKED_ACTION_URI,
+            com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.VERSION to MOCKED_PAYLOAD_VERSION,
+            com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.RATING_UNSELECTED_ICON to "rating_star_outline",
+            com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.RATING_SELECTED_ICON to "rating_star_filled",
+            com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.RATING_ACTIONS to "[{\"uri\":\"https://www.adobe.com\", \"type\":\"WEBURL\"},{\"type\":\"OPENAPP\"},{\"uri\":\"https://www.adobe.com\", \"type\":\"WEBURL\"},{\"uri\": \"https://www.adobe.com\", \"type\":\"WEBURL\"},{\"uri\":\"https://www.adobe.com\", \"type\":\"WEBURL\"}]"
         )
     }
 
     fun getMockedBundleForRatingTemplate(): Bundle {
         val mockBundle = Bundle()
-        mockBundle.putString(PushTemplateConstants.PushPayloadKeys.VERSION, MOCKED_PAYLOAD_VERSION)
-        mockBundle.putString(PushTemplateConstants.PushPayloadKeys.TEMPLATE_TYPE, PushTemplateType.PRODUCT_RATING.value)
-        mockBundle.putString(PushTemplateConstants.PushPayloadKeys.TITLE, MOCKED_TITLE)
-        mockBundle.putString(PushTemplateConstants.PushPayloadKeys.BODY, MOCKED_BODY)
-        mockBundle.putString(PushTemplateConstants.PushPayloadKeys.EXPANDED_BODY_TEXT, MOCKED_BASIC_TEMPLATE_BODY_EXPANDED)
-        mockBundle.putString(PushTemplateConstants.PushPayloadKeys.IMAGE_URL, MOCKED_IMAGE_URI)
-        mockBundle.putString(PushTemplateConstants.PushPayloadKeys.ACTION_TYPE, "WEBURL")
-        mockBundle.putString(PushTemplateConstants.PushPayloadKeys.ACTION_URI, MOCKED_ACTION_URI)
-        mockBundle.putString(PushTemplateConstants.PushPayloadKeys.VERSION, MOCKED_PAYLOAD_VERSION)
-        mockBundle.putString(PushTemplateConstants.PushPayloadKeys.RATING_UNSELECTED_ICON, "rating_star_outline")
-        mockBundle.putString(PushTemplateConstants.PushPayloadKeys.RATING_SELECTED_ICON, "rating_star_filled")
-        mockBundle.putString(PushTemplateConstants.PushPayloadKeys.RATING_ACTIONS, "[{\"uri\":\"https://www.adobe.com\", \"type\":\"WEBURL\"},{\"type\":\"OPENAPP\"},{\"uri\":\"https://www.adobe.com\", \"type\":\"WEBURL\"},{\"uri\": \"https://www.adobe.com\", \"type\":\"WEBURL\"},{\"uri\":\"https://www.adobe.com\", \"type\":\"WEBURL\"}]")
+        mockBundle.putString(com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.VERSION, MOCKED_PAYLOAD_VERSION)
+        mockBundle.putString(com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.TEMPLATE_TYPE, PushTemplateType.PRODUCT_RATING.value)
+        mockBundle.putString(com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.TITLE, MOCKED_TITLE)
+        mockBundle.putString(com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.BODY, MOCKED_BODY)
+        mockBundle.putString(com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.EXPANDED_BODY_TEXT, MOCKED_BASIC_TEMPLATE_BODY_EXPANDED)
+        mockBundle.putString(com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.IMAGE_URL, MOCKED_IMAGE_URI)
+        mockBundle.putString(com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.ACTION_TYPE, "WEBURL")
+        mockBundle.putString(com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.ACTION_URI, MOCKED_ACTION_URI)
+        mockBundle.putString(com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.VERSION, MOCKED_PAYLOAD_VERSION)
+        mockBundle.putString(com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.RATING_UNSELECTED_ICON, "rating_star_outline")
+        mockBundle.putString(com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.RATING_SELECTED_ICON, "rating_star_filled")
+        mockBundle.putString(com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.RATING_ACTIONS, "[{\"uri\":\"https://www.adobe.com\", \"type\":\"WEBURL\"},{\"type\":\"OPENAPP\"},{\"uri\":\"https://www.adobe.com\", \"type\":\"WEBURL\"},{\"uri\": \"https://www.adobe.com\", \"type\":\"WEBURL\"},{\"uri\":\"https://www.adobe.com\", \"type\":\"WEBURL\"}]")
         return mockBundle
     }
 }

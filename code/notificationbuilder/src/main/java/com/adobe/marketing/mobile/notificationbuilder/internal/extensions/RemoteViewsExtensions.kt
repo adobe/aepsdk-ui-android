@@ -18,10 +18,10 @@ import android.graphics.Color
 import android.os.Bundle
 import android.view.View
 import android.widget.RemoteViews
-import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants
-import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.LOG_TAG
+import com.adobe.ui_utils.PushTemplateConstants
+import com.adobe.ui_utils.PushTemplateConstants.LOG_TAG
 import com.adobe.marketing.mobile.notificationbuilder.internal.PendingIntentUtils
-import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateImageUtils
+import com.adobe.ui_utils.PushTemplateImageUtils
 import com.adobe.marketing.mobile.services.Log
 import com.adobe.marketing.mobile.services.ServiceProvider
 import com.adobe.marketing.mobile.util.UrlUtils
@@ -79,8 +79,8 @@ internal fun RemoteViews.setNotificationBackgroundColor(
     setElementColor(
         containerViewId,
         "#$backgroundColor",
-        PushTemplateConstants.MethodNames.SET_BACKGROUND_COLOR,
-        PushTemplateConstants.FriendlyViewNames.NOTIFICATION_BACKGROUND
+        com.adobe.ui_utils.PushTemplateConstants.MethodNames.SET_BACKGROUND_COLOR,
+        com.adobe.ui_utils.PushTemplateConstants.FriendlyViewNames.NOTIFICATION_BACKGROUND
     )
 }
 
@@ -98,8 +98,8 @@ internal fun RemoteViews.setTimerTextColor(
     setElementColor(
         containerViewId,
         "#$timerTextColor",
-        PushTemplateConstants.MethodNames.SET_TEXT_COLOR,
-        PushTemplateConstants.FriendlyViewNames.TIMER_TEXT
+        com.adobe.ui_utils.PushTemplateConstants.MethodNames.SET_TEXT_COLOR,
+        com.adobe.ui_utils.PushTemplateConstants.FriendlyViewNames.TIMER_TEXT
     )
 }
 
@@ -117,8 +117,8 @@ internal fun RemoteViews.setNotificationTitleTextColor(
     setElementColor(
         containerViewId,
         "#$titleTextColor",
-        PushTemplateConstants.MethodNames.SET_TEXT_COLOR,
-        PushTemplateConstants.FriendlyViewNames.NOTIFICATION_TITLE
+        com.adobe.ui_utils.PushTemplateConstants.MethodNames.SET_TEXT_COLOR,
+        com.adobe.ui_utils.PushTemplateConstants.FriendlyViewNames.NOTIFICATION_TITLE
     )
 }
 
@@ -137,8 +137,8 @@ internal fun RemoteViews.setNotificationBodyTextColor(
     setElementColor(
         containerViewId,
         "#$expandedBodyTextColor",
-        PushTemplateConstants.MethodNames.SET_TEXT_COLOR,
-        PushTemplateConstants.FriendlyViewNames.NOTIFICATION_BODY_TEXT
+        com.adobe.ui_utils.PushTemplateConstants.MethodNames.SET_TEXT_COLOR,
+        com.adobe.ui_utils.PushTemplateConstants.FriendlyViewNames.NOTIFICATION_BODY_TEXT
     )
 }
 
@@ -222,7 +222,7 @@ internal fun RemoteViews.setRemoteImage(
     if (!UrlUtils.isValidUrl(imageUrl)) {
         return false
     }
-    val downloadedIconCount = PushTemplateImageUtils.cacheImages(listOf(imageUrl))
+    val downloadedIconCount = com.adobe.ui_utils.PushTemplateImageUtils.cacheImages(listOf(imageUrl))
     if (downloadedIconCount == 0) {
         Log.warning(
             LOG_TAG,
@@ -234,7 +234,7 @@ internal fun RemoteViews.setRemoteImage(
     }
     setImageViewBitmap(
         containerViewId,
-        PushTemplateImageUtils.getCachedImage(imageUrl)
+        com.adobe.ui_utils.PushTemplateImageUtils.getCachedImage(imageUrl)
     )
     return true
 }

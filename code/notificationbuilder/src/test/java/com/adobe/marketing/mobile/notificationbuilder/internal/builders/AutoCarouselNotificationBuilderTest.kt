@@ -17,9 +17,9 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.widget.RemoteViews
 import com.adobe.marketing.mobile.notificationbuilder.internal.PendingIntentUtils
-import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateImageUtils
-import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateImageUtils.cacheImages
-import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateImageUtils.getCachedImage
+import com.adobe.ui_utils.PushTemplateImageUtils
+import com.adobe.ui_utils.PushTemplateImageUtils.cacheImages
+import com.adobe.ui_utils.PushTemplateImageUtils.getCachedImage
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setRemoteViewClickAction
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.AutoCarouselPushTemplate
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.provideMockedAutoCarousalTemplate
@@ -61,7 +61,7 @@ class AutoCarouselNotificationBuilderTest {
         autoCarouselPushTemplate = provideMockedAutoCarousalTemplate(false)
         mockkObject(BasicNotificationBuilder)
         mockkObject(PendingIntentUtils)
-        mockkObject(PushTemplateImageUtils)
+        mockkObject(com.adobe.ui_utils.PushTemplateImageUtils)
         mockkConstructor(RemoteViews::class)
     }
 

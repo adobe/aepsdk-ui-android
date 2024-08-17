@@ -21,9 +21,9 @@ import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import androidx.core.app.RemoteInput
 import com.adobe.marketing.mobile.notificationbuilder.NotificationConstructionFailedException
-import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants
-import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.LOG_TAG
-import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.PushPayloadKeys
+import com.adobe.ui_utils.PushTemplateConstants
+import com.adobe.ui_utils.PushTemplateConstants.LOG_TAG
+import com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys
 import com.adobe.marketing.mobile.notificationbuilder.R
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.createNotificationChannelIfRequired
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setRemoteImage
@@ -119,7 +119,7 @@ internal object InputBoxNotificationBuilder {
         pushTemplate: InputBoxPushTemplate
     ) {
         val inputHint =
-            if (pushTemplate.inputTextHint.isNullOrEmpty()) PushTemplateConstants.DefaultValues.INPUT_BOX_DEFAULT_REPLY_TEXT else pushTemplate.inputTextHint
+            if (pushTemplate.inputTextHint.isNullOrEmpty()) com.adobe.ui_utils.PushTemplateConstants.DefaultValues.INPUT_BOX_DEFAULT_REPLY_TEXT else pushTemplate.inputTextHint
         val remoteInput = RemoteInput.Builder(pushTemplate.inputBoxReceiverName)
             .setLabel(inputHint)
             .build()
@@ -156,7 +156,7 @@ internal object InputBoxNotificationBuilder {
     ): PendingIntent {
         val inputReceivedIntentExtras = pushTemplate.data.getBundle()
         inputReceivedIntentExtras.putString(PushPayloadKeys.CHANNEL_ID, channelId)
-        val intent = Intent(PushTemplateConstants.NotificationAction.INPUT_RECEIVED)
+        val intent = Intent(com.adobe.ui_utils.PushTemplateConstants.NotificationAction.INPUT_RECEIVED)
         trackerActivityClass?.let {
             intent.setClass(context.applicationContext, trackerActivityClass)
         }

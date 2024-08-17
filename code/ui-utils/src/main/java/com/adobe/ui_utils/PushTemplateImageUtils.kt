@@ -9,14 +9,12 @@
   governing permissions and limitations under the License.
 */
 
-package com.adobe.marketing.mobile.notificationbuilder.internal
+package com.adobe.ui_utils
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
 import android.graphics.RectF
-import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants
-import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.LOG_TAG
 import com.adobe.marketing.mobile.services.HttpConnecting
 import com.adobe.marketing.mobile.services.HttpMethod
 import com.adobe.marketing.mobile.services.Log
@@ -27,6 +25,7 @@ import com.adobe.marketing.mobile.services.caching.CacheEntry
 import com.adobe.marketing.mobile.services.caching.CacheExpiry
 import com.adobe.marketing.mobile.services.caching.CacheService
 import com.adobe.marketing.mobile.util.UrlUtils
+import com.adobe.ui_utils.PushTemplateConstants.LOG_TAG
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.File
@@ -42,10 +41,10 @@ import java.util.concurrent.atomic.AtomicInteger
  * Utility functions to assist in downloading and caching images for push template notifications.
  */
 
-internal object PushTemplateImageUtils {
+object PushTemplateImageUtils {
     private const val SELF_TAG = "PushTemplateImageUtil"
-    private const val FULL_BITMAP_QUALITY = 100
-    private const val DOWNLOAD_TIMEOUT_SECS = 10
+    private const val DEFAULT_BITMAP_QUALITY = 100
+    private const val DEFAULT_DOWNLOAD_TIMEOUT_SECS = 10
 
     /**
      * Downloads and caches images provided in the [urlList]. Prior to downloading, the image url
@@ -59,8 +58,13 @@ internal object PushTemplateImageUtils {
      * @param urlList [String] containing an image asset url
      * @return [Int] number of images that were found in cache or successfully downloaded
      */
-    internal fun cacheImages(
-        urlList: List<String?>
+    fun cacheImages(
+        urlList: List<String?>,
+        downloadTimeoutInSeconds: Int = DEFAULT_DOWNLOAD_TIMEOUT_SECS,
+        bitmapQuality: Int = DEFAULT_BITMAP_QUALITY,
+        bitmapWidth: Float = PushTemplateConstants.DefaultValues.CAROUSEL_MAX_BITMAP_WIDTH.toFloat(),
+        bitmapHeight: Float = PushTemplateConstants.DefaultValues.CAROUSEL_MAX_BITMAP_HEIGHT.toFloat(),
+        scaleToFit: Matrix.ScaleToFit = Matrix.ScaleToFit.CENTER
     ): Int {
         val assetCacheLocation = getAssetCacheLocation()
         if (urlList.isEmpty() || assetCacheLocation.isNullOrEmpty()) {
@@ -89,16 +93,16 @@ internal object PushTemplateImageUtils {
                 continue
             }
 
-            downloadImage(url) { connection ->
+            downloadImage(url, downloadTimeoutInSeconds) { connection ->
                 if (!latchAborted.get()) {
                     val image = handleDownloadResponse(url, connection)
                     // scale down the bitmap to 300dp x 200dp as we don't want to use a full
                     // size image due to memory constraints
                     image?.let {
-                        val pushImage = scaleBitmap(it)
+                        val pushImage = scaleBitmap(it, bitmapWidth, bitmapHeight, scaleToFit)
                         // write bitmap to cache
                         try {
-                            bitmapToInputStream(pushImage).use { bitmapInputStream ->
+                            bitmapToInputStream(pushImage, bitmapQuality).use { bitmapInputStream ->
                                 cacheBitmapInputStream(
                                     cacheService,
                                     bitmapInputStream,
@@ -120,7 +124,7 @@ internal object PushTemplateImageUtils {
             }
         }
         try {
-            if (latch.await(DOWNLOAD_TIMEOUT_SECS.toLong(), TimeUnit.SECONDS)) {
+            if (latch.await(downloadTimeoutInSeconds.toLong(), TimeUnit.SECONDS)) {
                 Log.trace(
                     LOG_TAG,
                     SELF_TAG,
@@ -154,6 +158,7 @@ internal object PushTemplateImageUtils {
      */
     private fun downloadImage(
         url: String,
+        downloadTimeoutInSeconds: Int,
         completionCallback: (HttpConnecting?) -> Unit
     ) {
         val networkRequest = NetworkRequest(
@@ -161,8 +166,8 @@ internal object PushTemplateImageUtils {
             HttpMethod.GET,
             null,
             null,
-            DOWNLOAD_TIMEOUT_SECS,
-            DOWNLOAD_TIMEOUT_SECS
+            downloadTimeoutInSeconds,
+            downloadTimeoutInSeconds
         )
 
         val networkCallback = NetworkCallback { connection: HttpConnecting? ->
@@ -180,7 +185,7 @@ internal object PushTemplateImageUtils {
      * @param url [String] containing the image url to retrieve from cache
      * @return [Bitmap] containing the image retrieved from cache, or `null` if no image is found
      */
-    internal fun getCachedImage(url: String?): Bitmap? {
+    fun getCachedImage(url: String?): Bitmap? {
         val assetCacheLocation = getAssetCacheLocation()
         if (url == null || !UrlUtils.isValidUrl(url) || assetCacheLocation.isNullOrEmpty()) {
             return null
@@ -228,9 +233,9 @@ internal object PushTemplateImageUtils {
      * @param bitmap [Bitmap] to be converted into an [InputStream]
      * @return an `InputStream` created from the provided bitmap
      */
-    private fun bitmapToInputStream(bitmap: Bitmap): InputStream {
+    private fun bitmapToInputStream(bitmap: Bitmap, bitmapQuality: Int): InputStream {
         ByteArrayOutputStream().use {
-            bitmap.compress(Bitmap.CompressFormat.PNG, FULL_BITMAP_QUALITY, it)
+            bitmap.compress(Bitmap.CompressFormat.PNG, bitmapQuality, it)
             val bitmapData = it.toByteArray()
             return ByteArrayInputStream(bitmapData)
         }
@@ -274,17 +279,22 @@ internal object PushTemplateImageUtils {
      * @param downloadedBitmap [Bitmap] to be scaled
      * @return [Bitmap] containing the scaled image
      */
-    private fun scaleBitmap(downloadedBitmap: Bitmap): Bitmap {
+    private fun scaleBitmap(
+        downloadedBitmap: Bitmap,
+        bitmapWidth: Float,
+        bitmapHeight: Float,
+        scaleToFit: Matrix.ScaleToFit
+    ): Bitmap {
         val matrix = Matrix()
         matrix.setRectToRect(
             RectF(0f, 0f, downloadedBitmap.width.toFloat(), downloadedBitmap.height.toFloat()),
             RectF(
                 0f,
                 0f,
-                PushTemplateConstants.DefaultValues.CAROUSEL_MAX_BITMAP_WIDTH.toFloat(),
-                PushTemplateConstants.DefaultValues.CAROUSEL_MAX_BITMAP_HEIGHT.toFloat()
+                bitmapWidth,
+                bitmapHeight
             ),
-            Matrix.ScaleToFit.CENTER
+            scaleToFit
         )
         return Bitmap.createBitmap(
             downloadedBitmap,
@@ -302,7 +312,7 @@ internal object PushTemplateImageUtils {
      *
      * @return [String] containing the asset cache location to use for storing downloaded push template images.
      */
-    internal fun getAssetCacheLocation(): String? {
+    fun getAssetCacheLocation(): String? {
         val deviceInfoService = ServiceProvider.getInstance().deviceInfoService
             ?: return null
         val applicationCacheDir = deviceInfoService.applicationCacheDir

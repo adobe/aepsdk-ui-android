@@ -17,12 +17,12 @@ import android.content.Context
 import android.graphics.Bitmap
 import androidx.core.app.NotificationCompat
 import com.adobe.marketing.mobile.notificationbuilder.NotificationConstructionFailedException
-import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants
-import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.DefaultValues.PRODUCT_CATALOG_VERTICAL_LAYOUT
+import com.adobe.ui_utils.PushTemplateConstants
+import com.adobe.ui_utils.PushTemplateConstants.DefaultValues.PRODUCT_CATALOG_VERTICAL_LAYOUT
 import com.adobe.marketing.mobile.notificationbuilder.R
-import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateImageUtils
-import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateImageUtils.cacheImages
-import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateImageUtils.getCachedImage
+import com.adobe.ui_utils.PushTemplateImageUtils
+import com.adobe.ui_utils.PushTemplateImageUtils.cacheImages
+import com.adobe.ui_utils.PushTemplateImageUtils.getCachedImage
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.MockProductCatalogTemplateDataProvider.getMockedMapWithProductCatalogData
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.ProductCatalogPushTemplate
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.provideMockedProductCatalogTemplate
@@ -59,7 +59,7 @@ class ProductCatalogNotificationBuilderTest {
         context = RuntimeEnvironment.getApplication()
         trackerActivityClass = mockkClass(Activity::class, relaxed = true).javaClass
         broadcastReceiverClass = mockkClass(BroadcastReceiver::class, relaxed = true).javaClass
-        mockkObject(PushTemplateImageUtils)
+        mockkObject(com.adobe.ui_utils.PushTemplateImageUtils)
     }
 
     @After
@@ -84,7 +84,7 @@ class ProductCatalogNotificationBuilderTest {
     fun `construct should throw IllegalArgumentException if downloaded image count is more than 3`() {
         val dataMap = getMockedMapWithProductCatalogData()
         dataMap.replaceValueInMap(
-            PushTemplateConstants.PushPayloadKeys.CATALOG_ITEMS,
+            com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.CATALOG_ITEMS,
             "[" +
                 "{\"title\":\"title1\",\"body\":\"body1\",\"img\":\"img1\",\"price\":\"price1\",\"uri\":\"uri1\"}," +
                 "{\"title\":\"title2\",\"body\":\"body2\",\"img\":\"img2\",\"price\":\"price2\",\"uri\":\"uri2\"}," +
@@ -112,7 +112,7 @@ class ProductCatalogNotificationBuilderTest {
     fun `construct should throw IllegalArgumentException if downloaded image count is less than 3`() {
         val dataMap = getMockedMapWithProductCatalogData()
         dataMap.replaceValueInMap(
-            PushTemplateConstants.PushPayloadKeys.CATALOG_ITEMS,
+            com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.CATALOG_ITEMS,
             "[" +
                 "{\"title\":\"title1\",\"body\":\"body1\",\"img\":\"img1\",\"price\":\"price1\",\"uri\":\"uri1\"}," +
                 "{\"title\":\"title2\",\"body\":\"body2\",\"img\":\"img2\",\"price\":\"price2\",\"uri\":\"uri2\"}," +
@@ -151,7 +151,7 @@ class ProductCatalogNotificationBuilderTest {
     @Test
     fun `construct should build a notification with a vertical layout if vertical layout is provided`() {
         val dataMap = getMockedMapWithProductCatalogData()
-        dataMap.replaceValueInMap(PushTemplateConstants.PushPayloadKeys.CATALOG_LAYOUT, PRODUCT_CATALOG_VERTICAL_LAYOUT)
+        dataMap.replaceValueInMap(com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.CATALOG_LAYOUT, PRODUCT_CATALOG_VERTICAL_LAYOUT)
         val pushTemplate = ProductCatalogPushTemplate(MapData(dataMap))
         val cachedItem = mockkClass(Bitmap::class)
 
@@ -194,7 +194,7 @@ class ProductCatalogNotificationBuilderTest {
     @Test
     fun `construct should return a NotificationCompat Builder if Tag is provided in Push Template`() {
         val dataMap = getMockedMapWithProductCatalogData()
-        dataMap[PushTemplateConstants.PushPayloadKeys.TAG] = "tag"
+        dataMap[com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.TAG] = "tag"
         val pushTemplate = ProductCatalogPushTemplate(MapData(dataMap))
         val cachedItem = mockkClass(Bitmap::class)
 

@@ -16,12 +16,12 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.graphics.Bitmap
 import android.widget.RemoteViews
-import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants
+import com.adobe.ui_utils.PushTemplateConstants
 import com.adobe.marketing.mobile.notificationbuilder.internal.PendingIntentUtils
-import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateImageUtils
-import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateImageUtils.cacheImages
-import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateImageUtils.getAssetCacheLocation
-import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateImageUtils.getCachedImage
+import com.adobe.ui_utils.PushTemplateImageUtils
+import com.adobe.ui_utils.PushTemplateImageUtils.cacheImages
+import com.adobe.ui_utils.PushTemplateImageUtils.getAssetCacheLocation
+import com.adobe.ui_utils.PushTemplateImageUtils.getCachedImage
 import com.adobe.marketing.mobile.notificationbuilder.internal.builders.ManualCarouselNotificationBuilder.getCarouselIndices
 import com.adobe.marketing.mobile.notificationbuilder.internal.builders.ManualCarouselNotificationBuilder.populateFilmstripCarouselImages
 import com.adobe.marketing.mobile.notificationbuilder.internal.builders.ManualCarouselNotificationBuilder.populateManualCarouselImages
@@ -66,7 +66,7 @@ class ManualCarouselNotificationBuilderTest {
         pushTemplate = provideMockedManualCarousalTemplate(false)
         trackerActivityClass = mockkClass(Activity::class, relaxed = true).javaClass
         broadcastReceiverClass = mockkClass(BroadcastReceiver::class, relaxed = true).javaClass
-        mockkObject(PushTemplateImageUtils)
+        mockkObject(com.adobe.ui_utils.PushTemplateImageUtils)
         mockkObject(BasicNotificationBuilder)
         mockkObject(PendingIntentUtils)
         mockkConstructor(RemoteViews::class)
@@ -139,7 +139,7 @@ class ManualCarouselNotificationBuilderTest {
     fun `test getCarouselIndices with left click intent action`() {
         val mockBundle = MockCarousalTemplateDataProvider.getMockedBundleWithManualCarouselData()
         val data =
-            IntentData(mockBundle, PushTemplateConstants.IntentActions.MANUAL_CAROUSEL_LEFT_CLICKED)
+            IntentData(mockBundle, com.adobe.ui_utils.PushTemplateConstants.IntentActions.MANUAL_CAROUSEL_LEFT_CLICKED)
         val mcPushTemplate = CarouselPushTemplate(data) as ManualCarouselPushTemplate
         val result = getCarouselIndices(mcPushTemplate, 3)
         assertEquals(Triple(1, 2, 0), result)
@@ -149,7 +149,7 @@ class ManualCarouselNotificationBuilderTest {
     fun `test getCarouselIndices with filmstrip left click intent action`() {
         val mockBundle = MockCarousalTemplateDataProvider.getMockedBundleWithManualCarouselData()
         val data =
-            IntentData(mockBundle, PushTemplateConstants.IntentActions.FILMSTRIP_LEFT_CLICKED)
+            IntentData(mockBundle, com.adobe.ui_utils.PushTemplateConstants.IntentActions.FILMSTRIP_LEFT_CLICKED)
         val mcPushTemplate = CarouselPushTemplate(data) as ManualCarouselPushTemplate
         val result = getCarouselIndices(mcPushTemplate, 3)
         assertEquals(Triple(1, 2, 0), result)
@@ -159,14 +159,14 @@ class ManualCarouselNotificationBuilderTest {
     fun `test getCarouselIndices with no intent action and filmstrip layout`() {
         val mockBundle = MockCarousalTemplateDataProvider.getMockedBundleWithManualCarouselData()
         val data =
-            IntentData(mockBundle, PushTemplateConstants.DefaultValues.FILMSTRIP_CAROUSEL_MODE)
+            IntentData(mockBundle, com.adobe.ui_utils.PushTemplateConstants.DefaultValues.FILMSTRIP_CAROUSEL_MODE)
         val mcPushTemplate = CarouselPushTemplate(data) as ManualCarouselPushTemplate
         val result = getCarouselIndices(mcPushTemplate, 3)
         assertEquals(
             Triple(
-                PushTemplateConstants.DefaultValues.FILMSTRIP_CAROUSEL_CENTER_INDEX - 1,
-                PushTemplateConstants.DefaultValues.FILMSTRIP_CAROUSEL_CENTER_INDEX,
-                PushTemplateConstants.DefaultValues.FILMSTRIP_CAROUSEL_CENTER_INDEX + 1
+                com.adobe.ui_utils.PushTemplateConstants.DefaultValues.FILMSTRIP_CAROUSEL_CENTER_INDEX - 1,
+                com.adobe.ui_utils.PushTemplateConstants.DefaultValues.FILMSTRIP_CAROUSEL_CENTER_INDEX,
+                com.adobe.ui_utils.PushTemplateConstants.DefaultValues.FILMSTRIP_CAROUSEL_CENTER_INDEX + 1
             ),
             result
         )
@@ -178,8 +178,8 @@ class ManualCarouselNotificationBuilderTest {
         assertEquals(
             Triple(
                 pushTemplate.carouselItems.size - 1,
-                PushTemplateConstants.DefaultValues.MANUAL_CAROUSEL_START_INDEX,
-                PushTemplateConstants.DefaultValues.MANUAL_CAROUSEL_START_INDEX + 1
+                com.adobe.ui_utils.PushTemplateConstants.DefaultValues.MANUAL_CAROUSEL_START_INDEX,
+                com.adobe.ui_utils.PushTemplateConstants.DefaultValues.MANUAL_CAROUSEL_START_INDEX + 1
             ),
             result
         )

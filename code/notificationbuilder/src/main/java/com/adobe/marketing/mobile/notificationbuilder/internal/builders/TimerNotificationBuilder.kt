@@ -22,9 +22,9 @@ import android.os.SystemClock
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import com.adobe.marketing.mobile.notificationbuilder.NotificationConstructionFailedException
-import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants
-import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.LOG_TAG
-import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.PushPayloadKeys.TimerKeys
+import com.adobe.ui_utils.PushTemplateConstants
+import com.adobe.ui_utils.PushTemplateConstants.LOG_TAG
+import com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.TimerKeys
 import com.adobe.marketing.mobile.notificationbuilder.R
 import com.adobe.marketing.mobile.notificationbuilder.internal.PendingIntentUtils
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.createNotificationChannelIfRequired
@@ -173,7 +173,7 @@ internal object TimerNotificationBuilder {
      * @return the intent for the timer expiry
      */
     private fun createIntent(template: TimerPushTemplate): Intent {
-        val intent = AEPPushNotificationBuilder.createIntent(PushTemplateConstants.IntentActions.TIMER_EXPIRED, template)
+        val intent = AEPPushNotificationBuilder.createIntent(com.adobe.ui_utils.PushTemplateConstants.IntentActions.TIMER_EXPIRED, template)
 
         // remove timer to prevent countdown from being recreated
         intent.removeExtra(TimerKeys.TIMER_DURATION)

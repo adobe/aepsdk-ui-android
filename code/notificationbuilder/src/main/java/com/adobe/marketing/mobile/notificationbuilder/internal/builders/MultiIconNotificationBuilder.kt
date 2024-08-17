@@ -20,7 +20,7 @@ import android.os.Bundle
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import com.adobe.marketing.mobile.notificationbuilder.NotificationConstructionFailedException
-import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants
+import com.adobe.ui_utils.PushTemplateConstants
 import com.adobe.marketing.mobile.notificationbuilder.R
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.createNotificationChannelIfRequired
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setRemoteViewClickAction
@@ -39,7 +39,7 @@ internal object MultiIconNotificationBuilder {
     ): NotificationCompat.Builder {
 
         Log.trace(
-            PushTemplateConstants.LOG_TAG,
+            com.adobe.ui_utils.PushTemplateConstants.LOG_TAG,
             SELF_TAG,
             "Building an icon template push notification."
         )
@@ -69,8 +69,8 @@ internal object MultiIconNotificationBuilder {
         )
 
         val closeButtonIntentExtra = Bundle(pushTemplate.data.getBundle()) // copy the bundle
-        closeButtonIntentExtra.putString(PushTemplateConstants.PushPayloadKeys.STICKY, "false")
-        val dismissIntent = Intent(PushTemplateConstants.NotificationAction.DISMISSED)
+        closeButtonIntentExtra.putString(com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.STICKY, "false")
+        val dismissIntent = Intent(com.adobe.ui_utils.PushTemplateConstants.NotificationAction.DISMISSED)
         trackerActivityClass?.let {
             dismissIntent.setClass(context.applicationContext, trackerActivityClass)
         }
@@ -133,7 +133,7 @@ internal object MultiIconNotificationBuilder {
             }
             notificationLayout.addView(R.id.icons_layout_linear, iconItem)
         }
-        if (validImagesAddedCount < PushTemplateConstants.DefaultValues.ICON_TEMPLATE_MIN_IMAGE_COUNT) {
+        if (validImagesAddedCount < com.adobe.ui_utils.PushTemplateConstants.DefaultValues.ICON_TEMPLATE_MIN_IMAGE_COUNT) {
             throw NotificationConstructionFailedException("Valid icons are less then 3, cannot build a notification.")
         }
     }

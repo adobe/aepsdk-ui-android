@@ -16,8 +16,8 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import com.adobe.marketing.mobile.notificationbuilder.NotificationPriority
 import com.adobe.marketing.mobile.notificationbuilder.NotificationVisibility
-import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.ActionType
-import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.PushPayloadKeys
+import com.adobe.ui_utils.PushTemplateConstants.ActionType
+import com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys
 import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateType
 import com.adobe.marketing.mobile.notificationbuilder.internal.util.IntentData
 import com.adobe.marketing.mobile.notificationbuilder.internal.util.NotificationData

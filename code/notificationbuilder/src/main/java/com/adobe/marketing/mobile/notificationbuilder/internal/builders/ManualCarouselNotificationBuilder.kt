@@ -22,16 +22,16 @@ import android.widget.RemoteViews
 import androidx.annotation.VisibleForTesting
 import androidx.core.app.NotificationCompat
 import com.adobe.marketing.mobile.notificationbuilder.NotificationConstructionFailedException
-import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants
-import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.LOG_TAG
-import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.PushPayloadKeys
 import com.adobe.marketing.mobile.notificationbuilder.R
-import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateImageUtils
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.createNotificationChannelIfRequired
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setRemoteViewClickAction
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.CarouselPushTemplate
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.ManualCarouselPushTemplate
 import com.adobe.marketing.mobile.services.Log
+import com.adobe.ui_utils.PushTemplateConstants
+import com.adobe.ui_utils.PushTemplateConstants.LOG_TAG
+import com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys
+import com.adobe.ui_utils.PushTemplateImageUtils
 
 /**
  * Object responsible for constructing a [NotificationCompat.Builder] object containing a manual or filmstrip carousel push template notification.
@@ -137,7 +137,8 @@ internal object ManualCarouselNotificationBuilder {
         val validCarouselItems = mutableListOf<CarouselPushTemplate.CarouselItem>()
         for (item: CarouselPushTemplate.CarouselItem in items) {
             val imageUri: String = item.imageUri
-            val pushImage: Bitmap? = PushTemplateImageUtils.getCachedImage(imageUri)
+            val pushImage: Bitmap? =
+                PushTemplateImageUtils.getCachedImage(imageUri)
             if (pushImage == null) {
                 Log.warning(
                     LOG_TAG,
@@ -278,7 +279,8 @@ internal object ManualCarouselNotificationBuilder {
     ) {
         for (item: CarouselPushTemplate.CarouselItem in items) {
             val imageUri = item.imageUri
-            val pushImage: Bitmap? = PushTemplateImageUtils.getCachedImage(imageUri)
+            val pushImage: Bitmap? =
+                PushTemplateImageUtils.getCachedImage(imageUri)
             if (pushImage == null) {
                 Log.warning(
                     LOG_TAG,

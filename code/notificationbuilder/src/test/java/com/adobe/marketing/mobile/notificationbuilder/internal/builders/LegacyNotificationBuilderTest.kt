@@ -17,9 +17,9 @@ import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import androidx.core.app.NotificationCompat
-import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants
-import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.DefaultValues.DEFAULT_CHANNEL_ID
-import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.DefaultValues.SILENT_NOTIFICATION_CHANNEL_ID
+import com.adobe.ui_utils.PushTemplateConstants
+import com.adobe.ui_utils.PushTemplateConstants.DefaultValues.DEFAULT_CHANNEL_ID
+import com.adobe.ui_utils.PushTemplateConstants.DefaultValues.SILENT_NOTIFICATION_CHANNEL_ID
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.BasicPushTemplate
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.MockAEPPushTemplateDataProvider
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.removeKeysFromMap
@@ -91,15 +91,15 @@ class LegacyNotificationBuilderTest {
         assertNotNull(notification.deleteIntent)
         assertEquals(
             pushTemplate.actionUri,
-            intent.getStringExtra(PushTemplateConstants.TrackingKeys.ACTION_URI)
+            intent.getStringExtra(com.adobe.ui_utils.PushTemplateConstants.TrackingKeys.ACTION_URI)
         )
         assertEquals(
             pushTemplate.tag,
-            intent.getStringExtra(PushTemplateConstants.PushPayloadKeys.TAG)
+            intent.getStringExtra(com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.TAG)
         )
         assertEquals(
             pushTemplate.isNotificationSticky.toString(),
-            intent.getStringExtra(PushTemplateConstants.PushPayloadKeys.STICKY)
+            intent.getStringExtra(com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.STICKY)
         )
     }
 
@@ -114,7 +114,7 @@ class LegacyNotificationBuilderTest {
 
     @Test
     fun `construct should set default channel ID if pushTemplate channelId is null`() {
-        dataMap.removeKeysFromMap(PushTemplateConstants.PushPayloadKeys.CHANNEL_ID)
+        dataMap.removeKeysFromMap(com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.CHANNEL_ID)
         val pushTemplate = BasicPushTemplate(MapData(dataMap))
         val notification =
             LegacyNotificationBuilder.construct(context, pushTemplate, trackerActivityClass)
@@ -148,15 +148,15 @@ class LegacyNotificationBuilderTest {
         assertNotNull(notification.deleteIntent)
         assertEquals(
             pushTemplate.actionUri,
-            intent.getStringExtra(PushTemplateConstants.TrackingKeys.ACTION_URI)
+            intent.getStringExtra(com.adobe.ui_utils.PushTemplateConstants.TrackingKeys.ACTION_URI)
         )
         assertEquals(
             pushTemplate.tag,
-            intent.getStringExtra(PushTemplateConstants.PushPayloadKeys.TAG)
+            intent.getStringExtra(com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.TAG)
         )
         assertEquals(
             pushTemplate.isNotificationSticky.toString(),
-            intent.getStringExtra(PushTemplateConstants.PushPayloadKeys.STICKY)
+            intent.getStringExtra(com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.STICKY)
         )
     }
 
@@ -164,7 +164,7 @@ class LegacyNotificationBuilderTest {
     fun `construct should not set smallIcon if pushTemplate smallIcon is invalid`() {
         dataMap.replaceValueInMap(
             Pair(
-                PushTemplateConstants.PushPayloadKeys.SMALL_ICON,
+                com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.SMALL_ICON,
                 "invalid_small_icon"
             )
         )
@@ -179,7 +179,7 @@ class LegacyNotificationBuilderTest {
     fun `construct should not set notification sound if pushTemplate sound is invalid`() {
         dataMap.replaceValueInMap(
             Pair(
-                PushTemplateConstants.PushPayloadKeys.SOUND,
+                com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.SOUND,
                 "invalid_sound"
             )
         )
@@ -194,7 +194,7 @@ class LegacyNotificationBuilderTest {
     fun `construct should set sticky flag to false when isNotificationSticky is false`() {
         dataMap.replaceValueInMap(
             Pair(
-                PushTemplateConstants.PushPayloadKeys.STICKY,
+                com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.STICKY,
                 "false"
             )
         )
@@ -207,7 +207,7 @@ class LegacyNotificationBuilderTest {
         val intent = shadowPendingIntent.savedIntent
         // Assert that the sticky flag is false
         assertEquals(
-            "false", intent.getStringExtra(PushTemplateConstants.PushPayloadKeys.STICKY)
+            "false", intent.getStringExtra(com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.STICKY)
         )
     }
 

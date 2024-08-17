@@ -18,10 +18,10 @@ import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.View
 import android.widget.RemoteViews
-import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants
-import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateImageUtils
-import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateImageUtils.cacheImages
-import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateImageUtils.getCachedImage
+import com.adobe.ui_utils.PushTemplateConstants
+import com.adobe.ui_utils.PushTemplateImageUtils
+import com.adobe.ui_utils.PushTemplateImageUtils.cacheImages
+import com.adobe.ui_utils.PushTemplateImageUtils.getCachedImage
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.MockAEPPushTemplateDataProvider
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.ZeroBezelPushTemplate
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.replaceValueInMap
@@ -60,7 +60,7 @@ class ZeroBezelNotificationBuilderTest {
     fun setup() {
         context = RuntimeEnvironment.getApplication()
         dataMap = MockAEPPushTemplateDataProvider.getMockedAEPDataMapWithAllKeys()
-        mockkObject(PushTemplateImageUtils)
+        mockkObject(com.adobe.ui_utils.PushTemplateImageUtils)
         mockkConstructor(RemoteViews::class)
         mockBitmap = mockk<Bitmap>(relaxed = true)
         trackerActivityClass = DummyActivity::class.java
@@ -96,7 +96,7 @@ class ZeroBezelNotificationBuilderTest {
     fun `verify construct with image downloaded and collapsedStyle is txt`() {
         dataMap.replaceValueInMap(
             Pair(
-                PushTemplateConstants.PushPayloadKeys.ZERO_BEZEL_COLLAPSED_STYLE,
+                com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.ZERO_BEZEL_COLLAPSED_STYLE,
                 "txt"
             )
         )
@@ -152,7 +152,7 @@ class ZeroBezelNotificationBuilderTest {
         ).build()
 
         assertEquals(
-            PushTemplateConstants.DefaultValues.SILENT_NOTIFICATION_CHANNEL_ID,
+            com.adobe.ui_utils.PushTemplateConstants.DefaultValues.SILENT_NOTIFICATION_CHANNEL_ID,
             notification.channelId
         )
         verifyNotificationDataFields(notification, pushTemplate)
@@ -164,7 +164,7 @@ class ZeroBezelNotificationBuilderTest {
     @Test
     fun `verify construct with image downloaded and collapsedStyle is txt for IntentData`() {
         mockBundle.putString(
-            PushTemplateConstants.PushPayloadKeys.ZERO_BEZEL_COLLAPSED_STYLE,
+            com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.ZERO_BEZEL_COLLAPSED_STYLE,
             "txt"
         )
 
@@ -180,7 +180,7 @@ class ZeroBezelNotificationBuilderTest {
         ).build()
 
         assertEquals(
-            PushTemplateConstants.DefaultValues.SILENT_NOTIFICATION_CHANNEL_ID,
+            com.adobe.ui_utils.PushTemplateConstants.DefaultValues.SILENT_NOTIFICATION_CHANNEL_ID,
             notification.channelId
         )
         verifyNotificationDataFields(notification, pushTemplate)
@@ -203,7 +203,7 @@ class ZeroBezelNotificationBuilderTest {
         ).build()
 
         assertEquals(
-            PushTemplateConstants.DefaultValues.SILENT_NOTIFICATION_CHANNEL_ID,
+            com.adobe.ui_utils.PushTemplateConstants.DefaultValues.SILENT_NOTIFICATION_CHANNEL_ID,
             notification.channelId
         )
         verifyNotificationDataFields(notification, pushTemplate)
@@ -227,15 +227,15 @@ class ZeroBezelNotificationBuilderTest {
         assertNotNull(notification.deleteIntent)
         assertEquals(
             pushTemplate.actionUri,
-            intent.getStringExtra(PushTemplateConstants.TrackingKeys.ACTION_URI)
+            intent.getStringExtra(com.adobe.ui_utils.PushTemplateConstants.TrackingKeys.ACTION_URI)
         )
         assertEquals(
             pushTemplate.tag,
-            intent.getStringExtra(PushTemplateConstants.PushPayloadKeys.TAG)
+            intent.getStringExtra(com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.TAG)
         )
         assertEquals(
             pushTemplate.isNotificationSticky.toString(),
-            intent.getStringExtra(PushTemplateConstants.PushPayloadKeys.STICKY)
+            intent.getStringExtra(com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.STICKY)
         )
     }
 }

@@ -11,14 +11,14 @@
 
 package com.adobe.marketing.mobile.notificationbuilder.internal.templates
 
-import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants
+import com.adobe.ui_utils.PushTemplateConstants
 import com.adobe.marketing.mobile.notificationbuilder.internal.util.IntentData
 import com.adobe.marketing.mobile.notificationbuilder.internal.util.NotificationData
 
 internal class ManualCarouselPushTemplate(data: NotificationData) : CarouselPushTemplate(data) {
     internal var intentAction: String? = null
         private set
-    internal var centerImageIndex: Int = PushTemplateConstants.DefaultValues.NO_CENTER_INDEX_SET
+    internal var centerImageIndex: Int = com.adobe.ui_utils.PushTemplateConstants.DefaultValues.NO_CENTER_INDEX_SET
 
     /**
      * Constructs a Manual Carousel Push Template from the provided data.
@@ -29,17 +29,17 @@ internal class ManualCarouselPushTemplate(data: NotificationData) : CarouselPush
         if (data is IntentData && data.actionName != null) {
             this.intentAction = data.actionName
             centerImageIndex =
-                data.getInteger(PushTemplateConstants.IntentKeys.CENTER_IMAGE_INDEX)
+                data.getInteger(com.adobe.ui_utils.PushTemplateConstants.IntentKeys.CENTER_IMAGE_INDEX)
                     ?: getDefaultCarouselIndex(carouselLayout)
         }
     }
 
     companion object {
         private fun getDefaultCarouselIndex(carouselLayoutType: String): Int {
-            return if (carouselLayoutType == PushTemplateConstants.DefaultValues.FILMSTRIP_CAROUSEL_MODE) {
-                PushTemplateConstants.DefaultValues.FILMSTRIP_CAROUSEL_CENTER_INDEX
+            return if (carouselLayoutType == com.adobe.ui_utils.PushTemplateConstants.DefaultValues.FILMSTRIP_CAROUSEL_MODE) {
+                com.adobe.ui_utils.PushTemplateConstants.DefaultValues.FILMSTRIP_CAROUSEL_CENTER_INDEX
             } else {
-                PushTemplateConstants.DefaultValues.MANUAL_CAROUSEL_START_INDEX
+                com.adobe.ui_utils.PushTemplateConstants.DefaultValues.MANUAL_CAROUSEL_START_INDEX
             }
         }
     }

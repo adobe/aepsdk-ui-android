@@ -34,3 +34,4 @@ include (
         ":notificationbuilder",
         ":testapp"
 )
+include(":ui-utils")

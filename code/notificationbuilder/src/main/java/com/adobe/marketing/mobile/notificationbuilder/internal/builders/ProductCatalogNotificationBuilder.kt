@@ -19,11 +19,11 @@ import android.content.Context
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import com.adobe.marketing.mobile.notificationbuilder.NotificationConstructionFailedException
-import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants
-import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.LOG_TAG
+import com.adobe.ui_utils.PushTemplateConstants
+import com.adobe.ui_utils.PushTemplateConstants.LOG_TAG
 import com.adobe.marketing.mobile.notificationbuilder.R
 import com.adobe.marketing.mobile.notificationbuilder.internal.PendingIntentUtils
-import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateImageUtils
+import com.adobe.ui_utils.PushTemplateImageUtils
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.createNotificationChannelIfRequired
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setElementColor
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.ProductCatalogPushTemplate
@@ -51,7 +51,7 @@ internal object ProductCatalogNotificationBuilder {
 
         // fast fail if we can't download a catalog item image
         val catalogImageUris = pushTemplate.catalogItems.map { it.img }
-        downloadedImageCount = PushTemplateImageUtils.cacheImages(catalogImageUris)
+        downloadedImageCount = com.adobe.ui_utils.PushTemplateImageUtils.cacheImages(catalogImageUris)
         if (downloadedImageCount != catalogImageUris.size) {
             Log.error(
                 LOG_TAG,
@@ -64,7 +64,7 @@ internal object ProductCatalogNotificationBuilder {
         val packageName = context.packageName
         val smallLayout = RemoteViews(packageName, R.layout.push_template_collapsed)
         val expandedLayout =
-            if (pushTemplate.displayLayout == PushTemplateConstants.DefaultValues.PRODUCT_CATALOG_VERTICAL_LAYOUT) {
+            if (pushTemplate.displayLayout == com.adobe.ui_utils.PushTemplateConstants.DefaultValues.PRODUCT_CATALOG_VERTICAL_LAYOUT) {
                 RemoteViews(packageName, R.layout.push_tempate_vertical_catalog)
             } else {
                 RemoteViews(packageName, R.layout.push_template_horizontal_catalog)
@@ -146,7 +146,7 @@ internal object ProductCatalogNotificationBuilder {
         )
 
         val pushImage =
-            PushTemplateImageUtils.getCachedImage(pushTemplate.catalogItems[pushTemplate.currentIndex].img)
+            com.adobe.ui_utils.PushTemplateImageUtils.getCachedImage(pushTemplate.catalogItems[pushTemplate.currentIndex].img)
         expandedLayout.setImageViewBitmap(R.id.product_image, pushImage)
         expandedLayout.setOnClickPendingIntent(
             R.id.product_image,
@@ -154,7 +154,7 @@ internal object ProductCatalogNotificationBuilder {
                 context,
                 trackerActivityClass,
                 pushTemplate.catalogItems[pushTemplate.currentIndex].uri,
-                PushTemplateConstants.CatalogActionIds.PRODUCT_IMAGE_CLICKED,
+                com.adobe.ui_utils.PushTemplateConstants.CatalogActionIds.PRODUCT_IMAGE_CLICKED,
                 pushTemplate.data.getBundle()
             )
         )
@@ -190,7 +190,7 @@ internal object ProductCatalogNotificationBuilder {
             R.id.product_thumbnail_3
         )
         for (index in catalogItems.indices) {
-            val thumbImage = PushTemplateImageUtils.getCachedImage(catalogItems[index].img)
+            val thumbImage = com.adobe.ui_utils.PushTemplateImageUtils.getCachedImage(catalogItems[index].img)
             if (thumbImage == null) {
                 Log.warning(
                     LOG_TAG,
@@ -247,7 +247,7 @@ internal object ProductCatalogNotificationBuilder {
                 context,
                 trackerActivityClass,
                 pushTemplate.ctaButtonUri,
-                PushTemplateConstants.CatalogActionIds.CTA_BUTTON_CLICKED,
+                com.adobe.ui_utils.PushTemplateConstants.CatalogActionIds.CTA_BUTTON_CLICKED,
                 pushTemplate.data.getBundle()
             )
         )
@@ -266,8 +266,8 @@ internal object ProductCatalogNotificationBuilder {
         setElementColor(
             containerViewId,
             "#$buttonColor",
-            PushTemplateConstants.MethodNames.SET_BACKGROUND_COLOR,
-            PushTemplateConstants.FriendlyViewNames.CTA_BUTTON
+            com.adobe.ui_utils.PushTemplateConstants.MethodNames.SET_BACKGROUND_COLOR,
+            com.adobe.ui_utils.PushTemplateConstants.FriendlyViewNames.CTA_BUTTON
         )
     }
 
@@ -284,8 +284,8 @@ internal object ProductCatalogNotificationBuilder {
         setElementColor(
             containerViewId,
             "#$buttonTextColor",
-            PushTemplateConstants.MethodNames.SET_TEXT_COLOR,
-            PushTemplateConstants.FriendlyViewNames.CTA_BUTTON
+            com.adobe.ui_utils.PushTemplateConstants.MethodNames.SET_TEXT_COLOR,
+            com.adobe.ui_utils.PushTemplateConstants.FriendlyViewNames.CTA_BUTTON
         )
     }
 
@@ -317,13 +317,13 @@ internal object ProductCatalogNotificationBuilder {
         )
 
         val thumbnailClickIntent = AEPPushNotificationBuilder.createIntent(
-            PushTemplateConstants.IntentActions.CATALOG_THUMBNAIL_CLICKED,
+            com.adobe.ui_utils.PushTemplateConstants.IntentActions.CATALOG_THUMBNAIL_CLICKED,
             pushTemplate
         ).apply {
             setClass(context.applicationContext, broadcastReceiverClass)
-            putExtra(PushTemplateConstants.PushPayloadKeys.CHANNEL_ID, channelId)
+            putExtra(com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.CHANNEL_ID, channelId)
             putExtra(
-                PushTemplateConstants.IntentKeys.CATALOG_ITEM_INDEX,
+                com.adobe.ui_utils.PushTemplateConstants.IntentKeys.CATALOG_ITEM_INDEX,
                 currentIndex.toString()
             )
         }

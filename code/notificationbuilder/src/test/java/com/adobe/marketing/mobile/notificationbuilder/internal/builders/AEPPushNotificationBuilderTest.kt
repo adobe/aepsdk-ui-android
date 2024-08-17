@@ -19,8 +19,8 @@ import android.os.Build
 import android.os.Bundle
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
-import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants
-import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.IntentActions.TIMER_EXPIRED
+import com.adobe.ui_utils.PushTemplateConstants
+import com.adobe.ui_utils.PushTemplateConstants.IntentActions.TIMER_EXPIRED
 import com.adobe.marketing.mobile.notificationbuilder.R
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setNotificationBackgroundColor
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setNotificationBodyTextColor
@@ -130,7 +130,7 @@ class AEPPushNotificationBuilderTest {
     fun `construct should not set notification sound if pushTemplate sound is invalid`() {
         dataMap.replaceValueInMap(
             Pair(
-                PushTemplateConstants.PushPayloadKeys.SOUND,
+                com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.SOUND,
                 "invalid_sound"
             )
         )
@@ -216,15 +216,15 @@ class AEPPushNotificationBuilderTest {
         assertNotNull(notification.deleteIntent)
         assertEquals(
             pushTemplate.actionUri,
-            intent.getStringExtra(PushTemplateConstants.TrackingKeys.ACTION_URI)
+            intent.getStringExtra(com.adobe.ui_utils.PushTemplateConstants.TrackingKeys.ACTION_URI)
         )
         assertEquals(
             pushTemplate.tag,
-            intent.getStringExtra(PushTemplateConstants.PushPayloadKeys.TAG)
+            intent.getStringExtra(com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.TAG)
         )
         assertEquals(
             pushTemplate.isNotificationSticky.toString(),
-            intent.getStringExtra(PushTemplateConstants.PushPayloadKeys.STICKY)
+            intent.getStringExtra(com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.STICKY)
         )
     }
 

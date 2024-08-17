@@ -17,9 +17,9 @@ import android.content.Context
 import android.content.Intent
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
-import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants
+import com.adobe.ui_utils.PushTemplateConstants
 import com.adobe.marketing.mobile.notificationbuilder.R
-import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateImageUtils
+import com.adobe.ui_utils.PushTemplateImageUtils
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setRemoteViewImage
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.BasicPushTemplate
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.MOCKED_CHANNEL_ID
@@ -33,7 +33,6 @@ import com.adobe.marketing.mobile.notificationbuilder.internal.templates.MockAEP
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.provideMockedBasicPushTemplateWithAllKeys
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.provideMockedBasicPushTemplateWithRequiredData
 import com.adobe.marketing.mobile.notificationbuilder.internal.util.MapData
-import com.google.common.base.Verify.verify
 import io.mockk.every
 import io.mockk.mockkConstructor
 import io.mockk.mockkObject
@@ -73,7 +72,7 @@ class BasicNotificationBuilderTest {
 
         mockkConstructor(RemoteViews::class)
         mockkStatic(RemoteViews::setRemoteViewImage)
-        mockkObject(PushTemplateImageUtils)
+        mockkObject(com.adobe.ui_utils.PushTemplateImageUtils)
     }
 
     @After
@@ -133,11 +132,11 @@ class BasicNotificationBuilderTest {
 
         assertEquals(
             pushTemplate.tag,
-            intent.getStringExtra(PushTemplateConstants.PushPayloadKeys.TAG)
+            intent.getStringExtra(com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.TAG)
         )
         assertEquals(
             pushTemplate.isNotificationSticky.toString(),
-            intent.getStringExtra(PushTemplateConstants.PushPayloadKeys.STICKY)
+            intent.getStringExtra(com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.STICKY)
         )
         assertEquals(pushTemplate.tag, MOCKED_TAG)
         assertEquals(build.channelId, MOCKED_CHANNEL_ID)
@@ -148,10 +147,10 @@ class BasicNotificationBuilderTest {
     fun `construct should set STICKY flag to false when isNotificationSticky parameter is false`() {
 
         val dataMap = MockAEPPushTemplateDataProvider.getMockedDataMapWithRequiredData()
-        dataMap[PushTemplateConstants.PushPayloadKeys.REMIND_LATER_TEXT] = MOCK_REMIND_LATER_TEXT
-        dataMap[PushTemplateConstants.PushPayloadKeys.REMIND_LATER_DURATION] =
+        dataMap[com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.REMIND_LATER_TEXT] = MOCK_REMIND_LATER_TEXT
+        dataMap[com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.REMIND_LATER_DURATION] =
             MOCK_REMIND_LATER_DURATION
-        dataMap[PushTemplateConstants.PushPayloadKeys.STICKY] = "false"
+        dataMap[com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.STICKY] = "false"
 
         val pushTemplate = BasicPushTemplate(MapData(dataMap))
 
@@ -167,7 +166,7 @@ class BasicNotificationBuilderTest {
         val shadowPendingIntent = Shadows.shadowOf(pendingIntent)
         val intent = shadowPendingIntent.savedIntent
 
-        assertEquals("false", intent.getStringExtra(PushTemplateConstants.PushPayloadKeys.STICKY))
+        assertEquals("false", intent.getStringExtra(com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.STICKY))
     }
 
     @Test
@@ -232,7 +231,7 @@ class BasicNotificationBuilderTest {
     @Test
     fun `remindLaterButton is not added when remindLaterText is not null, remindLaterTimestamp is null, remindLaterDuration is null`() {
         val dataMap = MockAEPPushTemplateDataProvider.getMockedDataMapWithRequiredData()
-        dataMap[PushTemplateConstants.PushPayloadKeys.REMIND_LATER_TEXT] = MOCK_REMIND_LATER_TEXT
+        dataMap[com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.REMIND_LATER_TEXT] = MOCK_REMIND_LATER_TEXT
 
         val pushTemplate = BasicPushTemplate(MapData(dataMap))
         val notificationBuilder = BasicNotificationBuilder.construct(
@@ -252,8 +251,8 @@ class BasicNotificationBuilderTest {
     @Test
     fun `remindLaterButton is added when remindLaterText is not null, remindLaterTimestamp is not null, remindLaterDuration is null`() {
         val dataMap = MockAEPPushTemplateDataProvider.getMockedDataMapWithRequiredData()
-        dataMap[PushTemplateConstants.PushPayloadKeys.REMIND_LATER_TEXT] = MOCK_REMIND_LATER_TEXT
-        dataMap[PushTemplateConstants.PushPayloadKeys.REMIND_LATER_TIMESTAMP] =
+        dataMap[com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.REMIND_LATER_TEXT] = MOCK_REMIND_LATER_TEXT
+        dataMap[com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.REMIND_LATER_TIMESTAMP] =
             MOCK_REMIND_LATER_TIME
 
         val pushTemplate = BasicPushTemplate(MapData(dataMap))
@@ -274,8 +273,8 @@ class BasicNotificationBuilderTest {
     @Test
     fun `remindLaterButton is added when remindLaterText is not null, remindLaterTimestamp is null, remindLaterDuration is not null`() {
         val dataMap = MockAEPPushTemplateDataProvider.getMockedDataMapWithRequiredData()
-        dataMap[PushTemplateConstants.PushPayloadKeys.REMIND_LATER_TEXT] = MOCK_REMIND_LATER_TEXT
-        dataMap[PushTemplateConstants.PushPayloadKeys.REMIND_LATER_DURATION] =
+        dataMap[com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.REMIND_LATER_TEXT] = MOCK_REMIND_LATER_TEXT
+        dataMap[com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.REMIND_LATER_DURATION] =
             MOCK_REMIND_LATER_DURATION
 
         val pushTemplate = BasicPushTemplate(MapData(dataMap))
