@@ -23,8 +23,8 @@ import android.widget.RemoteViews
 import com.adobe.marketing.mobile.notificationbuilder.internal.builders.DummyActivity
 import com.adobe.marketing.mobile.services.Logging
 import com.adobe.marketing.mobile.services.ServiceProvider
-import com.adobe.ui_utils.PushTemplateConstants
-import com.adobe.ui_utils.PushTemplateImageUtils
+import com.adobe.marketing.mobile.utils.PushTemplateConstants
+import com.adobe.marketing.mobile.utils.PushTemplateImageUtils
 import io.mockk.Runs
 import io.mockk.every
 import io.mockk.just

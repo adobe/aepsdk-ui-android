@@ -13,10 +13,11 @@ package com.adobe.marketing.mobile.notificationbuilder.internal.templates
 
 import com.adobe.marketing.mobile.notificationbuilder.internal.util.NotificationData
 import com.adobe.marketing.mobile.services.Log
-import com.adobe.ui_utils.PushTemplateConstants.CatalogItemKeys
-import com.adobe.ui_utils.PushTemplateConstants.DefaultValues
-import com.adobe.ui_utils.PushTemplateConstants.LOG_TAG
-import com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys
+import com.adobe.marketing.mobile.utils.PushTemplateConstants
+import com.adobe.marketing.mobile.utils.PushTemplateConstants.CatalogItemKeys
+import com.adobe.marketing.mobile.utils.PushTemplateConstants.DefaultValues
+import com.adobe.marketing.mobile.utils.PushTemplateConstants.LOG_TAG
+import com.adobe.marketing.mobile.utils.PushTemplateConstants.PushPayloadKeys
 import org.json.JSONArray
 import org.json.JSONException
 
@@ -74,7 +75,7 @@ internal class ProductCatalogPushTemplate(data: NotificationData) : AEPPushTempl
         displayLayout = data.getRequiredString(PushPayloadKeys.CATALOG_LAYOUT)
         rawCatalogItems = data.getRequiredString(PushPayloadKeys.CATALOG_ITEMS)
         catalogItems = parseCatalogItemsFromString(rawCatalogItems)
-        currentIndex = data.getInteger(com.adobe.ui_utils.PushTemplateConstants.IntentKeys.CATALOG_ITEM_INDEX)
+        currentIndex = data.getInteger(PushTemplateConstants.IntentKeys.CATALOG_ITEM_INDEX)
             ?: DefaultValues.PRODUCT_CATALOG_START_INDEX
     }
 

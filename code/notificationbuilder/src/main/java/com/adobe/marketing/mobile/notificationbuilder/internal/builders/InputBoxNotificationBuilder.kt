@@ -26,9 +26,9 @@ import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.create
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setRemoteImage
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.InputBoxPushTemplate
 import com.adobe.marketing.mobile.services.Log
-import com.adobe.ui_utils.PushTemplateConstants
-import com.adobe.ui_utils.PushTemplateConstants.LOG_TAG
-import com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys
+import com.adobe.marketing.mobile.utils.PushTemplateConstants
+import com.adobe.marketing.mobile.utils.PushTemplateConstants.LOG_TAG
+import com.adobe.marketing.mobile.utils.PushTemplateConstants.PushPayloadKeys
 import java.util.Random
 
 /**

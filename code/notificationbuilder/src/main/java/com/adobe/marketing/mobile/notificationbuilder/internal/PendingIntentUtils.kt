@@ -20,7 +20,7 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import com.adobe.marketing.mobile.services.Log
-import com.adobe.ui_utils.PushTemplateConstants
+import com.adobe.marketing.mobile.utils.PushTemplateConstants
 import java.util.Random
 
 internal object PendingIntentUtils {

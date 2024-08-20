@@ -25,7 +25,7 @@ import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setSma
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setSound
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.BasicPushTemplate
 import com.adobe.marketing.mobile.services.Log
-import com.adobe.ui_utils.PushTemplateConstants.LOG_TAG
+import com.adobe.marketing.mobile.utils.PushTemplateConstants.LOG_TAG
 
 /**
  * Object responsible for constructing a legacy push notification.

@@ -12,7 +12,7 @@
 package com.adobe.marketing.mobile.notificationbuilder.internal.templates
 
 import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateType
-import com.adobe.ui_utils.PushTemplateConstants
+import com.adobe.marketing.mobile.utils.PushTemplateConstants
 
 object MockMultiIconTemplateDataProvider {
 

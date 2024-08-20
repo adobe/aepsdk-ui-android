@@ -23,9 +23,9 @@ import com.adobe.marketing.mobile.notificationbuilder.internal.templates.removeK
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.replaceValueInMap
 import com.adobe.marketing.mobile.notificationbuilder.internal.util.IntentData
 import com.adobe.marketing.mobile.notificationbuilder.internal.util.MapData
-import com.adobe.ui_utils.PushTemplateConstants
-import com.adobe.ui_utils.PushTemplateConstants.DefaultValues.DEFAULT_CHANNEL_ID
-import com.adobe.ui_utils.PushTemplateConstants.DefaultValues.SILENT_NOTIFICATION_CHANNEL_ID
+import com.adobe.marketing.mobile.utils.PushTemplateConstants
+import com.adobe.marketing.mobile.utils.PushTemplateConstants.DefaultValues.DEFAULT_CHANNEL_ID
+import com.adobe.marketing.mobile.utils.PushTemplateConstants.DefaultValues.SILENT_NOTIFICATION_CHANNEL_ID
 import io.mockk.unmockkAll
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertNotNull

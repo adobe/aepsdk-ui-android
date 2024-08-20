@@ -9,7 +9,7 @@
   governing permissions and limitations under the License.
 */
 
-package com.adobe.ui_utils
+package com.adobe.marketing.mobile.utils
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -25,7 +25,7 @@ import com.adobe.marketing.mobile.services.caching.CacheEntry
 import com.adobe.marketing.mobile.services.caching.CacheExpiry
 import com.adobe.marketing.mobile.services.caching.CacheService
 import com.adobe.marketing.mobile.util.UrlUtils
-import com.adobe.ui_utils.PushTemplateConstants.LOG_TAG
+import com.adobe.marketing.mobile.utils.PushTemplateConstants.LOG_TAG
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.File
@@ -320,9 +320,9 @@ object PushTemplateImageUtils {
             (
                 applicationCacheDir
                     .toString() + File.separator +
-                    PushTemplateConstants.CACHE_BASE_DIR
+                        PushTemplateConstants.CACHE_BASE_DIR
                 ) + File.separator +
-                PushTemplateConstants.PUSH_IMAGE_CACHE
+                    PushTemplateConstants.PUSH_IMAGE_CACHE
             )
     }
 }

@@ -1,3 +1,5 @@
+import com.adobe.marketing.mobile.gradle.BuildConstants
+
 plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
@@ -7,41 +9,34 @@ val mavenCoreVersion: String by project
 
 
 android {
-    namespace = "com.adobe.ui_utils"
-    compileSdk = 34
+    namespace = "com.adobe.marketing.mobile.ui_utils"
 
     defaultConfig {
-        minSdk = 21
+        minSdk = BuildConstants.Versions.MIN_SDK_VERSION
+        compileSdk = BuildConstants.Versions.COMPILE_SDK_VERSION
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        consumerProguardFiles("consumer-rules.pro")
+        vectorDrawables.useSupportLibrary = true
     }
 
     buildTypes {
-        release {
+        getByName(BuildConstants.BuildTypes.RELEASE) {
             isMinifyEnabled = false
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = BuildConstants.Versions.JAVA_SOURCE_COMPATIBILITY
+        targetCompatibility = BuildConstants.Versions.JAVA_TARGET_COMPATIBILITY
     }
+
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = BuildConstants.Versions.KOTLIN_JVM_TARGET
+        languageVersion = BuildConstants.Versions.KOTLIN_LANGUAGE_VERSION
+        apiVersion = BuildConstants.Versions.KOTLIN_API_VERSION
     }
 }
 
 dependencies {
     implementation("com.adobe.marketing.mobile:core:$mavenCoreVersion")
-
-    implementation("androidx.core:core-ktx:1.13.1")
-    implementation("androidx.appcompat:appcompat:1.7.0")
-    implementation("com.google.android.material:material:1.12.0")
-    testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test.ext:junit:1.2.1")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
 }

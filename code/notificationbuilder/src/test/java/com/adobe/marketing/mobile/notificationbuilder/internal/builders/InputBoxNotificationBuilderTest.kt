@@ -34,7 +34,7 @@ import com.adobe.marketing.mobile.notificationbuilder.internal.templates.provide
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.removeKeysFromMap
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.replaceValueInMap
 import com.adobe.marketing.mobile.notificationbuilder.internal.util.MapData
-import com.adobe.ui_utils.PushTemplateConstants
+import com.adobe.marketing.mobile.utils.PushTemplateConstants
 import io.mockk.Runs
 import io.mockk.every
 import io.mockk.just

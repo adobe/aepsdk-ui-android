@@ -34,7 +34,7 @@ import com.adobe.marketing.mobile.notificationbuilder.internal.templates.MOCKED_
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.MOCKED_TITLE
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.TimerPushTemplate
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.provideMockedTimerTemplate
-import com.adobe.ui_utils.PushTemplateImageUtils
+import com.adobe.marketing.mobile.utils.PushTemplateImageUtils
 import io.mockk.Runs
 import io.mockk.every
 import io.mockk.just

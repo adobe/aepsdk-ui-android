@@ -32,6 +32,6 @@ dependencyResolutionManagement {
 rootProject.name = "aepsdk-ui-android"
 include (
         ":notificationbuilder",
-        ":testapp"
+    ":testapp",
+    ":ui-utils"
 )
-include(":ui-utils")

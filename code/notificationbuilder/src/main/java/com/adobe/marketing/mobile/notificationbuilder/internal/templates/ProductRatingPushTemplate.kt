@@ -13,6 +13,7 @@ package com.adobe.marketing.mobile.notificationbuilder.internal.templates
 
 import com.adobe.marketing.mobile.notificationbuilder.internal.util.NotificationData
 import com.adobe.marketing.mobile.services.Log
+import com.adobe.marketing.mobile.utils.PushTemplateConstants
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -20,7 +21,7 @@ internal class ProductRatingPushTemplate(data: NotificationData) : AEPPushTempla
 
     private val SELF_TAG = "ProductRatingPushTemplate"
 
-    class RatingAction(val type: com.adobe.ui_utils.PushTemplateConstants.ActionType, val link: String?) {
+    class RatingAction(val type: PushTemplateConstants.ActionType, val link: String?) {
         companion object {
             private const val SELF_TAG = "RatingAction"
 
@@ -33,23 +34,23 @@ internal class ProductRatingPushTemplate(data: NotificationData) : AEPPushTempla
             fun from(jsonObject: JSONObject): RatingAction? {
                 return try {
                     var uri: String? = null
-                    val type = com.adobe.ui_utils.PushTemplateConstants.ActionType.valueOf(
+                    val type = PushTemplateConstants.ActionType.valueOf(
                         jsonObject.getString(
-                            com.adobe.ui_utils.PushTemplateConstants.RatingAction.TYPE
+                            PushTemplateConstants.RatingAction.TYPE
                         )
                     )
-                    if (type == com.adobe.ui_utils.PushTemplateConstants.ActionType.WEBURL || type == com.adobe.ui_utils.PushTemplateConstants.ActionType.DEEPLINK) {
-                        uri = jsonObject.getString(com.adobe.ui_utils.PushTemplateConstants.RatingAction.URI)
+                    if (type == PushTemplateConstants.ActionType.WEBURL || type == PushTemplateConstants.ActionType.DEEPLINK) {
+                        uri = jsonObject.getString(PushTemplateConstants.RatingAction.URI)
                     }
                     Log.trace(
-                        com.adobe.ui_utils.PushTemplateConstants.LOG_TAG,
+                        PushTemplateConstants.LOG_TAG,
                         SELF_TAG,
                         "Creating a rating action with uri ($uri), and type ($type)."
                     )
                     RatingAction(type, uri)
                 } catch (e: Exception) {
                     Log.warning(
-                        com.adobe.ui_utils.PushTemplateConstants.LOG_TAG,
+                        PushTemplateConstants.LOG_TAG,
                         SELF_TAG,
                         "Exception in converting rating action json string to json object, Error : ${e.localizedMessage}."
                     )
@@ -66,22 +67,22 @@ internal class ProductRatingPushTemplate(data: NotificationData) : AEPPushTempla
     internal val ratingSelected: Int
 
     init {
-        ratingUnselectedIcon = data.getRequiredString(com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.RATING_UNSELECTED_ICON)
-        ratingSelectedIcon = data.getRequiredString(com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.RATING_SELECTED_ICON)
-        ratingActionString = data.getRequiredString(com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.RATING_ACTIONS)
+        ratingUnselectedIcon = data.getRequiredString(PushTemplateConstants.PushPayloadKeys.RATING_UNSELECTED_ICON)
+        ratingSelectedIcon = data.getRequiredString(PushTemplateConstants.PushPayloadKeys.RATING_SELECTED_ICON)
+        ratingActionString = data.getRequiredString(PushTemplateConstants.PushPayloadKeys.RATING_ACTIONS)
         ratingActionList = getRatingActionsFromString(ratingActionString)
-            ?: throw IllegalArgumentException("Required field \"${com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.RATING_ACTIONS}\" is invalid.")
+            ?: throw IllegalArgumentException("Required field \"${PushTemplateConstants.PushPayloadKeys.RATING_ACTIONS}\" is invalid.")
         if (ratingActionList.size < 3 || ratingActionList.size > 5) {
-            throw IllegalArgumentException("\"${com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.RATING_ACTIONS}\" field must have 3 to 5 rating actions")
+            throw IllegalArgumentException("\"${PushTemplateConstants.PushPayloadKeys.RATING_ACTIONS}\" field must have 3 to 5 rating actions")
         }
-        ratingSelected = data.getInteger(com.adobe.ui_utils.PushTemplateConstants.IntentKeys.RATING_SELECTED)
-            ?: com.adobe.ui_utils.PushTemplateConstants.ProductRatingKeys.RATING_UNSELECTED
+        ratingSelected = data.getInteger(PushTemplateConstants.IntentKeys.RATING_SELECTED)
+            ?: PushTemplateConstants.ProductRatingKeys.RATING_UNSELECTED
     }
 
     private fun getRatingActionsFromString(ratingActionJsonString: String?): List<RatingAction>? {
         if (ratingActionJsonString.isNullOrEmpty()) {
             Log.debug(
-                com.adobe.ui_utils.PushTemplateConstants.LOG_TAG,
+                PushTemplateConstants.LOG_TAG,
                 SELF_TAG,
                 "Exception in converting rating uri json string to json array, Error :" +
                     " rating uris is null"
@@ -98,7 +99,7 @@ internal class ProductRatingPushTemplate(data: NotificationData) : AEPPushTempla
             }
         } catch (e: Exception) {
             Log.debug(
-                com.adobe.ui_utils.PushTemplateConstants.LOG_TAG,
+                PushTemplateConstants.LOG_TAG,
                 SELF_TAG,
                 "Exception in converting rating uri json string to json array, Error : ${e.localizedMessage}"
             )

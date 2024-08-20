@@ -9,7 +9,7 @@
   governing permissions and limitations under the License.
 */
 
-package com.adobe.ui_utils
+package com.adobe.marketing.mobile.utils
 
 import java.util.concurrent.TimeUnit
 

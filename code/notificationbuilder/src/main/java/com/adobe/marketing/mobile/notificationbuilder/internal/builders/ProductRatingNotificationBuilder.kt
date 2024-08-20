@@ -28,9 +28,9 @@ import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setRem
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setRemoteViewImage
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.ProductRatingPushTemplate
 import com.adobe.marketing.mobile.services.Log
-import com.adobe.ui_utils.PushTemplateConstants
-import com.adobe.ui_utils.PushTemplateConstants.LOG_TAG
-import com.adobe.ui_utils.PushTemplateImageUtils
+import com.adobe.marketing.mobile.utils.PushTemplateConstants
+import com.adobe.marketing.mobile.utils.PushTemplateConstants.LOG_TAG
+import com.adobe.marketing.mobile.utils.PushTemplateImageUtils
 
 internal object ProductRatingNotificationBuilder {
     private const val SELF_TAG = "ProductRatingNotificationBuilder"

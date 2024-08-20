@@ -26,11 +26,11 @@ import com.adobe.marketing.mobile.notificationbuilder.internal.templates.ManualC
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.MockCarousalTemplateDataProvider
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.provideMockedManualCarousalTemplate
 import com.adobe.marketing.mobile.notificationbuilder.internal.util.IntentData
-import com.adobe.ui_utils.PushTemplateConstants
-import com.adobe.ui_utils.PushTemplateImageUtils
-import com.adobe.ui_utils.PushTemplateImageUtils.cacheImages
-import com.adobe.ui_utils.PushTemplateImageUtils.getAssetCacheLocation
-import com.adobe.ui_utils.PushTemplateImageUtils.getCachedImage
+import com.adobe.marketing.mobile.utils.PushTemplateConstants
+import com.adobe.marketing.mobile.utils.PushTemplateImageUtils
+import com.adobe.marketing.mobile.utils.PushTemplateImageUtils.cacheImages
+import com.adobe.marketing.mobile.utils.PushTemplateImageUtils.getAssetCacheLocation
+import com.adobe.marketing.mobile.utils.PushTemplateImageUtils.getCachedImage
 import io.mockk.Runs
 import io.mockk.every
 import io.mockk.just

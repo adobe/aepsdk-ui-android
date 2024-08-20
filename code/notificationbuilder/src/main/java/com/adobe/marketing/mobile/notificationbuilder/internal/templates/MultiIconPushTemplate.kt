@@ -13,7 +13,8 @@ package com.adobe.marketing.mobile.notificationbuilder.internal.templates
 
 import com.adobe.marketing.mobile.notificationbuilder.internal.util.NotificationData
 import com.adobe.marketing.mobile.services.Log
-import com.adobe.ui_utils.PushTemplateConstants.DEFAULT_DELETE_ICON_NAME
+import com.adobe.marketing.mobile.utils.PushTemplateConstants
+import com.adobe.marketing.mobile.utils.PushTemplateConstants.DEFAULT_DELETE_ICON_NAME
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
@@ -23,7 +24,7 @@ internal class MultiIconPushTemplate(data: NotificationData) : AEPPushTemplate(d
     private val SELF_TAG = "MultiIconNotificationTemplate"
     data class MultiIconTemplateItem(
         val iconUrl: String,
-        val actionType: com.adobe.ui_utils.PushTemplateConstants.ActionType,
+        val actionType: PushTemplateConstants.ActionType,
         val actionUri: String?
     )
 
@@ -31,17 +32,17 @@ internal class MultiIconPushTemplate(data: NotificationData) : AEPPushTemplate(d
     internal var cancelIcon: String? = null
 
     init {
-        val itemsJson = data.getRequiredString(com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.MULTI_ICON_ITEMS)
+        val itemsJson = data.getRequiredString(PushTemplateConstants.PushPayloadKeys.MULTI_ICON_ITEMS)
         templateItemList = getTemplateItemList(itemsJson)
-            ?: throw IllegalArgumentException("Required field \"${com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.MULTI_ICON_ITEMS}\" is invalid.")
+            ?: throw IllegalArgumentException("Required field \"${PushTemplateConstants.PushPayloadKeys.MULTI_ICON_ITEMS}\" is invalid.")
 
-        if (templateItemList.size < com.adobe.ui_utils.PushTemplateConstants.DefaultValues.ICON_TEMPLATE_MIN_IMAGE_COUNT ||
-            templateItemList.size > com.adobe.ui_utils.PushTemplateConstants.DefaultValues.ICON_TEMPLATE_MAX_IMAGE_COUNT
+        if (templateItemList.size < PushTemplateConstants.DefaultValues.ICON_TEMPLATE_MIN_IMAGE_COUNT ||
+            templateItemList.size > PushTemplateConstants.DefaultValues.ICON_TEMPLATE_MAX_IMAGE_COUNT
         ) {
-            throw IllegalArgumentException("\"${com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.MULTI_ICON_ITEMS}\" field must have 3 to 5 valid items")
+            throw IllegalArgumentException("\"${PushTemplateConstants.PushPayloadKeys.MULTI_ICON_ITEMS}\" field must have 3 to 5 valid items")
         }
 
-        cancelIcon = data.getString(com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.MULTI_ICON_CLOSE_BUTTON)
+        cancelIcon = data.getString(PushTemplateConstants.PushPayloadKeys.MULTI_ICON_CLOSE_BUTTON)
         if (cancelIcon.isNullOrEmpty()) {
             cancelIcon = DEFAULT_DELETE_ICON_NAME
         }
@@ -50,7 +51,7 @@ internal class MultiIconPushTemplate(data: NotificationData) : AEPPushTemplate(d
     private fun getTemplateItemList(templateIconListJsonString: String?): MutableList<MultiIconTemplateItem>? {
         if (templateIconListJsonString.isNullOrEmpty()) {
             Log.warning(
-                com.adobe.ui_utils.PushTemplateConstants.LOG_TAG,
+                PushTemplateConstants.LOG_TAG,
                 SELF_TAG,
                 "Exception in converting rating uri json string to json array, Error :" +
                     " templateIconList Json String is null or empty"
@@ -67,7 +68,7 @@ internal class MultiIconPushTemplate(data: NotificationData) : AEPPushTemplate(d
             }
         } catch (e: JSONException) {
             Log.debug(
-                com.adobe.ui_utils.PushTemplateConstants.LOG_TAG,
+                PushTemplateConstants.LOG_TAG,
                 SELF_TAG,
                 "Exception in converting template action json string to json array, Error : ${e.localizedMessage}"
             )
@@ -78,28 +79,28 @@ internal class MultiIconPushTemplate(data: NotificationData) : AEPPushTemplate(d
 
     private fun getIconItemFromJsonObject(jsonObject: JSONObject): MultiIconTemplateItem? {
         return try {
-            val imageUri = jsonObject.getString(com.adobe.ui_utils.PushTemplateConstants.MultiIconTemplateKeys.IMG)
+            val imageUri = jsonObject.getString(PushTemplateConstants.MultiIconTemplateKeys.IMG)
             // In case of invalid image URI, return null as icon is mandatory
             if (imageUri.isNullOrEmpty()) {
                 Log.debug(
-                    com.adobe.ui_utils.PushTemplateConstants.LOG_TAG,
+                    PushTemplateConstants.LOG_TAG,
                     SELF_TAG,
                     "Image uri is empty, cannot create icon item."
                 )
                 return null
             }
             var uri: String? = null
-            val actionTypeString = jsonObject.getString(com.adobe.ui_utils.PushTemplateConstants.MultiIconTemplateKeys.TYPE)
+            val actionTypeString = jsonObject.getString(PushTemplateConstants.MultiIconTemplateKeys.TYPE)
             var actionType = if (actionTypeString.isNullOrEmpty()) {
-                com.adobe.ui_utils.PushTemplateConstants.ActionType.NONE
+                PushTemplateConstants.ActionType.NONE
             } else {
-                com.adobe.ui_utils.PushTemplateConstants.ActionType.valueOf(actionTypeString)
+                PushTemplateConstants.ActionType.valueOf(actionTypeString)
             }
-            if (actionType == com.adobe.ui_utils.PushTemplateConstants.ActionType.WEBURL || actionType == com.adobe.ui_utils.PushTemplateConstants.ActionType.DEEPLINK) {
-                uri = jsonObject.getString(com.adobe.ui_utils.PushTemplateConstants.MultiIconTemplateKeys.URI)
+            if (actionType == PushTemplateConstants.ActionType.WEBURL || actionType == PushTemplateConstants.ActionType.DEEPLINK) {
+                uri = jsonObject.getString(PushTemplateConstants.MultiIconTemplateKeys.URI)
                 if (uri.isNullOrEmpty()) {
                     Log.debug(
-                        com.adobe.ui_utils.PushTemplateConstants.LOG_TAG,
+                        PushTemplateConstants.LOG_TAG,
                         SELF_TAG,
                         "Uri is empty for action type $actionType, cannot create icon item."
                     )

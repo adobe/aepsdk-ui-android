@@ -19,7 +19,7 @@ import com.adobe.marketing.mobile.notificationbuilder.internal.PendingIntentUtil
 import com.adobe.marketing.mobile.services.Log
 import com.adobe.marketing.mobile.services.ServiceProvider
 import com.adobe.marketing.mobile.util.TimeUtils
-import com.adobe.ui_utils.PushTemplateConstants
+import com.adobe.marketing.mobile.utils.PushTemplateConstants
 
 /**
  * Public facing object to handle the remind later intent.

@@ -27,9 +27,9 @@ import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setRem
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.BasicPushTemplate
 import com.adobe.marketing.mobile.notificationbuilder.internal.util.NotificationData
 import com.adobe.marketing.mobile.services.Log
-import com.adobe.ui_utils.PushTemplateConstants
-import com.adobe.ui_utils.PushTemplateConstants.LOG_TAG
-import com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys
+import com.adobe.marketing.mobile.utils.PushTemplateConstants
+import com.adobe.marketing.mobile.utils.PushTemplateConstants.LOG_TAG
+import com.adobe.marketing.mobile.utils.PushTemplateConstants.PushPayloadKeys
 
 /**
  * Object responsible for constructing a [NotificationCompat.Builder] object containing a basic push template notification.

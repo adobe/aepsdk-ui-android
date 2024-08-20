@@ -26,10 +26,10 @@ import com.adobe.marketing.mobile.notificationbuilder.internal.templates.MockPro
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.ProductRatingPushTemplate
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.provideMockedProductRatingTemplate
 import com.adobe.marketing.mobile.notificationbuilder.internal.util.MapData
-import com.adobe.ui_utils.PushTemplateConstants
-import com.adobe.ui_utils.PushTemplateImageUtils
-import com.adobe.ui_utils.PushTemplateImageUtils.cacheImages
-import com.adobe.ui_utils.PushTemplateImageUtils.getCachedImage
+import com.adobe.marketing.mobile.utils.PushTemplateConstants
+import com.adobe.marketing.mobile.utils.PushTemplateImageUtils
+import com.adobe.marketing.mobile.utils.PushTemplateImageUtils.cacheImages
+import com.adobe.marketing.mobile.utils.PushTemplateImageUtils.getCachedImage
 import io.mockk.Runs
 import io.mockk.every
 import io.mockk.just

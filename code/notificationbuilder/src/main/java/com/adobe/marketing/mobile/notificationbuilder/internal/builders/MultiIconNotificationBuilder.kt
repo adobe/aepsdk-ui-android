@@ -26,7 +26,7 @@ import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setRem
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setRemoteViewImage
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.MultiIconPushTemplate
 import com.adobe.marketing.mobile.services.Log
-import com.adobe.ui_utils.PushTemplateConstants
+import com.adobe.marketing.mobile.utils.PushTemplateConstants
 import java.util.Random
 
 internal object MultiIconNotificationBuilder {

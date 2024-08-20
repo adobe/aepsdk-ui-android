@@ -16,7 +16,7 @@ import android.content.Intent
 import androidx.core.app.NotificationManagerCompat
 import com.adobe.marketing.mobile.notificationbuilder.internal.PendingIntentUtils
 import com.adobe.marketing.mobile.services.ServiceProvider
-import com.adobe.ui_utils.PushTemplateConstants
+import com.adobe.marketing.mobile.utils.PushTemplateConstants
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject

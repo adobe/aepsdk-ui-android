@@ -25,9 +25,9 @@ import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.create
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setElementColor
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.ProductCatalogPushTemplate
 import com.adobe.marketing.mobile.services.Log
-import com.adobe.ui_utils.PushTemplateConstants
-import com.adobe.ui_utils.PushTemplateConstants.LOG_TAG
-import com.adobe.ui_utils.PushTemplateImageUtils
+import com.adobe.marketing.mobile.utils.PushTemplateConstants
+import com.adobe.marketing.mobile.utils.PushTemplateConstants.LOG_TAG
+import com.adobe.marketing.mobile.utils.PushTemplateImageUtils
 
 /**
  * Object responsible for constructing a [NotificationCompat.Builder] object containing a product catalog template notification.

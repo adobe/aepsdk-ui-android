@@ -20,9 +20,9 @@ import com.adobe.marketing.mobile.notificationbuilder.internal.PendingIntentUtil
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setRemoteViewClickAction
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.AutoCarouselPushTemplate
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.provideMockedAutoCarousalTemplate
-import com.adobe.ui_utils.PushTemplateImageUtils
-import com.adobe.ui_utils.PushTemplateImageUtils.cacheImages
-import com.adobe.ui_utils.PushTemplateImageUtils.getCachedImage
+import com.adobe.marketing.mobile.utils.PushTemplateImageUtils
+import com.adobe.marketing.mobile.utils.PushTemplateImageUtils.cacheImages
+import com.adobe.marketing.mobile.utils.PushTemplateImageUtils.getCachedImage
 import io.mockk.Runs
 import io.mockk.every
 import io.mockk.just

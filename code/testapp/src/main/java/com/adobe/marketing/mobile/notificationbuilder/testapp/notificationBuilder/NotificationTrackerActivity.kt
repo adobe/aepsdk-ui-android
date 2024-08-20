@@ -18,7 +18,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationManagerCompat
 import com.adobe.marketing.mobile.services.ServiceProvider
-import com.adobe.ui_utils.PushTemplateConstants
+import com.adobe.marketing.mobile.utils.PushTemplateConstants
 
 class NotificationTrackerActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

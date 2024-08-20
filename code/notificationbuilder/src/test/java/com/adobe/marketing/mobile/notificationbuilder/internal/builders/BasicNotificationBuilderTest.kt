@@ -31,8 +31,8 @@ import com.adobe.marketing.mobile.notificationbuilder.internal.templates.MockAEP
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.provideMockedBasicPushTemplateWithAllKeys
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.provideMockedBasicPushTemplateWithRequiredData
 import com.adobe.marketing.mobile.notificationbuilder.internal.util.MapData
-import com.adobe.ui_utils.PushTemplateConstants
-import com.adobe.ui_utils.PushTemplateImageUtils
+import com.adobe.marketing.mobile.utils.PushTemplateConstants
+import com.adobe.marketing.mobile.utils.PushTemplateImageUtils
 import io.mockk.every
 import io.mockk.mockkConstructor
 import io.mockk.mockkObject

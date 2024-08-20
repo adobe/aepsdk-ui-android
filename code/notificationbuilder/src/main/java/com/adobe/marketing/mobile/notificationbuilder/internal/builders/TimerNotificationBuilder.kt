@@ -30,9 +30,9 @@ import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setTim
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.TimerPushTemplate
 import com.adobe.marketing.mobile.services.Log
 import com.adobe.marketing.mobile.util.TimeUtils
-import com.adobe.ui_utils.PushTemplateConstants
-import com.adobe.ui_utils.PushTemplateConstants.LOG_TAG
-import com.adobe.ui_utils.PushTemplateConstants.PushPayloadKeys.TimerKeys
+import com.adobe.marketing.mobile.utils.PushTemplateConstants
+import com.adobe.marketing.mobile.utils.PushTemplateConstants.LOG_TAG
+import com.adobe.marketing.mobile.utils.PushTemplateConstants.PushPayloadKeys.TimerKeys
 
 private const val TAG = "TimerNotificationBuilder"
 
