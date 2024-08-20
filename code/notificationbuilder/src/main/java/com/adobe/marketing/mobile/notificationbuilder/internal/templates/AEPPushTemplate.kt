@@ -29,13 +29,13 @@ import com.adobe.marketing.mobile.notificationbuilder.internal.util.Notification
 internal sealed class AEPPushTemplate(val data: NotificationData) {
 
     // Required, title of the message shown in the collapsed and expanded push template layouts
-    internal val title: String
+    internal lateinit var title: String
 
     // Required, body of the message shown in the collapsed push template layout
-    internal val body: String
+    internal lateinit var body: String
 
     // Required, Version of the payload assigned by the authoring UI.
-    internal val payloadVersion: String
+    internal lateinit var payloadVersion: String
 
     // begin optional values
     // Optional, sound to play when the notification is shown
@@ -107,17 +107,14 @@ internal sealed class AEPPushTemplate(val data: NotificationData) {
      * Initializes the push template with the given NotificationData.
      */
     init {
-        // extract the payload version
-        payloadVersion = data.getRequiredString(PushPayloadKeys.VERSION)
 
-        // extract the remaining text information
-        title = data.getRequiredString(PushPayloadKeys.TITLE)
-        body = data.getRequiredString(PushPayloadKeys.BODY)
+        templateType = PushTemplateType.fromString(data.getString(PushPayloadKeys.TEMPLATE_TYPE))
+        initRequiredValues()
+        // extract the payload version
         expandedBodyText = data.getString(PushPayloadKeys.EXPANDED_BODY_TEXT)
         ticker = data.getString(PushPayloadKeys.TICKER)
 
         // extract the template type
-        templateType = PushTemplateType.fromString(data.getString(PushPayloadKeys.TEMPLATE_TYPE))
         isFromIntent = data is IntentData
 
         // extract the basic media information
@@ -149,6 +146,21 @@ internal sealed class AEPPushTemplate(val data: NotificationData) {
         // extract notification priority and visibility
         priority = NotificationPriority.fromString(data.getString(PushPayloadKeys.PRIORITY))
         visibility = NotificationVisibility.fromString(data.getString(PushPayloadKeys.VISIBILITY))
+    }
+
+    private fun initRequiredValues() {
+
+        payloadVersion = data.getRequiredString(PushPayloadKeys.VERSION)
+
+        // extract the remaining text information
+        if (templateType == PushTemplateType.MULTI_ICON) {
+            // Title and body are not required for MultiIconPushTemplate
+            title = ""
+            body = ""
+        } else {
+            title = data.getRequiredString(PushPayloadKeys.TITLE)
+            body = data.getRequiredString(PushPayloadKeys.BODY)
+        }
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)

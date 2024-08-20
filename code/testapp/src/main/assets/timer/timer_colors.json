@@ -21,5 +21,9 @@
   "adb_n_visibility": "PRIVATE",
   "adb_n_priority": "PRIORITY_DEFAULT",
   "adb_n_count": "1",
-  "adb_image": "https://i.ibb.co/QN078XB/Resize-image-project.jpg"
+  "adb_image": "https://i.ibb.co/QN078XB/Resize-image-project.jpg",
+  "adb_clr_body": "00EE00",
+  "adb_clr_title": "AABBCC",
+  "adb_clr_bg": "000000",
+  "adb_clr_tmr": "FFFFFF"
 }

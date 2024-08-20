@@ -17,6 +17,7 @@ import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import androidx.core.app.RemoteInput
@@ -44,6 +45,11 @@ internal object InputBoxNotificationBuilder {
         trackerActivityClass: Class<out Activity>?,
         broadcastReceiverClass: Class<out BroadcastReceiver>?
     ): NotificationCompat.Builder {
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+            throw NotificationConstructionFailedException("Input box push notification on devices below Android N is not supported.")
+        }
+
         Log.trace(LOG_TAG, SELF_TAG, "Building an input box template push notification.")
         val packageName = context.packageName
         val smallLayout = RemoteViews(packageName, R.layout.push_template_collapsed)

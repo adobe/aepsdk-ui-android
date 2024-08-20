@@ -33,7 +33,6 @@ import com.adobe.marketing.mobile.notificationbuilder.internal.templates.MockAEP
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.provideMockedBasicPushTemplateWithAllKeys
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.provideMockedBasicPushTemplateWithRequiredData
 import com.adobe.marketing.mobile.notificationbuilder.internal.util.MapData
-import com.google.common.base.Verify.verify
 import io.mockk.every
 import io.mockk.mockkConstructor
 import io.mockk.mockkObject
@@ -100,6 +99,19 @@ class BasicNotificationBuilderTest {
 
         assertEquals(NotificationCompat.Builder::class.java, notificationBuilder.javaClass)
         verify(exactly = 1) { any<RemoteViews>().setRemoteViewImage(MOCKED_IMAGE_URI, R.id.expanded_template_image) }
+    }
+
+    @Config(sdk = [23])
+    @Test
+    fun `construct should use the api23 expanded layout for API level below 24`() {
+        val pushTemplate = provideMockedBasicPushTemplateWithAllKeys()
+        val notificationBuilder = BasicNotificationBuilder.construct(
+            context,
+            pushTemplate,
+            trackerActivityClass,
+            broadcastReceiverClass
+        )
+        assertEquals(R.layout.push_template_expanded_api23, notificationBuilder.bigContentView.layoutId)
     }
 
     @Test
