@@ -33,10 +33,13 @@ import com.adobe.marketing.mobile.notificationbuilder.internal.util.IntentData
 import com.adobe.marketing.mobile.notificationbuilder.internal.util.MapData
 import io.mockk.unmockkAll
 import junit.framework.TestCase.assertEquals
+import junit.framework.TestCase.assertFalse
 import junit.framework.TestCase.assertNotNull
 import junit.framework.TestCase.assertNull
+import junit.framework.TestCase.assertTrue
 import org.junit.After
 import org.junit.Assert.assertArrayEquals
+import org.junit.Assert.assertNotEquals
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -124,6 +127,97 @@ class AEPPushNotificationBuilderTest {
 
         verifyNotificationDataFields(notification, pushTemplate)
         verifyNotificationViewDataAndColors(pushTemplate)
+    }
+
+    @Config(sdk = [21])
+    @Test
+    fun `construct should set alert only once for API level below 22`() {
+        val pushTemplate = BasicPushTemplate(MapData(dataMap))
+        val notification =
+            AEPPushNotificationBuilder.construct(
+                context,
+                pushTemplate,
+                CHANNEL_ID_TO_USE,
+                trackerActivityClass,
+                smallLayout,
+                expandedLayout,
+                CONTAINER_LAYOUT_VIEW_ID
+            ).build()
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP_MR1) {
+            assertTrue(NotificationCompat.getOnlyAlertOnce(notification))
+        }
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1) {
+            assertFalse(NotificationCompat.getOnlyAlertOnce(notification))
+        }
+    }
+
+    @Config(sdk = [21])
+    @Test
+    fun `construct should set the expanded layout as the custom heads up content view for API level below 22`() {
+        val pushTemplate = BasicPushTemplate(MapData(dataMap))
+        val notificationBuilder =
+            AEPPushNotificationBuilder.construct(
+                context,
+                pushTemplate,
+                CHANNEL_ID_TO_USE,
+                trackerActivityClass,
+                smallLayout,
+                expandedLayout,
+                CONTAINER_LAYOUT_VIEW_ID
+            )
+        assertEquals(expandedLayout, notificationBuilder.headsUpContentView)
+    }
+
+    @Config(sdk = [22])
+    @Test
+    fun `construct should set the small layout as the custom heads up content view for API 22`() {
+        val pushTemplate = BasicPushTemplate(MapData(dataMap))
+        val notificationBuilder =
+            AEPPushNotificationBuilder.construct(
+                context,
+                pushTemplate,
+                CHANNEL_ID_TO_USE,
+                trackerActivityClass,
+                smallLayout,
+                expandedLayout,
+                CONTAINER_LAYOUT_VIEW_ID
+            )
+        assertEquals(smallLayout, notificationBuilder.headsUpContentView)
+    }
+
+    @Config(sdk = [23])
+    @Test
+    fun `construct should set the small layout as the custom heads up content view for API 23`() {
+        val pushTemplate = BasicPushTemplate(MapData(dataMap))
+        val notificationBuilder =
+            AEPPushNotificationBuilder.construct(
+                context,
+                pushTemplate,
+                CHANNEL_ID_TO_USE,
+                trackerActivityClass,
+                smallLayout,
+                expandedLayout,
+                CONTAINER_LAYOUT_VIEW_ID
+            )
+        assertEquals(smallLayout, notificationBuilder.headsUpContentView)
+    }
+
+    @Config(sdk = [24])
+    @Test
+    fun `construct should not set a custom heads up content view for API 24 or higher`() {
+        val pushTemplate = BasicPushTemplate(MapData(dataMap))
+        val notificationBuilder =
+            AEPPushNotificationBuilder.construct(
+                context,
+                pushTemplate,
+                CHANNEL_ID_TO_USE,
+                trackerActivityClass,
+                smallLayout,
+                expandedLayout,
+                CONTAINER_LAYOUT_VIEW_ID
+            )
+        assertNotEquals(smallLayout, notificationBuilder.headsUpContentView)
+        assertNotEquals(expandedLayout, notificationBuilder.headsUpContentView)
     }
 
     @Test

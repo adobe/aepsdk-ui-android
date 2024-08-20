@@ -6,7 +6,7 @@
   "adb_body_ex": "Basic push template with action buttons.",
   "adb_a_type": "WEBURL",
   "adb_uri": "https://chess.com/games",
-  "adb_image": "https://i.ibb.co/QN078XB/Resize-image-project.jpg",
+  "adb_image": "https://images.pexels.com/photos/260024/pexels-photo-260024.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
   "adb_act": "[{\"label\":\"Go to chess.com\",\"uri\":\"https:\/\/chess.com\/games\/552\",\"type\":\"DEEPLINK\"},{\"label\":\"Open the app\",\"uri\":\"\",\"type\":\"OPENAPP\"}]",
   "adb_small_icon": "chat_bubble",
   "adb_large_icon": "https://cdn-icons-png.flaticon.com/128/864/864639.png",

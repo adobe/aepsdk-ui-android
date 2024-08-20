@@ -215,7 +215,8 @@ internal object ManualCarouselNotificationBuilder {
         }
     }
 
-    private fun setupNavigationButtons(
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    internal fun setupNavigationButtons(
         context: Context,
         pushTemplate: ManualCarouselPushTemplate,
         broadcastReceiverClass: Class<out BroadcastReceiver>?,
@@ -444,7 +445,8 @@ internal object ManualCarouselNotificationBuilder {
      * @param channelId [String] containing the notification channel ID
      * @return the created click [Intent]
      */
-    private fun createCarouselNavigationClickPendingIntent(
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    internal fun createCarouselNavigationClickPendingIntent(
         context: Context,
         pushTemplate: ManualCarouselPushTemplate,
         intentAction: String,

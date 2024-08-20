@@ -143,7 +143,7 @@ object PushTemplateConstants {
             const val ALTERNATE_TITLE = "adb_title_alt"
             const val ALTERNATE_BODY = "adb_body_alt"
             const val ALTERNATE_EXPANDED_BODY = "adb_body_ex_alt"
-            const val TIMER_COLOR = "adb_clr_timer"
+            const val TIMER_COLOR = "adb_clr_tmr"
             const val ALTERNATE_IMAGE = "adb_image_alt"
             const val TIMER_DURATION = "adb_tmr_dur"
             const val TIMER_END_TIME = "adb_tmr_end"
