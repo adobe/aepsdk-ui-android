@@ -15,7 +15,6 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
 import android.graphics.RectF
-import androidx.core.content.PackageManagerCompat.LOG_TAG
 import com.adobe.marketing.mobile.services.HttpConnecting
 import com.adobe.marketing.mobile.services.HttpMethod
 import com.adobe.marketing.mobile.services.Log
@@ -26,6 +25,14 @@ import com.adobe.marketing.mobile.services.caching.CacheEntry
 import com.adobe.marketing.mobile.services.caching.CacheExpiry
 import com.adobe.marketing.mobile.services.caching.CacheService
 import com.adobe.marketing.mobile.util.UrlUtils
+import com.adobe.marketing.mobile.utils.UiImageConstants.CACHE_BASE_DIR
+import com.adobe.marketing.mobile.utils.UiImageConstants.CAROUSEL_MAX_BITMAP_HEIGHT
+import com.adobe.marketing.mobile.utils.UiImageConstants.CAROUSEL_MAX_BITMAP_WIDTH
+import com.adobe.marketing.mobile.utils.UiImageConstants.DEFAULT_BITMAP_QUALITY
+import com.adobe.marketing.mobile.utils.UiImageConstants.DEFAULT_DOWNLOAD_TIMEOUT_SECS
+import com.adobe.marketing.mobile.utils.UiImageConstants.LOG_TAG
+import com.adobe.marketing.mobile.utils.UiImageConstants.PUSH_IMAGE_CACHE
+import com.adobe.marketing.mobile.utils.UiImageConstants.PUSH_NOTIFICATION_IMAGE_CACHE_EXPIRY_IN_MILLISECONDS
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.File
@@ -43,8 +50,6 @@ import java.util.concurrent.atomic.AtomicInteger
 
 object UiImageUtils {
     private const val SELF_TAG = "PushTemplateImageUtil"
-    private const val DEFAULT_BITMAP_QUALITY = 100
-    private const val DEFAULT_DOWNLOAD_TIMEOUT_SECS = 10
 
     /**
      * Downloads and caches images provided in the [urlList]. Prior to downloading, the image url
@@ -62,8 +67,8 @@ object UiImageUtils {
         urlList: List<String?>,
         downloadTimeoutInSeconds: Int = DEFAULT_DOWNLOAD_TIMEOUT_SECS,
         bitmapQuality: Int = DEFAULT_BITMAP_QUALITY,
-        bitmapWidth: Float = com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.DefaultValues.CAROUSEL_MAX_BITMAP_WIDTH.toFloat(),
-        bitmapHeight: Float = com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.DefaultValues.CAROUSEL_MAX_BITMAP_HEIGHT.toFloat(),
+        bitmapWidth: Float = CAROUSEL_MAX_BITMAP_WIDTH.toFloat(),
+        bitmapHeight: Float = CAROUSEL_MAX_BITMAP_HEIGHT.toFloat(),
         scaleToFit: Matrix.ScaleToFit = Matrix.ScaleToFit.CENTER
     ): Int {
         val assetCacheLocation = getAssetCacheLocation()
@@ -262,9 +267,7 @@ object UiImageUtils {
             // cache push notification images for 3 days
             val cacheEntry = CacheEntry(
                 bitmapInputStream,
-                CacheExpiry.after(
-                    com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.DefaultValues.PUSH_NOTIFICATION_IMAGE_CACHE_EXPIRY_IN_MILLISECONDS
-                ),
+                CacheExpiry.after(PUSH_NOTIFICATION_IMAGE_CACHE_EXPIRY_IN_MILLISECONDS),
                 null
             )
             cacheService[it, imageUrl] = cacheEntry
@@ -320,9 +323,9 @@ object UiImageUtils {
             (
                 applicationCacheDir
                     .toString() + File.separator +
-                        com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.CACHE_BASE_DIR
+                        CACHE_BASE_DIR
                 ) + File.separator +
-                    com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.PUSH_IMAGE_CACHE
+                    PUSH_IMAGE_CACHE
             )
     }
 }
