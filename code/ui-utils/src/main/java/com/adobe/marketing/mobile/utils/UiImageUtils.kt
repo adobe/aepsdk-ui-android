@@ -30,9 +30,9 @@ import com.adobe.marketing.mobile.utils.UiImageConstants.CAROUSEL_MAX_BITMAP_HEI
 import com.adobe.marketing.mobile.utils.UiImageConstants.CAROUSEL_MAX_BITMAP_WIDTH
 import com.adobe.marketing.mobile.utils.UiImageConstants.DEFAULT_BITMAP_QUALITY
 import com.adobe.marketing.mobile.utils.UiImageConstants.DEFAULT_DOWNLOAD_TIMEOUT_SECS
-import com.adobe.marketing.mobile.utils.UiImageConstants.LOG_TAG
 import com.adobe.marketing.mobile.utils.UiImageConstants.PUSH_IMAGE_CACHE
 import com.adobe.marketing.mobile.utils.UiImageConstants.PUSH_NOTIFICATION_IMAGE_CACHE_EXPIRY_IN_MILLISECONDS
+import com.adobe.marketing.mobile.utils.UiImageConstants.PUSH_TEMPLATE_LOG_TAG
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.File
@@ -89,7 +89,7 @@ object UiImageUtils {
             val cacheResult = cacheService[assetCacheLocation, url]
             if (cacheResult != null) {
                 Log.trace(
-                    LOG_TAG,
+                    PUSH_TEMPLATE_LOG_TAG,
                     SELF_TAG,
                     "Found cached image for $url"
                 )
@@ -117,7 +117,7 @@ object UiImageUtils {
                             downloadedImageCount.incrementAndGet()
                         } catch (exception: IOException) {
                             Log.warning(
-                                LOG_TAG,
+                                PUSH_TEMPLATE_LOG_TAG,
                                 SELF_TAG,
                                 "Exception occurred creating an input stream from a bitmap for {$url}: ${exception.localizedMessage}."
                             )
@@ -131,13 +131,13 @@ object UiImageUtils {
         try {
             if (latch.await(downloadTimeoutInSeconds.toLong(), TimeUnit.SECONDS)) {
                 Log.trace(
-                    LOG_TAG,
+                    PUSH_TEMPLATE_LOG_TAG,
                     SELF_TAG,
                     "All image downloads have completed."
                 )
             } else {
                 Log.warning(
-                    LOG_TAG,
+                    PUSH_TEMPLATE_LOG_TAG,
                     SELF_TAG,
                     "Timed out waiting for image downloads to complete."
                 )
@@ -145,7 +145,7 @@ object UiImageUtils {
             }
         } catch (e: InterruptedException) {
             Log.warning(
-                LOG_TAG,
+                PUSH_TEMPLATE_LOG_TAG,
                 SELF_TAG,
                 "Interrupted while waiting for image downloads to complete: ${e.localizedMessage}"
             )
@@ -197,17 +197,17 @@ object UiImageUtils {
         }
         val cacheResult = ServiceProvider.getInstance().cacheService[assetCacheLocation, url]
         if (cacheResult == null) {
-            Log.warning(LOG_TAG, SELF_TAG, "Image not found in cache for $url")
+            Log.warning(PUSH_TEMPLATE_LOG_TAG, SELF_TAG, "Image not found in cache for $url")
             return null
         }
-        Log.trace(LOG_TAG, SELF_TAG, "Found cached image for $url")
+        Log.trace(PUSH_TEMPLATE_LOG_TAG, SELF_TAG, "Found cached image for $url")
         return BitmapFactory.decodeStream(cacheResult.data)
     }
 
     private fun handleDownloadResponse(url: String?, connection: HttpConnecting?): Bitmap? {
         if (connection == null) {
             Log.warning(
-                LOG_TAG,
+                PUSH_TEMPLATE_LOG_TAG,
                 SELF_TAG,
                 "Failed to download push notification image from url ($url), received a null connection."
             )
@@ -215,7 +215,7 @@ object UiImageUtils {
         }
         if ((connection.responseCode != HttpURLConnection.HTTP_OK)) {
             Log.debug(
-                LOG_TAG,
+                PUSH_TEMPLATE_LOG_TAG,
                 SELF_TAG,
                 "Failed to download push notification image from url ($url). Response code was: ${connection.responseCode}."
             )
@@ -224,7 +224,7 @@ object UiImageUtils {
         val bitmap = BitmapFactory.decodeStream(connection.inputStream)
         bitmap?.let {
             Log.trace(
-                LOG_TAG,
+                PUSH_TEMPLATE_LOG_TAG,
                 SELF_TAG,
                 "Downloaded push notification image from url ($url)"
             )
@@ -259,7 +259,7 @@ object UiImageUtils {
         imageUrl: String
     ) {
         Log.trace(
-            LOG_TAG,
+            PUSH_TEMPLATE_LOG_TAG,
             SELF_TAG,
             "Caching image downloaded from $imageUrl."
         )
