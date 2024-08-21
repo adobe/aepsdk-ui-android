@@ -20,10 +20,10 @@ import androidx.core.app.NotificationCompat
 import com.adobe.marketing.mobile.notificationbuilder.NotificationConstructionFailedException
 import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.LOG_TAG
 import com.adobe.marketing.mobile.notificationbuilder.R
-import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateImageUtils
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.createNotificationChannelIfRequired
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.ZeroBezelPushTemplate
 import com.adobe.marketing.mobile.services.Log
+import com.adobe.marketing.mobile.utils.UiImageUtils
 
 internal object ZeroBezelNotificationBuilder {
     private const val SELF_TAG = "ZeroBezelNotificationBuilder"
@@ -41,13 +41,13 @@ internal object ZeroBezelNotificationBuilder {
 
         // download and cache the image used in the notification
         val downloadedImageCount =
-            PushTemplateImageUtils.cacheImages(listOf(pushTemplate.imageUrl))
+            UiImageUtils.cacheImages(listOf(pushTemplate.imageUrl))
 
         // Check if the image was downloaded
         if (downloadedImageCount > 0) {
             // set the image on the notification if it was downloaded
             val pushImage =
-                PushTemplateImageUtils.getCachedImage(pushTemplate.imageUrl)
+                UiImageUtils.getCachedImage(pushTemplate.imageUrl)
             expandedLayout.setImageViewBitmap(R.id.expanded_template_image, pushImage)
 
             // only set image on the collapsed view if the style is "img"

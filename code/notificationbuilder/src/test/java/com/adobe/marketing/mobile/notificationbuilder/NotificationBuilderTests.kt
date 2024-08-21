@@ -20,7 +20,6 @@ import android.content.Context
 import android.content.Intent
 import androidx.core.app.NotificationManagerCompat
 import com.adobe.marketing.mobile.notificationbuilder.internal.PendingIntentUtils
-import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateImageUtils
 import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateType
 import com.adobe.marketing.mobile.notificationbuilder.internal.builders.AutoCarouselNotificationBuilder
 import com.adobe.marketing.mobile.notificationbuilder.internal.builders.BasicNotificationBuilder
@@ -38,6 +37,7 @@ import com.adobe.marketing.mobile.notificationbuilder.internal.templates.MockPro
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.MockTimerTemplateDataProvider
 import com.adobe.marketing.mobile.services.AppContextService
 import com.adobe.marketing.mobile.services.ServiceProvider
+import com.adobe.marketing.mobile.utils.UiImageUtils
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkClass
@@ -76,7 +76,7 @@ class NotificationBuilderTests {
         trackerActivityClass = mockkClass(Activity::class, relaxed = true).javaClass
         broadcastReceiverClass = mockkClass(BroadcastReceiver::class, relaxed = true).javaClass
         mockkObject(PendingIntentUtils)
-        mockkObject(PushTemplateImageUtils)
+        mockkObject(UiImageUtils)
     }
 
     @After
@@ -250,7 +250,7 @@ class NotificationBuilderTests {
 
     @Test
     fun `verify private createNotificationBuilder calls ProductRatingNotificationBuilder construct`() {
-        every { PushTemplateImageUtils.cacheImages(any()) } answers { 1 }
+        every { UiImageUtils.cacheImages(any()) } answers { 1 }
         val mapData = MockAEPPushTemplateDataProvider.getMockedAEPDataMapWithAllKeys()
         mapData[PushTemplateConstants.PushPayloadKeys.TEMPLATE_TYPE] = PushTemplateType.PRODUCT_RATING.value
         mapData[PushTemplateConstants.PushPayloadKeys.RATING_UNSELECTED_ICON] = "https://i.imgur.com/unselected.png"
@@ -262,8 +262,8 @@ class NotificationBuilderTests {
 
     @Test
     fun `verify private createNotificationBuilder calls ProductCatalogNotificationBuilder construct`() {
-        every { PushTemplateImageUtils.cacheImages(any()) } answers { 3 }
-        every { PushTemplateImageUtils.getCachedImage(any()) } answers { mockk() }
+        every { UiImageUtils.cacheImages(any()) } answers { 3 }
+        every { UiImageUtils.getCachedImage(any()) } answers { mockk() }
         val mapData = MockProductCatalogTemplateDataProvider.getMockedMapWithProductCatalogData()
         mapData[PushTemplateConstants.PushPayloadKeys.TEMPLATE_TYPE] = PushTemplateType.PRODUCT_CATALOG.value
         NotificationBuilder.constructNotificationBuilder(mapData, trackerActivityClass, broadcastReceiverClass)
@@ -272,8 +272,8 @@ class NotificationBuilderTests {
 
     @Test
     fun `verify private createNotificationBuilder calls MultiIconNotificationBuilder construct`() {
-        every { PushTemplateImageUtils.cacheImages(any()) } answers { 3 }
-        every { PushTemplateImageUtils.getCachedImage(any()) } answers { mockk() }
+        every { UiImageUtils.cacheImages(any()) } answers { 3 }
+        every { UiImageUtils.getCachedImage(any()) } answers { mockk() }
         val mapData = MockAEPPushTemplateDataProvider.getMockedAEPDataMapWithAllKeys()
         mapData[PushTemplateConstants.PushPayloadKeys.TEMPLATE_TYPE] = PushTemplateType.MULTI_ICON.value
         mapData[PushTemplateConstants.PushPayloadKeys.MULTI_ICON_ITEMS] = "[{\"img\":\"https://sneakerland.com/products/assets/shoe1.png\",\"uri\":\"myapp://chooseShoeType/shoe1\",\"type\":\"DEEPLINK\"},{\"img\":\"https://sneakerland.com/products/assets/shoe2.png\",\"uri\":\"myapp://chooseShoeType/shoe2\",\"type\":\"DEEPLINK\"},{\"img\":\"https://sneakerland.com/products/assets/shoe3.png\",\"uri\":\"myapp://chooseShoeType/shoe3\",\"type\":\"DEEPLINK\"},{\"img\":\"https://sneakerland.com/products/assets/shoe4.png\",\"uri\":\"myapp://chooseShoeType/shoe4\",\"type\":\"DEEPLINK\"},{\"img\":\"https://sneakerland.com/products/assets/shoe5.png\",\"uri\":\"myapp://chooseShoeType/shoe5\",\"type\":\"DEEPLINK\"}]"

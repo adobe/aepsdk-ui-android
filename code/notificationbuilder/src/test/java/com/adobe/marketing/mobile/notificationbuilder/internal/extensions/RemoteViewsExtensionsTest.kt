@@ -21,10 +21,10 @@ import android.os.Bundle
 import android.view.View
 import android.widget.RemoteViews
 import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants
-import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateImageUtils
 import com.adobe.marketing.mobile.notificationbuilder.internal.builders.DummyActivity
 import com.adobe.marketing.mobile.services.Logging
 import com.adobe.marketing.mobile.services.ServiceProvider
+import com.adobe.marketing.mobile.utils.UiImageUtils
 import io.mockk.Runs
 import io.mockk.every
 import io.mockk.just
@@ -59,7 +59,7 @@ class RemoteViewsExtensionsTest {
     @Before
     fun setup() {
         remoteViews = mockk<RemoteViews>(relaxed = true)
-        mockkObject(PushTemplateImageUtils)
+        mockkObject(UiImageUtils)
         mockBitmap = mockk<Bitmap>(relaxed = true)
         trackerActivityClass = DummyActivity::class.java
     }
@@ -182,8 +182,8 @@ class RemoteViewsExtensionsTest {
     @Test
     fun `setRemoteViewImage applies image when valid URL provided`() {
         val imageUrl = "http://example.com/image.png"
-        every { PushTemplateImageUtils.cacheImages(listOf(imageUrl)) } returns 1
-        every { PushTemplateImageUtils.getCachedImage(imageUrl) } returns mockBitmap
+        every { UiImageUtils.cacheImages(listOf(imageUrl)) } returns 1
+        every { UiImageUtils.getCachedImage(imageUrl) } returns mockBitmap
 
         val result = remoteViews.setRemoteViewImage(imageUrl, 1)
 
@@ -236,7 +236,7 @@ class RemoteViewsExtensionsTest {
     fun `setRemoteViewImage does not apply image when URL is invalid`() {
         val imageUrl = "invalid_url"
         every { remoteViews.setViewVisibility(any(), any()) } just Runs
-        every { PushTemplateImageUtils.cacheImages(listOf(imageUrl)) } returns 0
+        every { UiImageUtils.cacheImages(listOf(imageUrl)) } returns 0
 
         val result = remoteViews.setRemoteViewImage(imageUrl, 1)
 
@@ -250,7 +250,7 @@ class RemoteViewsExtensionsTest {
     fun `setRemoteViewImage does not apply image URL could not be downloaded`() {
         val imageUrl = "http://example.com/image.png"
         every { remoteViews.setViewVisibility(any(), any()) } just Runs
-        every { PushTemplateImageUtils.cacheImages(listOf(imageUrl)) } returns 0
+        every { UiImageUtils.cacheImages(listOf(imageUrl)) } returns 0
 
         val result = remoteViews.setRemoteViewImage(imageUrl, 1)
 

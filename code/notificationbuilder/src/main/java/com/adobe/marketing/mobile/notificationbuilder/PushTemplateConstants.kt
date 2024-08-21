@@ -11,15 +11,11 @@
 
 package com.adobe.marketing.mobile.notificationbuilder
 
-import java.util.concurrent.TimeUnit
-
 /**
  * This object holds all constant values for handling out-of-the-box push template notifications
  */
 object PushTemplateConstants {
     internal const val LOG_TAG = "PushTemplates"
-    internal const val CACHE_BASE_DIR = "pushtemplates"
-    internal const val PUSH_IMAGE_CACHE = "pushimagecache"
 
     internal const val DEFAULT_DELETE_ICON_NAME = "cross"
 
@@ -56,8 +52,6 @@ object PushTemplateConstants {
         internal const val SILENT_CHANNEL_NAME = "Silent Notifications"
         internal const val DEFAULT_CHANNEL_ID = "AEPSDKPushChannel"
         internal const val SILENT_NOTIFICATION_CHANNEL_ID = "AEPSDKSilentPushChannel"
-        internal const val CAROUSEL_MAX_BITMAP_WIDTH = 300
-        internal const val CAROUSEL_MAX_BITMAP_HEIGHT = 200
         internal const val AUTO_CAROUSEL_MODE = "auto"
         internal const val DEFAULT_MANUAL_CAROUSEL_MODE = "default"
         internal const val FILMSTRIP_CAROUSEL_MODE = "filmstrip"
@@ -70,11 +64,6 @@ object PushTemplateConstants {
         internal const val PRODUCT_CATALOG_VERTICAL_LAYOUT = "vertical"
         internal const val ICON_TEMPLATE_MIN_IMAGE_COUNT = 3
         internal const val ICON_TEMPLATE_MAX_IMAGE_COUNT = 5
-
-        // TODO: revisit this value. should cache time be configurable rather than have a static
-        // value?
-        internal val PUSH_NOTIFICATION_IMAGE_CACHE_EXPIRY_IN_MILLISECONDS: Long =
-            TimeUnit.DAYS.toMillis(3) // 3 days
     }
 
     internal object MethodNames {

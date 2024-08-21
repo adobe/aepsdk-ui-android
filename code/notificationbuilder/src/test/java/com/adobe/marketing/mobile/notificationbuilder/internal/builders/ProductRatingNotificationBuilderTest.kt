@@ -21,15 +21,15 @@ import androidx.core.app.NotificationCompat
 import com.adobe.marketing.mobile.notificationbuilder.NotificationConstructionFailedException
 import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants
 import com.adobe.marketing.mobile.notificationbuilder.R
-import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateImageUtils
-import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateImageUtils.cacheImages
-import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateImageUtils.getCachedImage
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setRemoteViewClickAction
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setRemoteViewImage
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.MockProductRatingTemplateDataProvider.getMockedDataMapForRatingTemplate
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.ProductRatingPushTemplate
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.provideMockedProductRatingTemplate
 import com.adobe.marketing.mobile.notificationbuilder.internal.util.MapData
+import com.adobe.marketing.mobile.utils.UiImageUtils
+import com.adobe.marketing.mobile.utils.UiImageUtils.cacheImages
+import com.adobe.marketing.mobile.utils.UiImageUtils.getCachedImage
 import io.mockk.Runs
 import io.mockk.every
 import io.mockk.just
@@ -64,7 +64,7 @@ class ProductRatingNotificationBuilderTest {
         mockkConstructor(RemoteViews::class)
         mockkStatic(RemoteViews::setRemoteViewImage)
         mockkStatic(RemoteViews::setRemoteViewClickAction)
-        mockkObject(PushTemplateImageUtils)
+        mockkObject(UiImageUtils)
     }
 
     @After

@@ -23,11 +23,11 @@ import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants
 import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.LOG_TAG
 import com.adobe.marketing.mobile.notificationbuilder.R
 import com.adobe.marketing.mobile.notificationbuilder.internal.PendingIntentUtils
-import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateImageUtils
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.createNotificationChannelIfRequired
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setElementColor
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.ProductCatalogPushTemplate
 import com.adobe.marketing.mobile.services.Log
+import com.adobe.marketing.mobile.utils.UiImageUtils
 
 /**
  * Object responsible for constructing a [NotificationCompat.Builder] object containing a product catalog template notification.
@@ -51,7 +51,7 @@ internal object ProductCatalogNotificationBuilder {
 
         // fast fail if we can't download a catalog item image
         val catalogImageUris = pushTemplate.catalogItems.map { it.img }
-        downloadedImageCount = PushTemplateImageUtils.cacheImages(catalogImageUris)
+        downloadedImageCount = UiImageUtils.cacheImages(catalogImageUris)
         if (downloadedImageCount != catalogImageUris.size) {
             Log.error(
                 LOG_TAG,
@@ -146,7 +146,7 @@ internal object ProductCatalogNotificationBuilder {
         )
 
         val pushImage =
-            PushTemplateImageUtils.getCachedImage(pushTemplate.catalogItems[pushTemplate.currentIndex].img)
+            UiImageUtils.getCachedImage(pushTemplate.catalogItems[pushTemplate.currentIndex].img)
         expandedLayout.setImageViewBitmap(R.id.product_image, pushImage)
         expandedLayout.setOnClickPendingIntent(
             R.id.product_image,
@@ -190,7 +190,7 @@ internal object ProductCatalogNotificationBuilder {
             R.id.product_thumbnail_3
         )
         for (index in catalogItems.indices) {
-            val thumbImage = PushTemplateImageUtils.getCachedImage(catalogItems[index].img)
+            val thumbImage = UiImageUtils.getCachedImage(catalogItems[index].img)
             if (thumbImage == null) {
                 Log.warning(
                     LOG_TAG,

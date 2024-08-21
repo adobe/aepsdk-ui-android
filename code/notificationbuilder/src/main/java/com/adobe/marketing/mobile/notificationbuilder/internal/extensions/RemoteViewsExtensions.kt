@@ -21,10 +21,10 @@ import android.widget.RemoteViews
 import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants
 import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.LOG_TAG
 import com.adobe.marketing.mobile.notificationbuilder.internal.PendingIntentUtils
-import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateImageUtils
 import com.adobe.marketing.mobile.services.Log
 import com.adobe.marketing.mobile.services.ServiceProvider
 import com.adobe.marketing.mobile.util.UrlUtils
+import com.adobe.marketing.mobile.utils.UiImageUtils
 
 private const val SELF_TAG = "RemoteViewExtensions"
 
@@ -222,7 +222,7 @@ internal fun RemoteViews.setRemoteImage(
     if (!UrlUtils.isValidUrl(imageUrl)) {
         return false
     }
-    val downloadedIconCount = PushTemplateImageUtils.cacheImages(listOf(imageUrl))
+    val downloadedIconCount = UiImageUtils.cacheImages(listOf(imageUrl))
     if (downloadedIconCount == 0) {
         Log.warning(
             LOG_TAG,
@@ -234,7 +234,7 @@ internal fun RemoteViews.setRemoteImage(
     }
     setImageViewBitmap(
         containerViewId,
-        PushTemplateImageUtils.getCachedImage(imageUrl)
+        UiImageUtils.getCachedImage(imageUrl)
     )
     return true
 }
