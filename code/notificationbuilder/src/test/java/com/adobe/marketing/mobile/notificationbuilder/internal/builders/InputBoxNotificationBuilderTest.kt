@@ -16,6 +16,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
+import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants
 import com.adobe.marketing.mobile.notificationbuilder.R
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setRemoteImage
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.InputBoxPushTemplate
@@ -34,7 +35,6 @@ import com.adobe.marketing.mobile.notificationbuilder.internal.templates.provide
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.removeKeysFromMap
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.replaceValueInMap
 import com.adobe.marketing.mobile.notificationbuilder.internal.util.MapData
-import com.adobe.marketing.mobile.utils.PushTemplateConstants
 import io.mockk.Runs
 import io.mockk.every
 import io.mockk.just

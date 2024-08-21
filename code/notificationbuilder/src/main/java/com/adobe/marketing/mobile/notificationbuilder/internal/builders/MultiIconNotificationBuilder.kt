@@ -20,13 +20,13 @@ import android.os.Bundle
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import com.adobe.marketing.mobile.notificationbuilder.NotificationConstructionFailedException
+import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants
 import com.adobe.marketing.mobile.notificationbuilder.R
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.createNotificationChannelIfRequired
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setRemoteViewClickAction
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setRemoteViewImage
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.MultiIconPushTemplate
 import com.adobe.marketing.mobile.services.Log
-import com.adobe.marketing.mobile.utils.PushTemplateConstants
 import java.util.Random
 
 internal object MultiIconNotificationBuilder {

@@ -19,14 +19,14 @@ import android.graphics.Bitmap
 import android.widget.RemoteViews
 import androidx.annotation.VisibleForTesting
 import androidx.core.app.NotificationCompat
+import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants
+import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.LOG_TAG
 import com.adobe.marketing.mobile.notificationbuilder.R
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.createNotificationChannelIfRequired
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setRemoteViewClickAction
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.AutoCarouselPushTemplate
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.CarouselPushTemplate
 import com.adobe.marketing.mobile.services.Log
-import com.adobe.marketing.mobile.utils.PushTemplateConstants
-import com.adobe.marketing.mobile.utils.PushTemplateConstants.LOG_TAG
 import com.adobe.marketing.mobile.utils.PushTemplateImageUtils
 
 /**

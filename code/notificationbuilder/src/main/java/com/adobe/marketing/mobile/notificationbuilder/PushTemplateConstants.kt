@@ -9,7 +9,7 @@
   governing permissions and limitations under the License.
 */
 
-package com.adobe.marketing.mobile.utils
+package com.adobe.marketing.mobile.notificationbuilder
 
 import java.util.concurrent.TimeUnit
 
@@ -17,26 +17,26 @@ import java.util.concurrent.TimeUnit
  * This object holds all constant values for handling out-of-the-box push template notifications
  */
 object PushTemplateConstants {
-    const val LOG_TAG = "PushTemplates"
-    const val CACHE_BASE_DIR = "pushtemplates"
-    const val PUSH_IMAGE_CACHE = "pushimagecache"
+    internal const val LOG_TAG = "PushTemplates"
+    internal const val CACHE_BASE_DIR = "pushtemplates"
+    internal const val PUSH_IMAGE_CACHE = "pushimagecache"
 
-    const val DEFAULT_DELETE_ICON_NAME = "cross"
+    internal const val DEFAULT_DELETE_ICON_NAME = "cross"
 
     /** Enum to denote the type of action  */
-    enum class ActionType {
+    internal enum class ActionType {
         DEEPLINK, WEBURL, DISMISS, OPENAPP, NONE
     }
 
-    object ActionButtons {
-        const val LABEL = "label"
-        const val URI = "uri"
-        const val TYPE = "type"
+    internal object ActionButtons {
+        internal const val LABEL = "label"
+        internal const val URI = "uri"
+        internal const val TYPE = "type"
     }
 
-    object RatingAction {
-        const val URI = "uri"
-        const val TYPE = "type"
+    internal object RatingAction {
+        internal const val URI = "uri"
+        internal const val TYPE = "type"
     }
 
     object NotificationAction {
@@ -49,45 +49,45 @@ object PushTemplateConstants {
         const val ACTION_URI = "actionUri"
     }
 
-    object DefaultValues {
+    internal object DefaultValues {
         // When no channel name is received from the push notification, this default channel name is used.
         // This will appear in the notification settings for the app.
-        const val DEFAULT_CHANNEL_NAME = "General Notifications"
-        const val SILENT_CHANNEL_NAME = "Silent Notifications"
-        const val DEFAULT_CHANNEL_ID = "AEPSDKPushChannel"
-        const val SILENT_NOTIFICATION_CHANNEL_ID = "AEPSDKSilentPushChannel"
-        const val CAROUSEL_MAX_BITMAP_WIDTH = 300
-        const val CAROUSEL_MAX_BITMAP_HEIGHT = 200
-        const val AUTO_CAROUSEL_MODE = "auto"
-        const val DEFAULT_MANUAL_CAROUSEL_MODE = "default"
-        const val FILMSTRIP_CAROUSEL_MODE = "filmstrip"
-        const val CAROUSEL_MINIMUM_IMAGE_COUNT = 3
-        const val MANUAL_CAROUSEL_START_INDEX = 0
-        const val FILMSTRIP_CAROUSEL_CENTER_INDEX = 1
-        const val NO_CENTER_INDEX_SET = -1
-        const val INPUT_BOX_DEFAULT_REPLY_TEXT = "Reply"
-        const val PRODUCT_CATALOG_START_INDEX = 0
-        const val PRODUCT_CATALOG_VERTICAL_LAYOUT = "vertical"
-        const val ICON_TEMPLATE_MIN_IMAGE_COUNT = 3
-        const val ICON_TEMPLATE_MAX_IMAGE_COUNT = 5
+        internal const val DEFAULT_CHANNEL_NAME = "General Notifications"
+        internal const val SILENT_CHANNEL_NAME = "Silent Notifications"
+        internal const val DEFAULT_CHANNEL_ID = "AEPSDKPushChannel"
+        internal const val SILENT_NOTIFICATION_CHANNEL_ID = "AEPSDKSilentPushChannel"
+        internal const val CAROUSEL_MAX_BITMAP_WIDTH = 300
+        internal const val CAROUSEL_MAX_BITMAP_HEIGHT = 200
+        internal const val AUTO_CAROUSEL_MODE = "auto"
+        internal const val DEFAULT_MANUAL_CAROUSEL_MODE = "default"
+        internal const val FILMSTRIP_CAROUSEL_MODE = "filmstrip"
+        internal const val CAROUSEL_MINIMUM_IMAGE_COUNT = 3
+        internal const val MANUAL_CAROUSEL_START_INDEX = 0
+        internal const val FILMSTRIP_CAROUSEL_CENTER_INDEX = 1
+        internal const val NO_CENTER_INDEX_SET = -1
+        internal const val INPUT_BOX_DEFAULT_REPLY_TEXT = "Reply"
+        internal const val PRODUCT_CATALOG_START_INDEX = 0
+        internal const val PRODUCT_CATALOG_VERTICAL_LAYOUT = "vertical"
+        internal const val ICON_TEMPLATE_MIN_IMAGE_COUNT = 3
+        internal const val ICON_TEMPLATE_MAX_IMAGE_COUNT = 5
 
         // TODO: revisit this value. should cache time be configurable rather than have a static
         // value?
-        val PUSH_NOTIFICATION_IMAGE_CACHE_EXPIRY_IN_MILLISECONDS: Long =
+        internal val PUSH_NOTIFICATION_IMAGE_CACHE_EXPIRY_IN_MILLISECONDS: Long =
             TimeUnit.DAYS.toMillis(3) // 3 days
     }
 
-    object MethodNames {
-        const val SET_BACKGROUND_COLOR = "setBackgroundColor"
-        const val SET_TEXT_COLOR = "setTextColor"
+    internal object MethodNames {
+        internal const val SET_BACKGROUND_COLOR = "setBackgroundColor"
+        internal const val SET_TEXT_COLOR = "setTextColor"
     }
 
-    object FriendlyViewNames {
-        const val NOTIFICATION_BACKGROUND = "notification background"
-        const val NOTIFICATION_TITLE = "notification title"
-        const val NOTIFICATION_BODY_TEXT = "notification body text"
-        const val CTA_BUTTON = "product catalog cta button"
-        const val TIMER_TEXT = "Timer Text"
+    internal object FriendlyViewNames {
+        internal const val NOTIFICATION_BACKGROUND = "notification background"
+        internal const val NOTIFICATION_TITLE = "notification title"
+        internal const val NOTIFICATION_BODY_TEXT = "notification body text"
+        internal const val CTA_BUTTON = "product catalog cta button"
+        internal const val TIMER_TEXT = "Timer Text"
     }
 
     object PushPayloadKeys {
@@ -139,7 +139,7 @@ object PushTemplateConstants {
         const val MULTI_ICON_ITEMS = "adb_items"
         const val MULTI_ICON_CLOSE_BUTTON = "adb_cancel_image"
 
-        object TimerKeys {
+        internal object TimerKeys {
             const val ALTERNATE_TITLE = "adb_title_alt"
             const val ALTERNATE_BODY = "adb_body_alt"
             const val ALTERNATE_EXPANDED_BODY = "adb_body_ex_alt"
@@ -150,27 +150,27 @@ object PushTemplateConstants {
         }
     }
 
-    object CarouselItemKeys {
-        const val IMAGE = "img"
-        const val TEXT = "txt"
-        const val URI = "uri"
+    internal object CarouselItemKeys {
+        internal const val IMAGE = "img"
+        internal const val TEXT = "txt"
+        internal const val URI = "uri"
     }
 
-    object CatalogItemKeys {
-        const val TITLE = "title"
-        const val BODY = "body"
-        const val IMAGE = "img"
-        const val PRICE = "price"
-        const val URI = "uri"
+    internal object CatalogItemKeys {
+        internal const val TITLE = "title"
+        internal const val BODY = "body"
+        internal const val IMAGE = "img"
+        internal const val PRICE = "price"
+        internal const val URI = "uri"
     }
 
-    object CatalogActionIds {
-        const val CTA_BUTTON_CLICKED = "cta_button_clicked"
-        const val PRODUCT_IMAGE_CLICKED = "product_image_clicked"
+    internal object CatalogActionIds {
+        internal const val CTA_BUTTON_CLICKED = "cta_button_clicked"
+        internal const val PRODUCT_IMAGE_CLICKED = "product_image_clicked"
     }
 
-    object ProductRatingKeys {
-        const val RATING_UNSELECTED = -1
+    internal object ProductRatingKeys {
+        internal const val RATING_UNSELECTED = -1
     }
 
     object IntentActions {
@@ -192,7 +192,7 @@ object PushTemplateConstants {
         const val RATING_SELECTED = "ratingSelected"
     }
 
-    object MultiIconTemplateKeys {
+    internal object MultiIconTemplateKeys {
         const val IMG = "img"
         const val URI = "uri"
         const val TYPE = "type"

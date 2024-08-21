@@ -18,12 +18,12 @@ import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.View
 import android.widget.RemoteViews
+import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.MockAEPPushTemplateDataProvider
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.ZeroBezelPushTemplate
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.replaceValueInMap
 import com.adobe.marketing.mobile.notificationbuilder.internal.util.IntentData
 import com.adobe.marketing.mobile.notificationbuilder.internal.util.MapData
-import com.adobe.marketing.mobile.utils.PushTemplateConstants
 import com.adobe.marketing.mobile.utils.PushTemplateImageUtils
 import com.adobe.marketing.mobile.utils.PushTemplateImageUtils.cacheImages
 import com.adobe.marketing.mobile.utils.PushTemplateImageUtils.getCachedImage

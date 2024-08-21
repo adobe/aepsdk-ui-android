@@ -18,12 +18,12 @@ import android.graphics.Color
 import android.os.Bundle
 import android.view.View
 import android.widget.RemoteViews
+import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants
+import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.LOG_TAG
 import com.adobe.marketing.mobile.notificationbuilder.internal.PendingIntentUtils
 import com.adobe.marketing.mobile.services.Log
 import com.adobe.marketing.mobile.services.ServiceProvider
 import com.adobe.marketing.mobile.util.UrlUtils
-import com.adobe.marketing.mobile.utils.PushTemplateConstants
-import com.adobe.marketing.mobile.utils.PushTemplateConstants.LOG_TAG
 import com.adobe.marketing.mobile.utils.PushTemplateImageUtils
 
 private const val SELF_TAG = "RemoteViewExtensions"

@@ -12,7 +12,7 @@
 package com.adobe.marketing.mobile.notificationbuilder.internal.templates
 
 import android.os.Bundle
-import com.adobe.marketing.mobile.utils.PushTemplateConstants
+import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants
 
 object MockProductCatalogTemplateDataProvider {
     fun getMockedMapWithProductCatalogData(): MutableMap<String, String> {

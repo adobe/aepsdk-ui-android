@@ -21,9 +21,9 @@ import android.net.Uri
 import android.os.Bundle
 import androidx.core.app.NotificationCompat
 import com.adobe.marketing.mobile.MobileCore
+import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants
 import com.adobe.marketing.mobile.notificationbuilder.internal.builders.DummyActivity
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.BasicPushTemplate
-import com.adobe.marketing.mobile.utils.PushTemplateConstants
 import com.adobe.marketing.mobile.utils.PushTemplateImageUtils
 import io.mockk.every
 import io.mockk.mockk

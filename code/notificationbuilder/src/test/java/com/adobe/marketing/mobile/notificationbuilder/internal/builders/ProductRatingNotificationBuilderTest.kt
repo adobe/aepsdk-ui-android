@@ -19,6 +19,7 @@ import android.view.View
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import com.adobe.marketing.mobile.notificationbuilder.NotificationConstructionFailedException
+import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants
 import com.adobe.marketing.mobile.notificationbuilder.R
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setRemoteViewClickAction
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setRemoteViewImage
@@ -26,7 +27,6 @@ import com.adobe.marketing.mobile.notificationbuilder.internal.templates.MockPro
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.ProductRatingPushTemplate
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.provideMockedProductRatingTemplate
 import com.adobe.marketing.mobile.notificationbuilder.internal.util.MapData
-import com.adobe.marketing.mobile.utils.PushTemplateConstants
 import com.adobe.marketing.mobile.utils.PushTemplateImageUtils
 import com.adobe.marketing.mobile.utils.PushTemplateImageUtils.cacheImages
 import com.adobe.marketing.mobile.utils.PushTemplateImageUtils.getCachedImage

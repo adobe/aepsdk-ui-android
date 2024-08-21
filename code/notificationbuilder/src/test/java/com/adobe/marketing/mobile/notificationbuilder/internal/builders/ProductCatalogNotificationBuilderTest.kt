@@ -17,14 +17,14 @@ import android.content.Context
 import android.graphics.Bitmap
 import androidx.core.app.NotificationCompat
 import com.adobe.marketing.mobile.notificationbuilder.NotificationConstructionFailedException
+import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants
+import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.DefaultValues.PRODUCT_CATALOG_VERTICAL_LAYOUT
 import com.adobe.marketing.mobile.notificationbuilder.R
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.MockProductCatalogTemplateDataProvider.getMockedMapWithProductCatalogData
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.ProductCatalogPushTemplate
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.provideMockedProductCatalogTemplate
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.replaceValueInMap
 import com.adobe.marketing.mobile.notificationbuilder.internal.util.MapData
-import com.adobe.marketing.mobile.utils.PushTemplateConstants
-import com.adobe.marketing.mobile.utils.PushTemplateConstants.DefaultValues.PRODUCT_CATALOG_VERTICAL_LAYOUT
 import com.adobe.marketing.mobile.utils.PushTemplateImageUtils
 import com.adobe.marketing.mobile.utils.PushTemplateImageUtils.cacheImages
 import com.adobe.marketing.mobile.utils.PushTemplateImageUtils.getCachedImage

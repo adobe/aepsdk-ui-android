@@ -11,8 +11,8 @@
 
 package com.adobe.marketing.mobile.notificationbuilder.internal.templates
 
+import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.PushPayloadKeys
 import com.adobe.marketing.mobile.notificationbuilder.internal.util.NotificationData
-import com.adobe.marketing.mobile.utils.PushTemplateConstants.PushPayloadKeys
 
 /**
  * This class is used to parse the push template data payload or an intent and provide the necessary information

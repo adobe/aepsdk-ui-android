@@ -37,7 +37,6 @@ import com.adobe.marketing.mobile.notificationbuilder.internal.templates.MockPro
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.MockTimerTemplateDataProvider
 import com.adobe.marketing.mobile.services.AppContextService
 import com.adobe.marketing.mobile.services.ServiceProvider
-import com.adobe.marketing.mobile.utils.PushTemplateConstants
 import com.adobe.marketing.mobile.utils.PushTemplateImageUtils
 import io.mockk.every
 import io.mockk.mockk

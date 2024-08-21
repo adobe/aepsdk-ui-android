@@ -11,9 +11,9 @@
 
 package com.adobe.marketing.mobile.notificationbuilder.internal.templates
 
+import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants
 import com.adobe.marketing.mobile.notificationbuilder.internal.util.NotificationData
 import com.adobe.marketing.mobile.services.Log
-import com.adobe.marketing.mobile.utils.PushTemplateConstants
 import org.json.JSONArray
 import org.json.JSONObject
 

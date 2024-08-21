@@ -17,6 +17,7 @@ import android.content.Context
 import android.content.Intent
 import androidx.core.app.NotificationCompat
 import com.adobe.marketing.mobile.notificationbuilder.NotificationBuilder.constructNotificationBuilder
+import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.LOG_TAG
 import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateType
 import com.adobe.marketing.mobile.notificationbuilder.internal.builders.AutoCarouselNotificationBuilder
 import com.adobe.marketing.mobile.notificationbuilder.internal.builders.BasicNotificationBuilder
@@ -44,8 +45,6 @@ import com.adobe.marketing.mobile.notificationbuilder.internal.util.MapData
 import com.adobe.marketing.mobile.notificationbuilder.internal.util.NotificationData
 import com.adobe.marketing.mobile.services.Log
 import com.adobe.marketing.mobile.services.ServiceProvider
-import com.adobe.marketing.mobile.utils.PushTemplateConstants
-import com.adobe.marketing.mobile.utils.PushTemplateConstants.LOG_TAG
 
 /**
  * Public facing object to construct a [NotificationCompat.Builder] object for the specified [PushTemplateType].

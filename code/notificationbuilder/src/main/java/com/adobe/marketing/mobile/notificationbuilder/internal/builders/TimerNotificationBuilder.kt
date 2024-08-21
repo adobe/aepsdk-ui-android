@@ -22,6 +22,9 @@ import android.os.SystemClock
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import com.adobe.marketing.mobile.notificationbuilder.NotificationConstructionFailedException
+import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants
+import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.LOG_TAG
+import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.PushPayloadKeys.TimerKeys
 import com.adobe.marketing.mobile.notificationbuilder.R
 import com.adobe.marketing.mobile.notificationbuilder.internal.PendingIntentUtils
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.createNotificationChannelIfRequired
@@ -30,9 +33,6 @@ import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setTim
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.TimerPushTemplate
 import com.adobe.marketing.mobile.services.Log
 import com.adobe.marketing.mobile.util.TimeUtils
-import com.adobe.marketing.mobile.utils.PushTemplateConstants
-import com.adobe.marketing.mobile.utils.PushTemplateConstants.LOG_TAG
-import com.adobe.marketing.mobile.utils.PushTemplateConstants.PushPayloadKeys.TimerKeys
 
 private const val TAG = "TimerNotificationBuilder"
 

@@ -20,6 +20,9 @@ import android.widget.RemoteViews
 import androidx.annotation.VisibleForTesting
 import androidx.core.app.NotificationCompat
 import com.adobe.marketing.mobile.notificationbuilder.NotificationConstructionFailedException
+import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants
+import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.LOG_TAG
+import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.PushPayloadKeys
 import com.adobe.marketing.mobile.notificationbuilder.R
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.addActionButtons
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.createNotificationChannelIfRequired
@@ -27,9 +30,6 @@ import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setRem
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.BasicPushTemplate
 import com.adobe.marketing.mobile.notificationbuilder.internal.util.NotificationData
 import com.adobe.marketing.mobile.services.Log
-import com.adobe.marketing.mobile.utils.PushTemplateConstants
-import com.adobe.marketing.mobile.utils.PushTemplateConstants.LOG_TAG
-import com.adobe.marketing.mobile.utils.PushTemplateConstants.PushPayloadKeys
 
 /**
  * Object responsible for constructing a [NotificationCompat.Builder] object containing a basic push template notification.

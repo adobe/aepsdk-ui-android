@@ -11,9 +11,9 @@
 
 package com.adobe.marketing.mobile.notificationbuilder.internal.templates
 
+import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants
 import com.adobe.marketing.mobile.notificationbuilder.internal.util.IntentData
 import com.adobe.marketing.mobile.notificationbuilder.internal.util.NotificationData
-import com.adobe.marketing.mobile.utils.PushTemplateConstants
 
 internal class ManualCarouselPushTemplate(data: NotificationData) : CarouselPushTemplate(data) {
     internal var intentAction: String? = null

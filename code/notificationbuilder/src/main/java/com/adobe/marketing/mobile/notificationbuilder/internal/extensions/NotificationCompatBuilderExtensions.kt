@@ -20,11 +20,11 @@ import android.media.RingtoneManager
 import android.os.Bundle
 import androidx.core.app.NotificationCompat
 import com.adobe.marketing.mobile.MobileCore
+import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants
+import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.LOG_TAG
 import com.adobe.marketing.mobile.notificationbuilder.internal.PendingIntentUtils
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.BasicPushTemplate
 import com.adobe.marketing.mobile.services.Log
-import com.adobe.marketing.mobile.utils.PushTemplateConstants
-import com.adobe.marketing.mobile.utils.PushTemplateConstants.LOG_TAG
 import com.adobe.marketing.mobile.utils.PushTemplateImageUtils
 import java.util.Random
 

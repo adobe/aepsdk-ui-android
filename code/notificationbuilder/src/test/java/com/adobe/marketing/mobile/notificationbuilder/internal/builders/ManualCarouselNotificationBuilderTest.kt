@@ -16,6 +16,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.graphics.Bitmap
 import android.widget.RemoteViews
+import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants
 import com.adobe.marketing.mobile.notificationbuilder.internal.PendingIntentUtils
 import com.adobe.marketing.mobile.notificationbuilder.internal.builders.ManualCarouselNotificationBuilder.getCarouselIndices
 import com.adobe.marketing.mobile.notificationbuilder.internal.builders.ManualCarouselNotificationBuilder.populateFilmstripCarouselImages
@@ -26,7 +27,6 @@ import com.adobe.marketing.mobile.notificationbuilder.internal.templates.ManualC
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.MockCarousalTemplateDataProvider
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.provideMockedManualCarousalTemplate
 import com.adobe.marketing.mobile.notificationbuilder.internal.util.IntentData
-import com.adobe.marketing.mobile.utils.PushTemplateConstants
 import com.adobe.marketing.mobile.utils.PushTemplateImageUtils
 import com.adobe.marketing.mobile.utils.PushTemplateImageUtils.cacheImages
 import com.adobe.marketing.mobile.utils.PushTemplateImageUtils.getAssetCacheLocation

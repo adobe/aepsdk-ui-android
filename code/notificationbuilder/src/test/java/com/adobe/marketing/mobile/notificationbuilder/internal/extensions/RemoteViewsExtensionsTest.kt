@@ -20,10 +20,10 @@ import android.graphics.Color
 import android.os.Bundle
 import android.view.View
 import android.widget.RemoteViews
+import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants
 import com.adobe.marketing.mobile.notificationbuilder.internal.builders.DummyActivity
 import com.adobe.marketing.mobile.services.Logging
 import com.adobe.marketing.mobile.services.ServiceProvider
-import com.adobe.marketing.mobile.utils.PushTemplateConstants
 import com.adobe.marketing.mobile.utils.PushTemplateImageUtils
 import io.mockk.Runs
 import io.mockk.every

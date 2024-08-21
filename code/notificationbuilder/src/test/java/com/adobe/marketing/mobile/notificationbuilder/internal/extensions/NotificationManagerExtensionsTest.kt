@@ -15,13 +15,13 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.media.RingtoneManager
+import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.BasicPushTemplate
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.MOCKED_CHANNEL_ID
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.MockAEPPushTemplateDataProvider
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.provideMockedBasicPushTemplateWithAllKeys
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.provideMockedBasicPushTemplateWithRequiredData
 import com.adobe.marketing.mobile.notificationbuilder.internal.util.MapData
-import com.adobe.marketing.mobile.utils.PushTemplateConstants
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test

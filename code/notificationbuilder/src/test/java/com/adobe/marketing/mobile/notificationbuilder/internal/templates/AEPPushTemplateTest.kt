@@ -14,9 +14,9 @@ package com.adobe.marketing.mobile.notificationbuilder.internal.templates
 import android.app.NotificationManager
 import com.adobe.marketing.mobile.notificationbuilder.NotificationPriority
 import com.adobe.marketing.mobile.notificationbuilder.NotificationVisibility
+import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants
 import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateType
 import com.adobe.marketing.mobile.notificationbuilder.internal.util.MapData
-import com.adobe.marketing.mobile.utils.PushTemplateConstants
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.runner.RunWith

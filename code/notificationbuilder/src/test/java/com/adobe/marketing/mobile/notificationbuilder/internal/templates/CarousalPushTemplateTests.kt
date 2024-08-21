@@ -11,6 +11,7 @@
 
 package com.adobe.marketing.mobile.notificationbuilder.internal.templates
 
+import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants
 import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateType
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.MockCarousalTemplateDataProvider.getMockedBundleWithAutoCarouselData
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.MockCarousalTemplateDataProvider.getMockedBundleWithManualCarouselData
@@ -18,7 +19,6 @@ import com.adobe.marketing.mobile.notificationbuilder.internal.templates.MockCar
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.MockCarousalTemplateDataProvider.getMockedMapWithManualCarouselData
 import com.adobe.marketing.mobile.notificationbuilder.internal.util.IntentData
 import com.adobe.marketing.mobile.notificationbuilder.internal.util.MapData
-import com.adobe.marketing.mobile.utils.PushTemplateConstants
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.runner.RunWith
