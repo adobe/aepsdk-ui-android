@@ -25,9 +25,9 @@ import com.adobe.marketing.mobile.notificationbuilder.internal.templates.Product
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.provideMockedProductCatalogTemplate
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.replaceValueInMap
 import com.adobe.marketing.mobile.notificationbuilder.internal.util.MapData
-import com.adobe.marketing.mobile.utils.PushTemplateImageUtils
-import com.adobe.marketing.mobile.utils.PushTemplateImageUtils.cacheImages
-import com.adobe.marketing.mobile.utils.PushTemplateImageUtils.getCachedImage
+import com.adobe.marketing.mobile.utils.UiImageUtils
+import com.adobe.marketing.mobile.utils.UiImageUtils.cacheImages
+import com.adobe.marketing.mobile.utils.UiImageUtils.getCachedImage
 import io.mockk.every
 import io.mockk.mockkClass
 import io.mockk.mockkObject
@@ -59,7 +59,7 @@ class ProductCatalogNotificationBuilderTest {
         context = RuntimeEnvironment.getApplication()
         trackerActivityClass = mockkClass(Activity::class, relaxed = true).javaClass
         broadcastReceiverClass = mockkClass(BroadcastReceiver::class, relaxed = true).javaClass
-        mockkObject(PushTemplateImageUtils)
+        mockkObject(UiImageUtils)
     }
 
     @After

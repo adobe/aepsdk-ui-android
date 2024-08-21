@@ -31,7 +31,7 @@ import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setRem
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.CarouselPushTemplate
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.ManualCarouselPushTemplate
 import com.adobe.marketing.mobile.services.Log
-import com.adobe.marketing.mobile.utils.PushTemplateImageUtils
+import com.adobe.marketing.mobile.utils.UiImageUtils
 
 /**
  * Object responsible for constructing a [NotificationCompat.Builder] object containing a manual or filmstrip carousel push template notification.
@@ -49,7 +49,7 @@ internal object ManualCarouselNotificationBuilder {
         Log.trace(LOG_TAG, SELF_TAG, "Building a manual carousel template push notification.")
 
         // download carousel images
-        val downloadedImagesCount = PushTemplateImageUtils.cacheImages(
+        val downloadedImagesCount = UiImageUtils.cacheImages(
             pushTemplate.carouselItems.map { it.imageUri }
         )
 
@@ -138,7 +138,7 @@ internal object ManualCarouselNotificationBuilder {
         for (item: CarouselPushTemplate.CarouselItem in items) {
             val imageUri: String = item.imageUri
             val pushImage: Bitmap? =
-                PushTemplateImageUtils.getCachedImage(imageUri)
+                UiImageUtils.getCachedImage(imageUri)
             if (pushImage == null) {
                 Log.warning(
                     LOG_TAG,
@@ -280,7 +280,7 @@ internal object ManualCarouselNotificationBuilder {
         for (item: CarouselPushTemplate.CarouselItem in items) {
             val imageUri = item.imageUri
             val pushImage: Bitmap? =
-                PushTemplateImageUtils.getCachedImage(imageUri)
+                UiImageUtils.getCachedImage(imageUri)
             if (pushImage == null) {
                 Log.warning(
                     LOG_TAG,
@@ -347,7 +347,7 @@ internal object ManualCarouselNotificationBuilder {
         )
 
         // set the downloaded bitmaps in the filmstrip image views
-        val assetCacheLocation = PushTemplateImageUtils.getAssetCacheLocation()
+        val assetCacheLocation = UiImageUtils.getAssetCacheLocation()
         if (assetCacheLocation.isNullOrEmpty()) {
             Log.warning(
                 LOG_TAG,
@@ -357,21 +357,21 @@ internal object ManualCarouselNotificationBuilder {
             return
         }
 
-        val newLeftImage = PushTemplateImageUtils.getCachedImage(
+        val newLeftImage = UiImageUtils.getCachedImage(
             validCarouselItems[newIndices.first].imageUri
         )
         expandedLayout.setImageViewBitmap(
             R.id.manual_carousel_filmstrip_left, newLeftImage
         )
 
-        val newCenterImage = PushTemplateImageUtils.getCachedImage(
+        val newCenterImage = UiImageUtils.getCachedImage(
             validCarouselItems[newIndices.second].imageUri
         )
         expandedLayout.setImageViewBitmap(
             R.id.manual_carousel_filmstrip_center, newCenterImage
         )
 
-        val newRightImage = PushTemplateImageUtils.getCachedImage(
+        val newRightImage = UiImageUtils.getCachedImage(
             validCarouselItems[newIndices.third].imageUri
         )
         expandedLayout.setImageViewBitmap(

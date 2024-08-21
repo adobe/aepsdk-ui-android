@@ -30,7 +30,7 @@ import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setRem
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setRemoteViewImage
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.ProductRatingPushTemplate
 import com.adobe.marketing.mobile.services.Log
-import com.adobe.marketing.mobile.utils.PushTemplateImageUtils
+import com.adobe.marketing.mobile.utils.UiImageUtils
 
 internal object ProductRatingNotificationBuilder {
     private const val SELF_TAG = "ProductRatingNotificationBuilder"
@@ -71,7 +71,7 @@ internal object ProductRatingNotificationBuilder {
 
         // set the image on the notification
         val imageUri = pushTemplate.imageUrl
-        val downloadedImageCount = PushTemplateImageUtils.cacheImages(listOf(imageUri))
+        val downloadedImageCount = UiImageUtils.cacheImages(listOf(imageUri))
 
         if (downloadedImageCount == 0) {
             Log.trace(
@@ -83,7 +83,7 @@ internal object ProductRatingNotificationBuilder {
         } else {
             expandedLayout.setImageViewBitmap(
                 R.id.expanded_template_image,
-                PushTemplateImageUtils.getCachedImage(imageUri)
+                UiImageUtils.getCachedImage(imageUri)
             )
         }
 

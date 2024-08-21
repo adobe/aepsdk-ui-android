@@ -27,10 +27,10 @@ import com.adobe.marketing.mobile.notificationbuilder.internal.templates.ManualC
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.MockCarousalTemplateDataProvider
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.provideMockedManualCarousalTemplate
 import com.adobe.marketing.mobile.notificationbuilder.internal.util.IntentData
-import com.adobe.marketing.mobile.utils.PushTemplateImageUtils
-import com.adobe.marketing.mobile.utils.PushTemplateImageUtils.cacheImages
-import com.adobe.marketing.mobile.utils.PushTemplateImageUtils.getAssetCacheLocation
-import com.adobe.marketing.mobile.utils.PushTemplateImageUtils.getCachedImage
+import com.adobe.marketing.mobile.utils.UiImageUtils
+import com.adobe.marketing.mobile.utils.UiImageUtils.cacheImages
+import com.adobe.marketing.mobile.utils.UiImageUtils.getAssetCacheLocation
+import com.adobe.marketing.mobile.utils.UiImageUtils.getCachedImage
 import io.mockk.Runs
 import io.mockk.every
 import io.mockk.just
@@ -66,7 +66,7 @@ class ManualCarouselNotificationBuilderTest {
         pushTemplate = provideMockedManualCarousalTemplate(false)
         trackerActivityClass = mockkClass(Activity::class, relaxed = true).javaClass
         broadcastReceiverClass = mockkClass(BroadcastReceiver::class, relaxed = true).javaClass
-        mockkObject(PushTemplateImageUtils)
+        mockkObject(UiImageUtils)
         mockkObject(BasicNotificationBuilder)
         mockkObject(PendingIntentUtils)
         mockkConstructor(RemoteViews::class)

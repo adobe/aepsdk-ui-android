@@ -20,9 +20,9 @@ import com.adobe.marketing.mobile.notificationbuilder.internal.PendingIntentUtil
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setRemoteViewClickAction
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.AutoCarouselPushTemplate
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.provideMockedAutoCarousalTemplate
-import com.adobe.marketing.mobile.utils.PushTemplateImageUtils
-import com.adobe.marketing.mobile.utils.PushTemplateImageUtils.cacheImages
-import com.adobe.marketing.mobile.utils.PushTemplateImageUtils.getCachedImage
+import com.adobe.marketing.mobile.utils.UiImageUtils
+import com.adobe.marketing.mobile.utils.UiImageUtils.cacheImages
+import com.adobe.marketing.mobile.utils.UiImageUtils.getCachedImage
 import io.mockk.Runs
 import io.mockk.every
 import io.mockk.just
@@ -61,7 +61,7 @@ class AutoCarouselNotificationBuilderTest {
         autoCarouselPushTemplate = provideMockedAutoCarousalTemplate(false)
         mockkObject(BasicNotificationBuilder)
         mockkObject(PendingIntentUtils)
-        mockkObject(PushTemplateImageUtils)
+        mockkObject(UiImageUtils)
         mockkConstructor(RemoteViews::class)
     }
 

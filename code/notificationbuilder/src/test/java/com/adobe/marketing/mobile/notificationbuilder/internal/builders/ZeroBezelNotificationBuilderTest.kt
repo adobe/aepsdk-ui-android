@@ -24,9 +24,9 @@ import com.adobe.marketing.mobile.notificationbuilder.internal.templates.ZeroBez
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.replaceValueInMap
 import com.adobe.marketing.mobile.notificationbuilder.internal.util.IntentData
 import com.adobe.marketing.mobile.notificationbuilder.internal.util.MapData
-import com.adobe.marketing.mobile.utils.PushTemplateImageUtils
-import com.adobe.marketing.mobile.utils.PushTemplateImageUtils.cacheImages
-import com.adobe.marketing.mobile.utils.PushTemplateImageUtils.getCachedImage
+import com.adobe.marketing.mobile.utils.UiImageUtils
+import com.adobe.marketing.mobile.utils.UiImageUtils.cacheImages
+import com.adobe.marketing.mobile.utils.UiImageUtils.getCachedImage
 import io.mockk.Runs
 import io.mockk.every
 import io.mockk.just
@@ -60,7 +60,7 @@ class ZeroBezelNotificationBuilderTest {
     fun setup() {
         context = RuntimeEnvironment.getApplication()
         dataMap = MockAEPPushTemplateDataProvider.getMockedAEPDataMapWithAllKeys()
-        mockkObject(PushTemplateImageUtils)
+        mockkObject(UiImageUtils)
         mockkConstructor(RemoteViews::class)
         mockBitmap = mockk<Bitmap>(relaxed = true)
         trackerActivityClass = DummyActivity::class.java
