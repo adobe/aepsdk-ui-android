@@ -14,8 +14,10 @@ package com.adobe.marketing.mobile.notificationbuilder.internal.builders
 import android.app.Activity
 import android.content.BroadcastReceiver
 import android.content.Context
+import android.os.Build
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
+import com.adobe.marketing.mobile.notificationbuilder.NotificationConstructionFailedException
 import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants
 import com.adobe.marketing.mobile.notificationbuilder.R
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setRemoteImage
@@ -51,6 +53,7 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 import org.robolectric.Shadows
 import org.robolectric.annotation.Config
+import org.robolectric.util.ReflectionHelpers
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
@@ -90,6 +93,19 @@ class InputBoxNotificationBuilderTest {
 
         assertNotNull(notificationBuilder)
         assertEquals(NotificationCompat.Builder::class.java, notificationBuilder.javaClass)
+    }
+
+    @Test(expected = NotificationConstructionFailedException::class)
+    fun `construct throws exception when API is less than 24`() {
+        ReflectionHelpers.setStaticField(Build.VERSION::class.java, "SDK_INT", 23)
+        val pushTemplate = provideMockedInputBoxPushTemplateWithRequiredData(true)
+        val result = InputBoxNotificationBuilder.construct(
+            context,
+            pushTemplate,
+            trackerActivityClass,
+            broadcastReceiverClass
+        )
+        assertNull(result)
     }
 
     @Test

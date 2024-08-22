@@ -106,6 +106,19 @@ internal object AEPPushNotificationBuilder {
             )
             .setNotificationDeleteAction(context, trackerActivityClass)
 
+        // API21 specific fixes
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP) {
+            // intent handling fix, see MOB-21261 for more info
+            builder.setOnlyAlertOnce(true)
+            // heads up display fix, see MOB-21447 for more info
+            builder.setCustomHeadsUpContentView(expandedLayout)
+        }
+
+        // API22 and 23 heads up display fix, see MOB-21447 for more info
+        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.M || Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP_MR1) {
+            builder.setCustomHeadsUpContentView(smallLayout)
+        }
+
         // if not from intent, set custom sound, note this applies to API 25 and lower only as
         // API 26 and up set the sound on the notification channel
         if (!pushTemplate.isFromIntent) {

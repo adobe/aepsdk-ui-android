@@ -75,6 +75,7 @@ internal object MultiIconNotificationBuilder {
             dismissIntent.setClass(context.applicationContext, trackerActivityClass)
         }
         dismissIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
+        dismissIntent.putExtras(closeButtonIntentExtra)
         val pendingIntent = PendingIntent.getActivity(
             context,
             Random().nextInt(),

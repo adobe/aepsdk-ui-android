@@ -16,6 +16,7 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
+import android.os.Build
 import android.widget.RemoteViews
 import androidx.annotation.VisibleForTesting
 import androidx.core.app.NotificationCompat
@@ -47,7 +48,14 @@ internal object BasicNotificationBuilder {
         Log.trace(LOG_TAG, SELF_TAG, "Building a basic template push notification.")
         val packageName = context.packageName
         val smallLayout = RemoteViews(packageName, R.layout.push_template_collapsed)
-        val expandedLayout = RemoteViews(packageName, R.layout.push_template_expanded)
+        var expandedLayout = RemoteViews(packageName, R.layout.push_template_expanded)
+
+        // API23 and below have a limited notification display area. the notification elements
+        // must use a smaller area to fix buttons not showing on expanded notification.
+        // see MOB-21262 for more info
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) {
+            expandedLayout = RemoteViews(packageName, R.layout.push_template_expanded_api23)
+        }
 
         val notificationManager =
             context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager

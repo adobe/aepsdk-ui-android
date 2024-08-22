@@ -53,7 +53,7 @@ import com.adobe.marketing.mobile.services.ServiceProvider
  */
 object NotificationBuilder {
     private const val SELF_TAG = "NotificationBuilder"
-    private const val VERSION = "3.0.0"
+    private const val VERSION = "3.0.1"
 
     @JvmStatic
     fun version(): String {

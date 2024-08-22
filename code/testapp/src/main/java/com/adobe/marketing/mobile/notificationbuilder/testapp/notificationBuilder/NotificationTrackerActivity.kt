@@ -17,13 +17,21 @@ import android.net.Uri
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationManagerCompat
+import androidx.core.app.RemoteInput
 import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants
+import com.adobe.marketing.mobile.services.Log
 import com.adobe.marketing.mobile.services.ServiceProvider
 
 class NotificationTrackerActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        when (intent?.action) {
+        val intent = intent
+        when (intent.action) {
+            "Input Received" -> {
+                val results = RemoteInput.getResultsFromIntent(intent)
+                val quickReplyResult = results?.getCharSequence("developer intent action name")
+                Log.debug("MyApp", "NotificationTrackerActivity", "input box quick reply result: $quickReplyResult")
+            }
             PushTemplateConstants.NotificationAction.CLICKED -> executePushAction(intent)
             else -> {}
         }

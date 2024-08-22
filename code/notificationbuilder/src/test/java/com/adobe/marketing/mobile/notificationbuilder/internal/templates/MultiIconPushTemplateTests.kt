@@ -13,6 +13,7 @@ package com.adobe.marketing.mobile.notificationbuilder.internal.templates
 
 import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants
 import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.DEFAULT_DELETE_ICON_NAME
+import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateType
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.MockMultiIconTemplateDataProvider.getMockedDataMapWithForMultiIcon
 import com.adobe.marketing.mobile.notificationbuilder.internal.util.MapData
 import org.junit.Assert.assertEquals
@@ -124,5 +125,20 @@ class MultiIconPushTemplateTests {
             "Required field \"${PushTemplateConstants.PushPayloadKeys.MULTI_ICON_ITEMS}\" is invalid.",
             exception.message
         )
+    }
+
+    @Test
+    fun testBMultiIconPushTemplateNoTitleBody() {
+        val dataMap = getMockedDataMapWithForMultiIcon()
+        dataMap.removeKeysFromMap(
+            PushTemplateConstants.PushPayloadKeys.TITLE,
+            PushTemplateConstants.PushPayloadKeys.BODY
+        )
+
+        val data = MapData(dataMap)
+        val multiIconPushTemplate = MultiIconPushTemplate(data)
+        assertEquals(PushTemplateType.MULTI_ICON, multiIconPushTemplate.templateType)
+        assertEquals(5, multiIconPushTemplate.templateItemList.size)
+        assertEquals("delete", multiIconPushTemplate.cancelIcon)
     }
 }

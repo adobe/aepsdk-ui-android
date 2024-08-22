@@ -14,13 +14,16 @@ package com.adobe.marketing.mobile.notificationbuilder.internal.builders
 import android.app.Activity
 import android.content.BroadcastReceiver
 import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
 import android.widget.RemoteViews
 import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants
 import com.adobe.marketing.mobile.notificationbuilder.internal.PendingIntentUtils
+import com.adobe.marketing.mobile.notificationbuilder.internal.builders.ManualCarouselNotificationBuilder.downloadCarouselItems
 import com.adobe.marketing.mobile.notificationbuilder.internal.builders.ManualCarouselNotificationBuilder.getCarouselIndices
 import com.adobe.marketing.mobile.notificationbuilder.internal.builders.ManualCarouselNotificationBuilder.populateFilmstripCarouselImages
 import com.adobe.marketing.mobile.notificationbuilder.internal.builders.ManualCarouselNotificationBuilder.populateManualCarouselImages
+import com.adobe.marketing.mobile.notificationbuilder.internal.builders.ManualCarouselNotificationBuilder.setupNavigationButtons
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setRemoteViewClickAction
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.CarouselPushTemplate
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.ManualCarouselPushTemplate
@@ -37,6 +40,7 @@ import io.mockk.just
 import io.mockk.mockkClass
 import io.mockk.mockkConstructor
 import io.mockk.mockkObject
+import io.mockk.runs
 import io.mockk.unmockkAll
 import io.mockk.verify
 import org.junit.After
@@ -109,7 +113,7 @@ class ManualCarouselNotificationBuilderTest {
     }
 
     @Test
-    fun `construct returns ManualCarouselNotificationBuilder if download image count is greater than equal to 3`() {
+    fun `construct returns ManualCarouselNotificationBuilder if download image count is equal to 3`() {
         every { cacheImages(any()) } answers { 3 }
         ManualCarouselNotificationBuilder.construct(
             context,
@@ -128,10 +132,43 @@ class ManualCarouselNotificationBuilderTest {
     }
 
     @Test
+    fun `construct returns ManualCarouselNotificationBuilder if download image count is greater than 3`() {
+        every { cacheImages(any()) } answers { 5 }
+        ManualCarouselNotificationBuilder.construct(
+            context,
+            pushTemplate,
+            trackerActivityClass,
+            broadcastReceiverClass
+        )
+        verify(exactly = 0) {
+            BasicNotificationBuilder.fallbackToBasicNotification(
+                context,
+                trackerActivityClass,
+                broadcastReceiverClass,
+                pushTemplate.data
+            )
+        }
+    }
+
+    @Test
+    fun `construct ManualCarouselNotificationBuilder shouldn't be called if downloadCarouselItems failed to download some of the images`() {
+        var callCount = 0
+        every { cacheImages(any()) } answers { 5 }
+        every { getCachedImage(any()) } answers { if (callCount++ % 2 == 0) mockkClass(Bitmap::class) else null }
+        verify(exactly = 0) {
+            ManualCarouselNotificationBuilder.construct(
+                context,
+                pushTemplate,
+                trackerActivityClass,
+                broadcastReceiverClass
+            )
+        }
+    }
+
+    @Test
     fun `test downloadCarouselItems returns non empty list when image bitmap is present in the cache`() {
         every { getCachedImage(any()) } answers { mockkClass(Bitmap::class) }
-        val imagesList =
-            ManualCarouselNotificationBuilder.downloadCarouselItems(pushTemplate.carouselItems)
+        val imagesList = downloadCarouselItems(pushTemplate.carouselItems)
         assertTrue(imagesList == pushTemplate.carouselItems)
     }
 
@@ -183,6 +220,74 @@ class ManualCarouselNotificationBuilderTest {
             ),
             result
         )
+    }
+
+    @Test
+    fun `test to verify notification with action name MANUAL_CAROUSEL_LEFT_CLICKED is having correct center image index`() {
+        every { cacheImages(any()) } answers { 5 }
+        every { getCachedImage(any()) } answers { mockkClass(Bitmap::class) }
+        val mockBundle = MockCarousalTemplateDataProvider.getMockedBundleWithManualCarouselData()
+        val data = IntentData(mockBundle, PushTemplateConstants.IntentActions.MANUAL_CAROUSEL_LEFT_CLICKED)
+        val mcPushTemplate = CarouselPushTemplate(data) as ManualCarouselPushTemplate
+        ManualCarouselNotificationBuilder.construct(
+            context,
+            mcPushTemplate,
+            trackerActivityClass,
+            broadcastReceiverClass
+        )
+        assertEquals(4, mcPushTemplate.centerImageIndex)
+    }
+
+    @Test
+    fun `test to verify notification with action name MANUAL_CAROUSEL_RIGHT_CLICKED is having correct center image index`() {
+        every { cacheImages(any()) } answers { 5 }
+        every { getCachedImage(any()) } answers { mockkClass(Bitmap::class) }
+        val mockBundle = MockCarousalTemplateDataProvider.getMockedBundleWithManualCarouselData()
+        val data = IntentData(mockBundle, PushTemplateConstants.IntentActions.MANUAL_CAROUSEL_RIGHT_CLICKED)
+        val mcPushTemplate = CarouselPushTemplate(data) as ManualCarouselPushTemplate
+        ManualCarouselNotificationBuilder.construct(
+            context,
+            mcPushTemplate,
+            trackerActivityClass,
+            broadcastReceiverClass
+        )
+        assertEquals(1, mcPushTemplate.centerImageIndex)
+    }
+
+    @Test
+    fun `test to verify notification with action name FILMSTRIP_LEFT_CLICKED is having correct center image index`() {
+        every { cacheImages(any()) } answers { 5 }
+        every { getCachedImage(any()) } answers { mockkClass(Bitmap::class) }
+        val mockBundle = MockCarousalTemplateDataProvider.getMockedBundleWithManualCarouselData()
+        mockBundle.putString(PushTemplateConstants.PushPayloadKeys.CAROUSEL_LAYOUT, PushTemplateConstants.DefaultValues.FILMSTRIP_CAROUSEL_MODE)
+        val data = IntentData(mockBundle, PushTemplateConstants.IntentActions.FILMSTRIP_LEFT_CLICKED)
+        val mcPushTemplate = CarouselPushTemplate(data) as ManualCarouselPushTemplate
+        mcPushTemplate.centerImageIndex
+        ManualCarouselNotificationBuilder.construct(
+            context,
+            mcPushTemplate,
+            trackerActivityClass,
+            broadcastReceiverClass
+        )
+        assertEquals(0, mcPushTemplate.centerImageIndex)
+    }
+
+    @Test
+    fun `test to verify notification with action name FILMSTRIP_RIGHT_CLICKED is having correct center image index`() {
+        every { cacheImages(any()) } answers { 5 }
+        every { getCachedImage(any()) } answers { mockkClass(Bitmap::class) }
+        val mockBundle = MockCarousalTemplateDataProvider.getMockedBundleWithManualCarouselData()
+        mockBundle.putString(PushTemplateConstants.PushPayloadKeys.CAROUSEL_LAYOUT, PushTemplateConstants.DefaultValues.FILMSTRIP_CAROUSEL_MODE)
+        val data = IntentData(mockBundle, PushTemplateConstants.IntentActions.FILMSTRIP_RIGHT_CLICKED)
+        val mcPushTemplate = CarouselPushTemplate(data) as ManualCarouselPushTemplate
+        mcPushTemplate.centerImageIndex
+        ManualCarouselNotificationBuilder.construct(
+            context,
+            mcPushTemplate,
+            trackerActivityClass,
+            broadcastReceiverClass
+        )
+        assertEquals(2, mcPushTemplate.centerImageIndex)
     }
 
     @Test
@@ -352,5 +457,25 @@ class ManualCarouselNotificationBuilderTest {
                 any()
             )
         }
+    }
+
+    @Test
+    fun `test setupNavigationButtons for DEFAULT_MANUAL_CAROUSEL_MODE`() {
+        val mockBundle = MockCarousalTemplateDataProvider.getMockedBundleWithManualCarouselData()
+        mockBundle.putString(PushTemplateConstants.PushPayloadKeys.CAROUSEL_LAYOUT, PushTemplateConstants.DefaultValues.DEFAULT_MANUAL_CAROUSEL_MODE)
+        val data = IntentData(mockBundle, PushTemplateConstants.IntentActions.MANUAL_CAROUSEL_RIGHT_CLICKED)
+        val mcPushTemplate = CarouselPushTemplate(data) as ManualCarouselPushTemplate
+
+        mockkConstructor(AEPPushNotificationBuilder::class)
+
+        every {
+            anyConstructed<AEPPushNotificationBuilder>().createIntent(any(), mcPushTemplate)
+        } returns Intent()
+
+        every { expandedLayout.setOnClickPendingIntent(any(), any()) } just runs
+
+        setupNavigationButtons(context, mcPushTemplate, broadcastReceiverClass, expandedLayout, "channelId")
+
+        verify(exactly = 2) { expandedLayout.setOnClickPendingIntent(any(), any()) }
     }
 }
