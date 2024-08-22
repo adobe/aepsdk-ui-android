@@ -12,4 +12,5 @@ object UiImageConstants {
     const val PUSH_IMAGE_CACHE = "pushimagecache"
     val PUSH_NOTIFICATION_IMAGE_CACHE_EXPIRY_IN_MILLISECONDS: Long =
         TimeUnit.DAYS.toMillis(3) // 3 days
+
 }
