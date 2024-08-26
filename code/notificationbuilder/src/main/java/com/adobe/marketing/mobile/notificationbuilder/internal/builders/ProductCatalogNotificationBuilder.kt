@@ -27,7 +27,7 @@ import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.create
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setElementColor
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.ProductCatalogPushTemplate
 import com.adobe.marketing.mobile.services.Log
-import com.adobe.marketing.mobile.utils.UiImageUtils
+import com.adobe.marketing.mobile.utils.AEPUIImageUtils
 
 /**
  * Object responsible for constructing a [NotificationCompat.Builder] object containing a product catalog template notification.
@@ -51,7 +51,11 @@ internal object ProductCatalogNotificationBuilder {
 
         // fast fail if we can't download a catalog item image
         val catalogImageUris = pushTemplate.catalogItems.map { it.img }
-        downloadedImageCount = UiImageUtils.cacheImages(catalogImageUris)
+        downloadedImageCount = AEPUIImageUtils.cacheImages(
+            urlList = catalogImageUris,
+            bitmapWidth = PushTemplateConstants.DefaultValues.CAROUSEL_MAX_BITMAP_WIDTH.toFloat(),
+            bitmapHeight = PushTemplateConstants.DefaultValues.CAROUSEL_MAX_BITMAP_HEIGHT.toFloat(),
+        )
         if (downloadedImageCount != catalogImageUris.size) {
             Log.error(
                 LOG_TAG,
@@ -146,7 +150,7 @@ internal object ProductCatalogNotificationBuilder {
         )
 
         val pushImage =
-            UiImageUtils.getCachedImage(pushTemplate.catalogItems[pushTemplate.currentIndex].img)
+            AEPUIImageUtils.getCachedImage(pushTemplate.catalogItems[pushTemplate.currentIndex].img)
         expandedLayout.setImageViewBitmap(R.id.product_image, pushImage)
         expandedLayout.setOnClickPendingIntent(
             R.id.product_image,
@@ -190,7 +194,7 @@ internal object ProductCatalogNotificationBuilder {
             R.id.product_thumbnail_3
         )
         for (index in catalogItems.indices) {
-            val thumbImage = UiImageUtils.getCachedImage(catalogItems[index].img)
+            val thumbImage = AEPUIImageUtils.getCachedImage(catalogItems[index].img)
             if (thumbImage == null) {
                 Log.warning(
                     LOG_TAG,

@@ -31,7 +31,7 @@ import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setRem
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.CarouselPushTemplate
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.ManualCarouselPushTemplate
 import com.adobe.marketing.mobile.services.Log
-import com.adobe.marketing.mobile.utils.UiImageUtils
+import com.adobe.marketing.mobile.utils.AEPUIImageUtils
 
 /**
  * Object responsible for constructing a [NotificationCompat.Builder] object containing a manual or filmstrip carousel push template notification.
@@ -49,8 +49,10 @@ internal object ManualCarouselNotificationBuilder {
         Log.trace(LOG_TAG, SELF_TAG, "Building a manual carousel template push notification.")
 
         // download carousel images
-        val downloadedImagesCount = UiImageUtils.cacheImages(
-            pushTemplate.carouselItems.map { it.imageUri }
+        val downloadedImagesCount = AEPUIImageUtils.cacheImages(
+            urlList = pushTemplate.carouselItems.map { it.imageUri },
+            bitmapWidth = PushTemplateConstants.DefaultValues.CAROUSEL_MAX_BITMAP_WIDTH.toFloat(),
+            bitmapHeight = PushTemplateConstants.DefaultValues.CAROUSEL_MAX_BITMAP_HEIGHT.toFloat(),
         )
 
         // fallback to a basic push template notification builder if less than 3 images were able
@@ -138,7 +140,7 @@ internal object ManualCarouselNotificationBuilder {
         for (item: CarouselPushTemplate.CarouselItem in items) {
             val imageUri: String = item.imageUri
             val pushImage: Bitmap? =
-                UiImageUtils.getCachedImage(imageUri)
+                AEPUIImageUtils.getCachedImage(imageUri)
             if (pushImage == null) {
                 Log.warning(
                     LOG_TAG,
@@ -281,7 +283,7 @@ internal object ManualCarouselNotificationBuilder {
         for (item: CarouselPushTemplate.CarouselItem in items) {
             val imageUri = item.imageUri
             val pushImage: Bitmap? =
-                UiImageUtils.getCachedImage(imageUri)
+                AEPUIImageUtils.getCachedImage(imageUri)
             if (pushImage == null) {
                 Log.warning(
                     LOG_TAG,
@@ -348,7 +350,7 @@ internal object ManualCarouselNotificationBuilder {
         )
 
         // set the downloaded bitmaps in the filmstrip image views
-        val assetCacheLocation = UiImageUtils.getAssetCacheLocation()
+        val assetCacheLocation = AEPUIImageUtils.getAssetCacheLocation()
         if (assetCacheLocation.isNullOrEmpty()) {
             Log.warning(
                 LOG_TAG,
@@ -358,21 +360,21 @@ internal object ManualCarouselNotificationBuilder {
             return
         }
 
-        val newLeftImage = UiImageUtils.getCachedImage(
+        val newLeftImage = AEPUIImageUtils.getCachedImage(
             validCarouselItems[newIndices.first].imageUri
         )
         expandedLayout.setImageViewBitmap(
             R.id.manual_carousel_filmstrip_left, newLeftImage
         )
 
-        val newCenterImage = UiImageUtils.getCachedImage(
+        val newCenterImage = AEPUIImageUtils.getCachedImage(
             validCarouselItems[newIndices.second].imageUri
         )
         expandedLayout.setImageViewBitmap(
             R.id.manual_carousel_filmstrip_center, newCenterImage
         )
 
-        val newRightImage = UiImageUtils.getCachedImage(
+        val newRightImage = AEPUIImageUtils.getCachedImage(
             validCarouselItems[newIndices.third].imageUri
         )
         expandedLayout.setImageViewBitmap(

@@ -24,7 +24,7 @@ import com.adobe.marketing.mobile.MobileCore
 import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants
 import com.adobe.marketing.mobile.notificationbuilder.internal.builders.DummyActivity
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.BasicPushTemplate
-import com.adobe.marketing.mobile.utils.UiImageUtils
+import com.adobe.marketing.mobile.utils.AEPUIImageUtils
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject
@@ -59,7 +59,7 @@ class NotificationCompatBuilderExtensionsTest {
         mockContext = mockk<Context>(relaxed = true)
         mockkStatic(Context::getIconWithResourceName)
         mockkStatic(MobileCore::class)
-        mockkObject(UiImageUtils)
+        mockkObject(AEPUIImageUtils)
         mockBitmap = mockk<Bitmap>(relaxed = true)
         trackerActivityClass = DummyActivity::class.java
     }
@@ -197,8 +197,8 @@ class NotificationCompatBuilderExtensionsTest {
 
     @Test
     fun `setLargeIcon with valid imageUrl`() {
-        every { UiImageUtils.cacheImages(listOf("valid_image_url")) } returns 1
-        every { UiImageUtils.getCachedImage("valid_image_url") } returns mockBitmap
+        every { AEPUIImageUtils.cacheImages(listOf("valid_image_url"), any(), any()) } returns 1
+        every { AEPUIImageUtils.getCachedImage("valid_image_url") } returns mockBitmap
 
         val spyBuilder = spyk(NotificationCompat.Builder(mockContext, "mockChannelId"))
 
@@ -210,7 +210,7 @@ class NotificationCompatBuilderExtensionsTest {
 
     @Test
     fun `setLargeIcon with imageUrl that cannot be downloaded`() {
-        every { UiImageUtils.cacheImages(listOf("invalid_image_url")) } returns 0
+        every { AEPUIImageUtils.cacheImages(listOf("invalid_image_url"), any(), any()) } returns 0
 
         val spyBuilder = spyk(NotificationCompat.Builder(mockContext, "mockChannelId"))
 

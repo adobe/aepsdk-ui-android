@@ -52,6 +52,8 @@ object PushTemplateConstants {
         internal const val SILENT_CHANNEL_NAME = "Silent Notifications"
         internal const val DEFAULT_CHANNEL_ID = "AEPSDKPushChannel"
         internal const val SILENT_NOTIFICATION_CHANNEL_ID = "AEPSDKSilentPushChannel"
+        internal const val CAROUSEL_MAX_BITMAP_WIDTH = 300
+        internal const val CAROUSEL_MAX_BITMAP_HEIGHT = 200
         internal const val AUTO_CAROUSEL_MODE = "auto"
         internal const val DEFAULT_MANUAL_CAROUSEL_MODE = "default"
         internal const val FILMSTRIP_CAROUSEL_MODE = "filmstrip"

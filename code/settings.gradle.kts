@@ -33,5 +33,5 @@ rootProject.name = "aepsdk-ui-android"
 include (
         ":notificationbuilder",
     ":testapp",
-    ":ui-utils"
+    ":aep_ui_utils"
 )

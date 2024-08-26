@@ -18,12 +18,13 @@ import android.view.View
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import com.adobe.marketing.mobile.notificationbuilder.NotificationConstructionFailedException
+import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants
 import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.LOG_TAG
 import com.adobe.marketing.mobile.notificationbuilder.R
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.createNotificationChannelIfRequired
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.ZeroBezelPushTemplate
 import com.adobe.marketing.mobile.services.Log
-import com.adobe.marketing.mobile.utils.UiImageUtils
+import com.adobe.marketing.mobile.utils.AEPUIImageUtils
 
 internal object ZeroBezelNotificationBuilder {
     private const val SELF_TAG = "ZeroBezelNotificationBuilder"
@@ -40,14 +41,17 @@ internal object ZeroBezelNotificationBuilder {
         val expandedLayout = RemoteViews(packageName, R.layout.push_template_zero_bezel_expanded)
 
         // download and cache the image used in the notification
-        val downloadedImageCount =
-            UiImageUtils.cacheImages(listOf(pushTemplate.imageUrl))
+        val downloadedImageCount = AEPUIImageUtils.cacheImages(
+            urlList = listOf(pushTemplate.imageUrl),
+            bitmapWidth = PushTemplateConstants.DefaultValues.CAROUSEL_MAX_BITMAP_WIDTH.toFloat(),
+            bitmapHeight = PushTemplateConstants.DefaultValues.CAROUSEL_MAX_BITMAP_HEIGHT.toFloat(),
+        )
 
         // Check if the image was downloaded
         if (downloadedImageCount > 0) {
             // set the image on the notification if it was downloaded
             val pushImage =
-                UiImageUtils.getCachedImage(pushTemplate.imageUrl)
+                AEPUIImageUtils.getCachedImage(pushTemplate.imageUrl)
             expandedLayout.setImageViewBitmap(R.id.expanded_template_image, pushImage)
 
             // only set image on the collapsed view if the style is "img"

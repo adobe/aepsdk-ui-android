@@ -24,7 +24,7 @@ import com.adobe.marketing.mobile.notificationbuilder.internal.PendingIntentUtil
 import com.adobe.marketing.mobile.services.Log
 import com.adobe.marketing.mobile.services.ServiceProvider
 import com.adobe.marketing.mobile.util.UrlUtils
-import com.adobe.marketing.mobile.utils.UiImageUtils
+import com.adobe.marketing.mobile.utils.AEPUIImageUtils
 
 private const val SELF_TAG = "RemoteViewExtensions"
 
@@ -222,7 +222,11 @@ internal fun RemoteViews.setRemoteImage(
     if (!UrlUtils.isValidUrl(imageUrl)) {
         return false
     }
-    val downloadedIconCount = UiImageUtils.cacheImages(listOf(imageUrl))
+    val downloadedIconCount = AEPUIImageUtils.cacheImages(
+        urlList = listOf(imageUrl),
+        bitmapWidth = PushTemplateConstants.DefaultValues.CAROUSEL_MAX_BITMAP_WIDTH.toFloat(),
+        bitmapHeight = PushTemplateConstants.DefaultValues.CAROUSEL_MAX_BITMAP_HEIGHT.toFloat(),
+    )
     if (downloadedIconCount == 0) {
         Log.warning(
             LOG_TAG,
@@ -234,7 +238,7 @@ internal fun RemoteViews.setRemoteImage(
     }
     setImageViewBitmap(
         containerViewId,
-        UiImageUtils.getCachedImage(imageUrl)
+        AEPUIImageUtils.getCachedImage(imageUrl)
     )
     return true
 }

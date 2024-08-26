@@ -20,9 +20,9 @@ import com.adobe.marketing.mobile.notificationbuilder.internal.PendingIntentUtil
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setRemoteViewClickAction
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.AutoCarouselPushTemplate
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.provideMockedAutoCarousalTemplate
-import com.adobe.marketing.mobile.utils.UiImageUtils
-import com.adobe.marketing.mobile.utils.UiImageUtils.cacheImages
-import com.adobe.marketing.mobile.utils.UiImageUtils.getCachedImage
+import com.adobe.marketing.mobile.utils.AEPUIImageUtils
+import com.adobe.marketing.mobile.utils.AEPUIImageUtils.cacheImages
+import com.adobe.marketing.mobile.utils.AEPUIImageUtils.getCachedImage
 import io.mockk.Runs
 import io.mockk.every
 import io.mockk.just
@@ -61,7 +61,7 @@ class AutoCarouselNotificationBuilderTest {
         autoCarouselPushTemplate = provideMockedAutoCarousalTemplate(false)
         mockkObject(BasicNotificationBuilder)
         mockkObject(PendingIntentUtils)
-        mockkObject(UiImageUtils)
+        mockkObject(AEPUIImageUtils)
         mockkConstructor(RemoteViews::class)
     }
 
@@ -83,7 +83,7 @@ class AutoCarouselNotificationBuilderTest {
 
     @Test
     fun `construct returns BasicNotificationBuilder if less than 3 images were downloaded`() {
-        every { cacheImages(any()) } answers { 2 }
+        every { cacheImages(any(), any(), any()) } answers { 2 }
         AutoCarouselNotificationBuilder.construct(
             context,
             autoCarouselPushTemplate,
@@ -102,7 +102,7 @@ class AutoCarouselNotificationBuilderTest {
 
     @Test
     fun `construct does not fallback to BasicNotificationBuilder if greater than or equal to 3 images were downloaded`() {
-        every { cacheImages(any()) } answers { 3 }
+        every { cacheImages(any(), any(), any()) } answers { 3 }
         AutoCarouselNotificationBuilder.construct(
             context,
             autoCarouselPushTemplate,

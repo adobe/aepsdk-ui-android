@@ -32,7 +32,7 @@ import com.adobe.marketing.mobile.notificationbuilder.internal.templates.MockAEP
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.provideMockedBasicPushTemplateWithAllKeys
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.provideMockedBasicPushTemplateWithRequiredData
 import com.adobe.marketing.mobile.notificationbuilder.internal.util.MapData
-import com.adobe.marketing.mobile.utils.UiImageUtils
+import com.adobe.marketing.mobile.utils.AEPUIImageUtils
 import io.mockk.every
 import io.mockk.mockkConstructor
 import io.mockk.mockkObject
@@ -72,7 +72,7 @@ class BasicNotificationBuilderTest {
 
         mockkConstructor(RemoteViews::class)
         mockkStatic(RemoteViews::setRemoteViewImage)
-        mockkObject(UiImageUtils)
+        mockkObject(AEPUIImageUtils)
     }
 
     @After

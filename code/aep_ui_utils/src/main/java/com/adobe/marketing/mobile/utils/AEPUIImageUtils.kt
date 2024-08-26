@@ -25,14 +25,12 @@ import com.adobe.marketing.mobile.services.caching.CacheEntry
 import com.adobe.marketing.mobile.services.caching.CacheExpiry
 import com.adobe.marketing.mobile.services.caching.CacheService
 import com.adobe.marketing.mobile.util.UrlUtils
-import com.adobe.marketing.mobile.utils.UiImageConstants.CACHE_BASE_DIR
-import com.adobe.marketing.mobile.utils.UiImageConstants.CAROUSEL_MAX_BITMAP_HEIGHT
-import com.adobe.marketing.mobile.utils.UiImageConstants.CAROUSEL_MAX_BITMAP_WIDTH
-import com.adobe.marketing.mobile.utils.UiImageConstants.DEFAULT_BITMAP_QUALITY
-import com.adobe.marketing.mobile.utils.UiImageConstants.DEFAULT_DOWNLOAD_TIMEOUT_SECS
-import com.adobe.marketing.mobile.utils.UiImageConstants.PUSH_IMAGE_CACHE
-import com.adobe.marketing.mobile.utils.UiImageConstants.PUSH_NOTIFICATION_IMAGE_CACHE_EXPIRY_IN_MILLISECONDS
-import com.adobe.marketing.mobile.utils.UiImageConstants.PUSH_TEMPLATE_LOG_TAG
+import com.adobe.marketing.mobile.utils.AEPUIImageConstants.AEP_UI_UTIL_LOG_TAG
+import com.adobe.marketing.mobile.utils.AEPUIImageConstants.CACHE_BASE_DIR
+import com.adobe.marketing.mobile.utils.AEPUIImageConstants.DEFAULT_BITMAP_QUALITY
+import com.adobe.marketing.mobile.utils.AEPUIImageConstants.DEFAULT_DOWNLOAD_TIMEOUT_SECS
+import com.adobe.marketing.mobile.utils.AEPUIImageConstants.IMAGE_CACHE_EXPIRY_IN_MILLISECONDS
+import com.adobe.marketing.mobile.utils.AEPUIImageConstants.PUSH_IMAGE_CACHE
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.File
@@ -48,8 +46,8 @@ import java.util.concurrent.atomic.AtomicInteger
  * Utility functions to assist in downloading and caching images for push template notifications.
  */
 
-object UiImageUtils {
-    private const val SELF_TAG = "PushTemplateImageUtil"
+object AEPUIImageUtils {
+    private const val SELF_TAG = "AEPUIImageUtils"
 
     /**
      * Downloads and caches images provided in the [urlList]. Prior to downloading, the image url
@@ -65,10 +63,10 @@ object UiImageUtils {
      */
     fun cacheImages(
         urlList: List<String?>,
+        bitmapWidth: Float,
+        bitmapHeight: Float,
         downloadTimeoutInSeconds: Int = DEFAULT_DOWNLOAD_TIMEOUT_SECS,
         bitmapQuality: Int = DEFAULT_BITMAP_QUALITY,
-        bitmapWidth: Float = CAROUSEL_MAX_BITMAP_WIDTH.toFloat(),
-        bitmapHeight: Float = CAROUSEL_MAX_BITMAP_HEIGHT.toFloat(),
         scaleToFit: Matrix.ScaleToFit = Matrix.ScaleToFit.CENTER
     ): Int {
         val assetCacheLocation = getAssetCacheLocation()
@@ -89,7 +87,7 @@ object UiImageUtils {
             val cacheResult = cacheService[assetCacheLocation, url]
             if (cacheResult != null) {
                 Log.trace(
-                    PUSH_TEMPLATE_LOG_TAG,
+                    AEP_UI_UTIL_LOG_TAG,
                     SELF_TAG,
                     "Found cached image for $url"
                 )
@@ -104,10 +102,10 @@ object UiImageUtils {
                     // scale down the bitmap to 300dp x 200dp as we don't want to use a full
                     // size image due to memory constraints
                     image?.let {
-                        val pushImage = scaleBitmap(it, bitmapWidth, bitmapHeight, scaleToFit)
+                        val scaledImage = scaleBitmap(it, bitmapWidth, bitmapHeight, scaleToFit)
                         // write bitmap to cache
                         try {
-                            bitmapToInputStream(pushImage, bitmapQuality).use { bitmapInputStream ->
+                            bitmapToInputStream(scaledImage, bitmapQuality).use { bitmapInputStream ->
                                 cacheBitmapInputStream(
                                     cacheService,
                                     bitmapInputStream,
@@ -117,7 +115,7 @@ object UiImageUtils {
                             downloadedImageCount.incrementAndGet()
                         } catch (exception: IOException) {
                             Log.warning(
-                                PUSH_TEMPLATE_LOG_TAG,
+                                AEP_UI_UTIL_LOG_TAG,
                                 SELF_TAG,
                                 "Exception occurred creating an input stream from a bitmap for {$url}: ${exception.localizedMessage}."
                             )
@@ -131,13 +129,13 @@ object UiImageUtils {
         try {
             if (latch.await(downloadTimeoutInSeconds.toLong(), TimeUnit.SECONDS)) {
                 Log.trace(
-                    PUSH_TEMPLATE_LOG_TAG,
+                    AEP_UI_UTIL_LOG_TAG,
                     SELF_TAG,
                     "All image downloads have completed."
                 )
             } else {
                 Log.warning(
-                    PUSH_TEMPLATE_LOG_TAG,
+                    AEP_UI_UTIL_LOG_TAG,
                     SELF_TAG,
                     "Timed out waiting for image downloads to complete."
                 )
@@ -145,7 +143,7 @@ object UiImageUtils {
             }
         } catch (e: InterruptedException) {
             Log.warning(
-                PUSH_TEMPLATE_LOG_TAG,
+                AEP_UI_UTIL_LOG_TAG,
                 SELF_TAG,
                 "Interrupted while waiting for image downloads to complete: ${e.localizedMessage}"
             )
@@ -197,17 +195,17 @@ object UiImageUtils {
         }
         val cacheResult = ServiceProvider.getInstance().cacheService[assetCacheLocation, url]
         if (cacheResult == null) {
-            Log.warning(PUSH_TEMPLATE_LOG_TAG, SELF_TAG, "Image not found in cache for $url")
+            Log.warning(AEP_UI_UTIL_LOG_TAG, SELF_TAG, "Image not found in cache for $url")
             return null
         }
-        Log.trace(PUSH_TEMPLATE_LOG_TAG, SELF_TAG, "Found cached image for $url")
+        Log.trace(AEP_UI_UTIL_LOG_TAG, SELF_TAG, "Found cached image for $url")
         return BitmapFactory.decodeStream(cacheResult.data)
     }
 
     private fun handleDownloadResponse(url: String?, connection: HttpConnecting?): Bitmap? {
         if (connection == null) {
             Log.warning(
-                PUSH_TEMPLATE_LOG_TAG,
+                AEP_UI_UTIL_LOG_TAG,
                 SELF_TAG,
                 "Failed to download push notification image from url ($url), received a null connection."
             )
@@ -215,7 +213,7 @@ object UiImageUtils {
         }
         if ((connection.responseCode != HttpURLConnection.HTTP_OK)) {
             Log.debug(
-                PUSH_TEMPLATE_LOG_TAG,
+                AEP_UI_UTIL_LOG_TAG,
                 SELF_TAG,
                 "Failed to download push notification image from url ($url). Response code was: ${connection.responseCode}."
             )
@@ -224,7 +222,7 @@ object UiImageUtils {
         val bitmap = BitmapFactory.decodeStream(connection.inputStream)
         bitmap?.let {
             Log.trace(
-                PUSH_TEMPLATE_LOG_TAG,
+                AEP_UI_UTIL_LOG_TAG,
                 SELF_TAG,
                 "Downloaded push notification image from url ($url)"
             )
@@ -259,7 +257,7 @@ object UiImageUtils {
         imageUrl: String
     ) {
         Log.trace(
-            PUSH_TEMPLATE_LOG_TAG,
+            AEP_UI_UTIL_LOG_TAG,
             SELF_TAG,
             "Caching image downloaded from $imageUrl."
         )
@@ -267,7 +265,7 @@ object UiImageUtils {
             // cache push notification images for 3 days
             val cacheEntry = CacheEntry(
                 bitmapInputStream,
-                CacheExpiry.after(PUSH_NOTIFICATION_IMAGE_CACHE_EXPIRY_IN_MILLISECONDS),
+                CacheExpiry.after(IMAGE_CACHE_EXPIRY_IN_MILLISECONDS),
                 null
             )
             cacheService[it, imageUrl] = cacheEntry
@@ -323,9 +321,9 @@ object UiImageUtils {
             (
                 applicationCacheDir
                     .toString() + File.separator +
-                        CACHE_BASE_DIR
+                    CACHE_BASE_DIR
                 ) + File.separator +
-                    PUSH_IMAGE_CACHE
+                PUSH_IMAGE_CACHE
             )
     }
 }

@@ -24,9 +24,9 @@ import com.adobe.marketing.mobile.notificationbuilder.internal.templates.ZeroBez
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.replaceValueInMap
 import com.adobe.marketing.mobile.notificationbuilder.internal.util.IntentData
 import com.adobe.marketing.mobile.notificationbuilder.internal.util.MapData
-import com.adobe.marketing.mobile.utils.UiImageUtils
-import com.adobe.marketing.mobile.utils.UiImageUtils.cacheImages
-import com.adobe.marketing.mobile.utils.UiImageUtils.getCachedImage
+import com.adobe.marketing.mobile.utils.AEPUIImageUtils
+import com.adobe.marketing.mobile.utils.AEPUIImageUtils.cacheImages
+import com.adobe.marketing.mobile.utils.AEPUIImageUtils.getCachedImage
 import io.mockk.Runs
 import io.mockk.every
 import io.mockk.just
@@ -60,7 +60,7 @@ class ZeroBezelNotificationBuilderTest {
     fun setup() {
         context = RuntimeEnvironment.getApplication()
         dataMap = MockAEPPushTemplateDataProvider.getMockedAEPDataMapWithAllKeys()
-        mockkObject(UiImageUtils)
+        mockkObject(AEPUIImageUtils)
         mockkConstructor(RemoteViews::class)
         mockBitmap = mockk<Bitmap>(relaxed = true)
         trackerActivityClass = DummyActivity::class.java
@@ -76,7 +76,7 @@ class ZeroBezelNotificationBuilderTest {
     @Test
     fun `verify construct with image downloaded and collapsedStyle is img`() {
         val pushTemplate = ZeroBezelPushTemplate(MapData(dataMap))
-        every { cacheImages(any()) } answers { 2 }
+        every { cacheImages(any(), any(), any()) } answers { 2 }
         every { anyConstructed<RemoteViews>().setImageViewBitmap(any(), mockBitmap) } just Runs
 
         val notification = ZeroBezelNotificationBuilder.construct(
@@ -87,7 +87,7 @@ class ZeroBezelNotificationBuilderTest {
 
         assertEquals(pushTemplate.channelId, notification.channelId)
         verifyNotificationDataFields(notification, pushTemplate)
-        verify { cacheImages(listOf(pushTemplate.imageUrl)) }
+        verify { cacheImages(listOf(pushTemplate.imageUrl), any(), any()) }
         verify { getCachedImage(pushTemplate.imageUrl) }
         verify { anyConstructed<RemoteViews>().setImageViewBitmap(any(), mockBitmap) }
     }
@@ -102,7 +102,7 @@ class ZeroBezelNotificationBuilderTest {
         )
         val pushTemplate = ZeroBezelPushTemplate(MapData(dataMap))
 
-        every { cacheImages(any()) } answers { 2 }
+        every { cacheImages(any(), any(), any()) } answers { 2 }
         every { anyConstructed<RemoteViews>().setImageViewBitmap(any(), mockBitmap) } just Runs
         every { anyConstructed<RemoteViews>().setViewVisibility(any(), View.GONE) } just Runs
 
@@ -114,7 +114,7 @@ class ZeroBezelNotificationBuilderTest {
 
         assertEquals(pushTemplate.channelId, notification.channelId)
         verifyNotificationDataFields(notification, pushTemplate)
-        verify { cacheImages(listOf(pushTemplate.imageUrl)) }
+        verify { cacheImages(listOf(pushTemplate.imageUrl), any(), any()) }
         verify { getCachedImage(pushTemplate.imageUrl) }
         verify { anyConstructed<RemoteViews>().setImageViewBitmap(any(), mockBitmap) }
         verify { anyConstructed<RemoteViews>().setViewVisibility(any(), View.GONE) }
@@ -124,7 +124,7 @@ class ZeroBezelNotificationBuilderTest {
     fun `verify construct with no image downloaded`() {
         val pushTemplate = ZeroBezelPushTemplate(MapData(dataMap))
 
-        every { cacheImages(listOf(pushTemplate.imageUrl)) } returns 0
+        every { cacheImages(listOf(pushTemplate.imageUrl), any(), any()) } returns 0
         every { anyConstructed<RemoteViews>().setViewVisibility(any(), View.GONE) } just Runs
 
         val notification = ZeroBezelNotificationBuilder.construct(
@@ -135,14 +135,14 @@ class ZeroBezelNotificationBuilderTest {
 
         assertEquals(pushTemplate.channelId, notification.channelId)
         verifyNotificationDataFields(notification, pushTemplate)
-        verify { cacheImages(listOf(pushTemplate.imageUrl)) }
+        verify { cacheImages(listOf(pushTemplate.imageUrl), any(), any()) }
         verify { anyConstructed<RemoteViews>().setViewVisibility(any(), View.GONE) }
     }
 
     @Test
     fun `verify construct with image downloaded and collapsedStyle is img for IntentData`() {
         val pushTemplate = ZeroBezelPushTemplate(IntentData(mockBundle, null))
-        every { cacheImages(any()) } answers { 2 }
+        every { cacheImages(any(), any(), any()) } answers { 2 }
         every { anyConstructed<RemoteViews>().setImageViewBitmap(any(), mockBitmap) } just Runs
 
         val notification = ZeroBezelNotificationBuilder.construct(
@@ -156,7 +156,7 @@ class ZeroBezelNotificationBuilderTest {
             notification.channelId
         )
         verifyNotificationDataFields(notification, pushTemplate)
-        verify { cacheImages(listOf(pushTemplate.imageUrl)) }
+        verify { cacheImages(listOf(pushTemplate.imageUrl), any(), any()) }
         verify { getCachedImage(pushTemplate.imageUrl) }
         verify { anyConstructed<RemoteViews>().setImageViewBitmap(any(), mockBitmap) }
     }
@@ -169,7 +169,7 @@ class ZeroBezelNotificationBuilderTest {
         )
 
         val pushTemplate = ZeroBezelPushTemplate(IntentData(mockBundle, null))
-        every { cacheImages(any()) } answers { 2 }
+        every { cacheImages(any(), any(), any()) } answers { 2 }
         every { anyConstructed<RemoteViews>().setImageViewBitmap(any(), mockBitmap) } just Runs
         every { anyConstructed<RemoteViews>().setViewVisibility(any(), View.GONE) } just Runs
 
@@ -184,7 +184,7 @@ class ZeroBezelNotificationBuilderTest {
             notification.channelId
         )
         verifyNotificationDataFields(notification, pushTemplate)
-        verify { cacheImages(listOf(pushTemplate.imageUrl)) }
+        verify { cacheImages(listOf(pushTemplate.imageUrl), any(), any()) }
         verify { getCachedImage(pushTemplate.imageUrl) }
         verify { anyConstructed<RemoteViews>().setImageViewBitmap(any(), mockBitmap) }
         verify { anyConstructed<RemoteViews>().setViewVisibility(any(), View.GONE) }
@@ -193,7 +193,7 @@ class ZeroBezelNotificationBuilderTest {
     @Test
     fun `verify construct with no image downloaded for IntentData`() {
         val pushTemplate = ZeroBezelPushTemplate(IntentData(mockBundle, null))
-        every { cacheImages(listOf(pushTemplate.imageUrl)) } returns 0
+        every { cacheImages(listOf(pushTemplate.imageUrl), any(), any()) } returns 0
         every { anyConstructed<RemoteViews>().setViewVisibility(any(), View.GONE) } just Runs
 
         val notification = ZeroBezelNotificationBuilder.construct(
@@ -207,7 +207,7 @@ class ZeroBezelNotificationBuilderTest {
             notification.channelId
         )
         verifyNotificationDataFields(notification, pushTemplate)
-        verify { cacheImages(listOf(pushTemplate.imageUrl)) }
+        verify { cacheImages(listOf(pushTemplate.imageUrl), any(), any()) }
         verify { anyConstructed<RemoteViews>().setViewVisibility(any(), View.GONE) }
     }
 

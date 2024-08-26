@@ -34,7 +34,7 @@ import com.adobe.marketing.mobile.notificationbuilder.internal.templates.MOCKED_
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.MOCKED_TITLE
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.TimerPushTemplate
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.provideMockedTimerTemplate
-import com.adobe.marketing.mobile.utils.UiImageUtils
+import com.adobe.marketing.mobile.utils.AEPUIImageUtils
 import io.mockk.Runs
 import io.mockk.every
 import io.mockk.just
@@ -76,7 +76,7 @@ class TimerNotificationBuilderTests {
         pushTemplate = provideMockedTimerTemplate(false, true)
         trackerActivityClass = mockkClass(Activity::class, relaxed = true).javaClass
         broadcastReceiverClass = mockkClass(BroadcastReceiver::class, relaxed = true).javaClass
-        mockkObject(UiImageUtils)
+        mockkObject(AEPUIImageUtils)
         mockkObject(PendingIntentUtils)
         mockkConstructor(RemoteViews::class)
         mockkStatic(RemoteViews::setTimerTextColor)

@@ -25,7 +25,7 @@ import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.LOG_
 import com.adobe.marketing.mobile.notificationbuilder.internal.PendingIntentUtils
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.BasicPushTemplate
 import com.adobe.marketing.mobile.services.Log
-import com.adobe.marketing.mobile.utils.UiImageUtils
+import com.adobe.marketing.mobile.utils.AEPUIImageUtils
 import java.util.Random
 
 private const val SELF_TAG = "RemoteViewExtensions"
@@ -156,8 +156,10 @@ internal fun NotificationCompat.Builder.setLargeIcon(
 ): NotificationCompat.Builder {
     // Quick bail out if there is no image url
     if (imageUrl.isNullOrEmpty()) return this
-    val downloadedIconCount: Int = UiImageUtils.cacheImages(
-        listOf(imageUrl)
+    val downloadedIconCount = AEPUIImageUtils.cacheImages(
+        urlList = listOf(imageUrl),
+        bitmapWidth = PushTemplateConstants.DefaultValues.CAROUSEL_MAX_BITMAP_WIDTH.toFloat(),
+        bitmapHeight = PushTemplateConstants.DefaultValues.CAROUSEL_MAX_BITMAP_HEIGHT.toFloat(),
     )
 
     // Bail out if the download fails
@@ -165,7 +167,7 @@ internal fun NotificationCompat.Builder.setLargeIcon(
         return this
     }
 
-    val bitmap = UiImageUtils.getCachedImage(imageUrl)
+    val bitmap = AEPUIImageUtils.getCachedImage(imageUrl)
     setLargeIcon(bitmap)
     val bigPictureStyle = NotificationCompat.BigPictureStyle()
     bigPictureStyle.bigPicture(bitmap)

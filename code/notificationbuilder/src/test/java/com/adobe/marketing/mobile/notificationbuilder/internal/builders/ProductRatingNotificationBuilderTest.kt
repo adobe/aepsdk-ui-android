@@ -27,9 +27,9 @@ import com.adobe.marketing.mobile.notificationbuilder.internal.templates.MockPro
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.ProductRatingPushTemplate
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.provideMockedProductRatingTemplate
 import com.adobe.marketing.mobile.notificationbuilder.internal.util.MapData
-import com.adobe.marketing.mobile.utils.UiImageUtils
-import com.adobe.marketing.mobile.utils.UiImageUtils.cacheImages
-import com.adobe.marketing.mobile.utils.UiImageUtils.getCachedImage
+import com.adobe.marketing.mobile.utils.AEPUIImageUtils
+import com.adobe.marketing.mobile.utils.AEPUIImageUtils.cacheImages
+import com.adobe.marketing.mobile.utils.AEPUIImageUtils.getCachedImage
 import io.mockk.Runs
 import io.mockk.every
 import io.mockk.just
@@ -64,7 +64,7 @@ class ProductRatingNotificationBuilderTest {
         mockkConstructor(RemoteViews::class)
         mockkStatic(RemoteViews::setRemoteViewImage)
         mockkStatic(RemoteViews::setRemoteViewClickAction)
-        mockkObject(UiImageUtils)
+        mockkObject(AEPUIImageUtils)
     }
 
     @After
@@ -87,7 +87,7 @@ class ProductRatingNotificationBuilderTest {
 
     @Test
     fun `construct should set visibility of expanded layout image view as GONE if no images are downloaded`() {
-        every { cacheImages(any()) } answers { 0 }
+        every { cacheImages(any(), any(), any()) } answers { 0 }
         every { any<RemoteViews>().setRemoteViewImage(any(), any()) } returns true
         every { anyConstructed<RemoteViews>().setViewVisibility(any(), View.GONE) } just Runs
 
@@ -101,7 +101,7 @@ class ProductRatingNotificationBuilderTest {
     fun `construct should set image for expanded layout if image is downloaded successfully`() {
         val cachedItem = mockkClass(Bitmap::class)
 
-        every { cacheImages(any()) } answers { 1 }
+        every { cacheImages(any(), any(), any()) } answers { 1 }
         every { getCachedImage(any()) } answers { cachedItem }
         every { any<RemoteViews>().setRemoteViewImage(any(), any()) } returns true
         every { anyConstructed<RemoteViews>().setViewVisibility(any(), View.GONE) } just Runs
