@@ -34,7 +34,11 @@ internal class ProductRatingPushTemplate(data: NotificationData) : AEPPushTempla
             fun from(jsonObject: JSONObject): RatingAction? {
                 return try {
                     var uri: String? = null
-                    val type = PushTemplateConstants.ActionType.valueOf(jsonObject.getString(PushTemplateConstants.RatingAction.TYPE))
+                    val type = PushTemplateConstants.ActionType.valueOf(
+                        jsonObject.getString(
+                            PushTemplateConstants.RatingAction.TYPE
+                        )
+                    )
                     if (type == PushTemplateConstants.ActionType.WEBURL || type == PushTemplateConstants.ActionType.DEEPLINK) {
                         uri = jsonObject.getString(PushTemplateConstants.RatingAction.URI)
                     }

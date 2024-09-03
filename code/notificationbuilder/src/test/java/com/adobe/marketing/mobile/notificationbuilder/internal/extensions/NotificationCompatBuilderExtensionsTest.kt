@@ -22,9 +22,10 @@ import android.os.Bundle
 import androidx.core.app.NotificationCompat
 import com.adobe.marketing.mobile.MobileCore
 import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants
-import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateImageUtils
 import com.adobe.marketing.mobile.notificationbuilder.internal.builders.DummyActivity
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.BasicPushTemplate
+import com.adobe.marketing.mobile.utils.AEPUIImageConfig
+import com.adobe.marketing.mobile.utils.AEPUIImageUtils
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject
@@ -59,7 +60,7 @@ class NotificationCompatBuilderExtensionsTest {
         mockContext = mockk<Context>(relaxed = true)
         mockkStatic(Context::getIconWithResourceName)
         mockkStatic(MobileCore::class)
-        mockkObject(PushTemplateImageUtils)
+        mockkObject(AEPUIImageUtils)
         mockBitmap = mockk<Bitmap>(relaxed = true)
         trackerActivityClass = DummyActivity::class.java
     }
@@ -197,8 +198,8 @@ class NotificationCompatBuilderExtensionsTest {
 
     @Test
     fun `setLargeIcon with valid imageUrl`() {
-        every { PushTemplateImageUtils.cacheImages(listOf("valid_image_url")) } returns 1
-        every { PushTemplateImageUtils.getCachedImage("valid_image_url") } returns mockBitmap
+        every { AEPUIImageUtils.cacheImages(any<AEPUIImageConfig>()) } returns 1
+        every { AEPUIImageUtils.getCachedImage("valid_image_url") } returns mockBitmap
 
         val spyBuilder = spyk(NotificationCompat.Builder(mockContext, "mockChannelId"))
 
@@ -210,7 +211,7 @@ class NotificationCompatBuilderExtensionsTest {
 
     @Test
     fun `setLargeIcon with imageUrl that cannot be downloaded`() {
-        every { PushTemplateImageUtils.cacheImages(listOf("invalid_image_url")) } returns 0
+        every { AEPUIImageUtils.cacheImages(any<AEPUIImageConfig>()) } returns 0
 
         val spyBuilder = spyk(NotificationCompat.Builder(mockContext, "mockChannelId"))
 

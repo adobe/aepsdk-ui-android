@@ -20,14 +20,15 @@ import com.adobe.marketing.mobile.notificationbuilder.NotificationConstructionFa
 import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants
 import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.DefaultValues.PRODUCT_CATALOG_VERTICAL_LAYOUT
 import com.adobe.marketing.mobile.notificationbuilder.R
-import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateImageUtils
-import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateImageUtils.cacheImages
-import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateImageUtils.getCachedImage
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.MockProductCatalogTemplateDataProvider.getMockedMapWithProductCatalogData
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.ProductCatalogPushTemplate
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.provideMockedProductCatalogTemplate
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.replaceValueInMap
 import com.adobe.marketing.mobile.notificationbuilder.internal.util.MapData
+import com.adobe.marketing.mobile.utils.AEPUIImageConfig
+import com.adobe.marketing.mobile.utils.AEPUIImageUtils
+import com.adobe.marketing.mobile.utils.AEPUIImageUtils.cacheImages
+import com.adobe.marketing.mobile.utils.AEPUIImageUtils.getCachedImage
 import io.mockk.every
 import io.mockk.mockkClass
 import io.mockk.mockkObject
@@ -59,7 +60,7 @@ class ProductCatalogNotificationBuilderTest {
         context = RuntimeEnvironment.getApplication()
         trackerActivityClass = mockkClass(Activity::class, relaxed = true).javaClass
         broadcastReceiverClass = mockkClass(BroadcastReceiver::class, relaxed = true).javaClass
-        mockkObject(PushTemplateImageUtils)
+        mockkObject(AEPUIImageUtils)
     }
 
     @After
@@ -101,7 +102,7 @@ class ProductCatalogNotificationBuilderTest {
                 val cachedItem = mockkClass(Bitmap::class)
 
                 // product catalog template requires 3 catalog items
-                every { cacheImages(any()) } answers { 4 }
+                every { cacheImages(any<AEPUIImageConfig>()) } answers { 4 }
                 every { getCachedImage(any()) } answers { cachedItem }
                 ProductCatalogNotificationBuilder.construct(context, pushTemplate, trackerActivityClass, broadcastReceiverClass)
             }
@@ -127,7 +128,7 @@ class ProductCatalogNotificationBuilderTest {
                 val cachedItem = mockkClass(Bitmap::class)
 
                 // product catalog template requires 3 catalog items
-                every { cacheImages(any()) } answers { 2 }
+                every { cacheImages(any<AEPUIImageConfig>()) } answers { 2 }
                 every { getCachedImage(any()) } answers { cachedItem }
                 ProductCatalogNotificationBuilder.construct(context, pushTemplate, trackerActivityClass, broadcastReceiverClass)
             }
@@ -140,7 +141,7 @@ class ProductCatalogNotificationBuilderTest {
         val cachedItem = mockkClass(Bitmap::class)
 
         // product catalog template requires 3 catalog items
-        every { cacheImages(any()) } answers { 3 }
+        every { cacheImages(any<AEPUIImageConfig>()) } answers { 3 }
         every { getCachedImage(any()) } answers { cachedItem }
         val notificationBuilder = ProductCatalogNotificationBuilder.construct(context, pushTemplate, trackerActivityClass, broadcastReceiverClass)
 
@@ -156,7 +157,7 @@ class ProductCatalogNotificationBuilderTest {
         val cachedItem = mockkClass(Bitmap::class)
 
         // product catalog template requires 3 catalog items
-        every { cacheImages(any()) } answers { 3 }
+        every { cacheImages(any<AEPUIImageConfig>()) } answers { 3 }
         every { getCachedImage(any()) } answers { cachedItem }
 
         val notificationBuilder = ProductCatalogNotificationBuilder.construct(context, pushTemplate, trackerActivityClass, broadcastReceiverClass)
@@ -170,7 +171,7 @@ class ProductCatalogNotificationBuilderTest {
         val cachedItem = mockkClass(Bitmap::class)
 
         // product catalog template requires 3 catalog items
-        every { cacheImages(any()) } answers { 3 }
+        every { cacheImages(any<AEPUIImageConfig>()) } answers { 3 }
         every { getCachedImage(any()) } answers { cachedItem }
 
         val notificationBuilder = ProductCatalogNotificationBuilder.construct(context, pushTemplate, trackerActivityClass, null)
@@ -180,7 +181,7 @@ class ProductCatalogNotificationBuilderTest {
     @Test
     fun `construct should throw NotificationConstructionFailedException if catalog thumbnail is not found`() {
         val pushTemplate = provideMockedProductCatalogTemplate()
-        every { cacheImages(any()) } answers { 3 }
+        every { cacheImages(any<AEPUIImageConfig>()) } answers { 3 }
 
         assertFailsWith(
             exceptionClass = NotificationConstructionFailedException::class,
@@ -199,7 +200,7 @@ class ProductCatalogNotificationBuilderTest {
         val cachedItem = mockkClass(Bitmap::class)
 
         // product catalog template requires 3 catalog items
-        every { cacheImages(any()) } answers { 3 }
+        every { cacheImages(any<AEPUIImageConfig>()) } answers { 3 }
         every { getCachedImage(any()) } answers { cachedItem }
 
         val notificationBuilder = ProductCatalogNotificationBuilder.construct(context, pushTemplate, trackerActivityClass, broadcastReceiverClass)

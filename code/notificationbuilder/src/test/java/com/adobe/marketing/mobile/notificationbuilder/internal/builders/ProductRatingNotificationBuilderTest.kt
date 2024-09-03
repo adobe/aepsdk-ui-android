@@ -21,15 +21,16 @@ import androidx.core.app.NotificationCompat
 import com.adobe.marketing.mobile.notificationbuilder.NotificationConstructionFailedException
 import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants
 import com.adobe.marketing.mobile.notificationbuilder.R
-import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateImageUtils
-import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateImageUtils.cacheImages
-import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateImageUtils.getCachedImage
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setRemoteViewClickAction
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setRemoteViewImage
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.MockProductRatingTemplateDataProvider.getMockedDataMapForRatingTemplate
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.ProductRatingPushTemplate
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.provideMockedProductRatingTemplate
 import com.adobe.marketing.mobile.notificationbuilder.internal.util.MapData
+import com.adobe.marketing.mobile.utils.AEPUIImageConfig
+import com.adobe.marketing.mobile.utils.AEPUIImageUtils
+import com.adobe.marketing.mobile.utils.AEPUIImageUtils.cacheImages
+import com.adobe.marketing.mobile.utils.AEPUIImageUtils.getCachedImage
 import io.mockk.Runs
 import io.mockk.every
 import io.mockk.just
@@ -64,7 +65,7 @@ class ProductRatingNotificationBuilderTest {
         mockkConstructor(RemoteViews::class)
         mockkStatic(RemoteViews::setRemoteViewImage)
         mockkStatic(RemoteViews::setRemoteViewClickAction)
-        mockkObject(PushTemplateImageUtils)
+        mockkObject(AEPUIImageUtils)
     }
 
     @After
@@ -87,7 +88,7 @@ class ProductRatingNotificationBuilderTest {
 
     @Test
     fun `construct should set visibility of expanded layout image view as GONE if no images are downloaded`() {
-        every { cacheImages(any()) } answers { 0 }
+        every { cacheImages(any<AEPUIImageConfig>()) } answers { 0 }
         every { any<RemoteViews>().setRemoteViewImage(any(), any()) } returns true
         every { anyConstructed<RemoteViews>().setViewVisibility(any(), View.GONE) } just Runs
 
@@ -101,7 +102,7 @@ class ProductRatingNotificationBuilderTest {
     fun `construct should set image for expanded layout if image is downloaded successfully`() {
         val cachedItem = mockkClass(Bitmap::class)
 
-        every { cacheImages(any()) } answers { 1 }
+        every { cacheImages(any<AEPUIImageConfig>()) } answers { 1 }
         every { getCachedImage(any()) } answers { cachedItem }
         every { any<RemoteViews>().setRemoteViewImage(any(), any()) } returns true
         every { anyConstructed<RemoteViews>().setViewVisibility(any(), View.GONE) } just Runs

@@ -9,14 +9,12 @@
   governing permissions and limitations under the License.
 */
 
-package com.adobe.marketing.mobile.notificationbuilder.internal
+package com.adobe.marketing.mobile.utils
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
 import android.graphics.RectF
-import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants
-import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.LOG_TAG
 import com.adobe.marketing.mobile.services.HttpConnecting
 import com.adobe.marketing.mobile.services.HttpMethod
 import com.adobe.marketing.mobile.services.Log
@@ -27,6 +25,10 @@ import com.adobe.marketing.mobile.services.caching.CacheEntry
 import com.adobe.marketing.mobile.services.caching.CacheExpiry
 import com.adobe.marketing.mobile.services.caching.CacheService
 import com.adobe.marketing.mobile.util.UrlUtils
+import com.adobe.marketing.mobile.utils.AEPUIImageConstants.AEP_UI_UTIL_LOG_TAG
+import com.adobe.marketing.mobile.utils.AEPUIImageConstants.CACHE_BASE_DIR
+import com.adobe.marketing.mobile.utils.AEPUIImageConstants.IMAGE_CACHE_EXPIRY_IN_MILLISECONDS
+import com.adobe.marketing.mobile.utils.AEPUIImageConstants.PUSH_IMAGE_CACHE
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.File
@@ -42,10 +44,8 @@ import java.util.concurrent.atomic.AtomicInteger
  * Utility functions to assist in downloading and caching images for push template notifications.
  */
 
-internal object PushTemplateImageUtils {
-    private const val SELF_TAG = "PushTemplateImageUtil"
-    private const val FULL_BITMAP_QUALITY = 100
-    private const val DOWNLOAD_TIMEOUT_SECS = 10
+object AEPUIImageUtils {
+    private const val SELF_TAG = "AEPUIImageUtils"
 
     /**
      * Downloads and caches images provided in the [urlList]. Prior to downloading, the image url
@@ -59,10 +59,11 @@ internal object PushTemplateImageUtils {
      * @param urlList [String] containing an image asset url
      * @return [Int] number of images that were found in cache or successfully downloaded
      */
-    internal fun cacheImages(
-        urlList: List<String?>
+    fun cacheImages(
+        config: AEPUIImageConfig
     ): Int {
         val assetCacheLocation = getAssetCacheLocation()
+        val urlList = config.urlList
         if (urlList.isEmpty() || assetCacheLocation.isNullOrEmpty()) {
             return 0
         }
@@ -80,7 +81,7 @@ internal object PushTemplateImageUtils {
             val cacheResult = cacheService[assetCacheLocation, url]
             if (cacheResult != null) {
                 Log.trace(
-                    LOG_TAG,
+                    AEP_UI_UTIL_LOG_TAG,
                     SELF_TAG,
                     "Found cached image for $url"
                 )
@@ -89,16 +90,24 @@ internal object PushTemplateImageUtils {
                 continue
             }
 
-            downloadImage(url) { connection ->
+            downloadImage(url, config.downloadTimeoutInSeconds) { connection ->
                 if (!latchAborted.get()) {
                     val image = handleDownloadResponse(url, connection)
                     // scale down the bitmap to 300dp x 200dp as we don't want to use a full
                     // size image due to memory constraints
                     image?.let {
-                        val pushImage = scaleBitmap(it)
+                        val scaledImage = scaleBitmap(
+                            it,
+                            config.bitmapWidth,
+                            config.bitmapHeight,
+                            config.scaleToFit
+                        )
                         // write bitmap to cache
                         try {
-                            bitmapToInputStream(pushImage).use { bitmapInputStream ->
+                            bitmapToInputStream(
+                                scaledImage,
+                                config.bitmapQuality
+                            ).use { bitmapInputStream ->
                                 cacheBitmapInputStream(
                                     cacheService,
                                     bitmapInputStream,
@@ -108,7 +117,7 @@ internal object PushTemplateImageUtils {
                             downloadedImageCount.incrementAndGet()
                         } catch (exception: IOException) {
                             Log.warning(
-                                LOG_TAG,
+                                AEP_UI_UTIL_LOG_TAG,
                                 SELF_TAG,
                                 "Exception occurred creating an input stream from a bitmap for {$url}: ${exception.localizedMessage}."
                             )
@@ -120,15 +129,15 @@ internal object PushTemplateImageUtils {
             }
         }
         try {
-            if (latch.await(DOWNLOAD_TIMEOUT_SECS.toLong(), TimeUnit.SECONDS)) {
+            if (latch.await(config.downloadTimeoutInSeconds.toLong(), TimeUnit.SECONDS)) {
                 Log.trace(
-                    LOG_TAG,
+                    AEP_UI_UTIL_LOG_TAG,
                     SELF_TAG,
                     "All image downloads have completed."
                 )
             } else {
                 Log.warning(
-                    LOG_TAG,
+                    AEP_UI_UTIL_LOG_TAG,
                     SELF_TAG,
                     "Timed out waiting for image downloads to complete."
                 )
@@ -136,7 +145,7 @@ internal object PushTemplateImageUtils {
             }
         } catch (e: InterruptedException) {
             Log.warning(
-                LOG_TAG,
+                AEP_UI_UTIL_LOG_TAG,
                 SELF_TAG,
                 "Interrupted while waiting for image downloads to complete: ${e.localizedMessage}"
             )
@@ -154,6 +163,7 @@ internal object PushTemplateImageUtils {
      */
     private fun downloadImage(
         url: String,
+        downloadTimeoutInSeconds: Int,
         completionCallback: (HttpConnecting?) -> Unit
     ) {
         val networkRequest = NetworkRequest(
@@ -161,8 +171,8 @@ internal object PushTemplateImageUtils {
             HttpMethod.GET,
             null,
             null,
-            DOWNLOAD_TIMEOUT_SECS,
-            DOWNLOAD_TIMEOUT_SECS
+            downloadTimeoutInSeconds,
+            downloadTimeoutInSeconds
         )
 
         val networkCallback = NetworkCallback { connection: HttpConnecting? ->
@@ -180,24 +190,24 @@ internal object PushTemplateImageUtils {
      * @param url [String] containing the image url to retrieve from cache
      * @return [Bitmap] containing the image retrieved from cache, or `null` if no image is found
      */
-    internal fun getCachedImage(url: String?): Bitmap? {
+    fun getCachedImage(url: String?): Bitmap? {
         val assetCacheLocation = getAssetCacheLocation()
         if (url == null || !UrlUtils.isValidUrl(url) || assetCacheLocation.isNullOrEmpty()) {
             return null
         }
         val cacheResult = ServiceProvider.getInstance().cacheService[assetCacheLocation, url]
         if (cacheResult == null) {
-            Log.warning(LOG_TAG, SELF_TAG, "Image not found in cache for $url")
+            Log.warning(AEP_UI_UTIL_LOG_TAG, SELF_TAG, "Image not found in cache for $url")
             return null
         }
-        Log.trace(LOG_TAG, SELF_TAG, "Found cached image for $url")
+        Log.trace(AEP_UI_UTIL_LOG_TAG, SELF_TAG, "Found cached image for $url")
         return BitmapFactory.decodeStream(cacheResult.data)
     }
 
     private fun handleDownloadResponse(url: String?, connection: HttpConnecting?): Bitmap? {
         if (connection == null) {
             Log.warning(
-                LOG_TAG,
+                AEP_UI_UTIL_LOG_TAG,
                 SELF_TAG,
                 "Failed to download push notification image from url ($url), received a null connection."
             )
@@ -205,7 +215,7 @@ internal object PushTemplateImageUtils {
         }
         if ((connection.responseCode != HttpURLConnection.HTTP_OK)) {
             Log.debug(
-                LOG_TAG,
+                AEP_UI_UTIL_LOG_TAG,
                 SELF_TAG,
                 "Failed to download push notification image from url ($url). Response code was: ${connection.responseCode}."
             )
@@ -214,7 +224,7 @@ internal object PushTemplateImageUtils {
         val bitmap = BitmapFactory.decodeStream(connection.inputStream)
         bitmap?.let {
             Log.trace(
-                LOG_TAG,
+                AEP_UI_UTIL_LOG_TAG,
                 SELF_TAG,
                 "Downloaded push notification image from url ($url)"
             )
@@ -228,9 +238,9 @@ internal object PushTemplateImageUtils {
      * @param bitmap [Bitmap] to be converted into an [InputStream]
      * @return an `InputStream` created from the provided bitmap
      */
-    private fun bitmapToInputStream(bitmap: Bitmap): InputStream {
+    private fun bitmapToInputStream(bitmap: Bitmap, bitmapQuality: Int): InputStream {
         ByteArrayOutputStream().use {
-            bitmap.compress(Bitmap.CompressFormat.PNG, FULL_BITMAP_QUALITY, it)
+            bitmap.compress(Bitmap.CompressFormat.PNG, bitmapQuality, it)
             val bitmapData = it.toByteArray()
             return ByteArrayInputStream(bitmapData)
         }
@@ -249,7 +259,7 @@ internal object PushTemplateImageUtils {
         imageUrl: String
     ) {
         Log.trace(
-            LOG_TAG,
+            AEP_UI_UTIL_LOG_TAG,
             SELF_TAG,
             "Caching image downloaded from $imageUrl."
         )
@@ -257,9 +267,7 @@ internal object PushTemplateImageUtils {
             // cache push notification images for 3 days
             val cacheEntry = CacheEntry(
                 bitmapInputStream,
-                CacheExpiry.after(
-                    PushTemplateConstants.DefaultValues.PUSH_NOTIFICATION_IMAGE_CACHE_EXPIRY_IN_MILLISECONDS
-                ),
+                CacheExpiry.after(IMAGE_CACHE_EXPIRY_IN_MILLISECONDS),
                 null
             )
             cacheService[it, imageUrl] = cacheEntry
@@ -274,17 +282,22 @@ internal object PushTemplateImageUtils {
      * @param downloadedBitmap [Bitmap] to be scaled
      * @return [Bitmap] containing the scaled image
      */
-    private fun scaleBitmap(downloadedBitmap: Bitmap): Bitmap {
+    private fun scaleBitmap(
+        downloadedBitmap: Bitmap,
+        bitmapWidth: Float,
+        bitmapHeight: Float,
+        scaleToFit: Matrix.ScaleToFit
+    ): Bitmap {
         val matrix = Matrix()
         matrix.setRectToRect(
             RectF(0f, 0f, downloadedBitmap.width.toFloat(), downloadedBitmap.height.toFloat()),
             RectF(
                 0f,
                 0f,
-                PushTemplateConstants.DefaultValues.CAROUSEL_MAX_BITMAP_WIDTH.toFloat(),
-                PushTemplateConstants.DefaultValues.CAROUSEL_MAX_BITMAP_HEIGHT.toFloat()
+                bitmapWidth,
+                bitmapHeight
             ),
-            Matrix.ScaleToFit.CENTER
+            scaleToFit
         )
         return Bitmap.createBitmap(
             downloadedBitmap,
@@ -302,7 +315,7 @@ internal object PushTemplateImageUtils {
      *
      * @return [String] containing the asset cache location to use for storing downloaded push template images.
      */
-    internal fun getAssetCacheLocation(): String? {
+    fun getAssetCacheLocation(): String? {
         val deviceInfoService = ServiceProvider.getInstance().deviceInfoService
             ?: return null
         val applicationCacheDir = deviceInfoService.applicationCacheDir
@@ -310,9 +323,9 @@ internal object PushTemplateImageUtils {
             (
                 applicationCacheDir
                     .toString() + File.separator +
-                    PushTemplateConstants.CACHE_BASE_DIR
+                    CACHE_BASE_DIR
                 ) + File.separator +
-                PushTemplateConstants.PUSH_IMAGE_CACHE
+                PUSH_IMAGE_CACHE
             )
     }
 }

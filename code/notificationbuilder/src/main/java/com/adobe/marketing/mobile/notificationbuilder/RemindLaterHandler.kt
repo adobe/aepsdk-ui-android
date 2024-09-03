@@ -49,9 +49,11 @@ object RemindLaterHandler {
         val intentExtras = remindLaterIntent.extras
             ?: throw NotificationConstructionFailedException("Intent extras are null, cannot schedule notification for later.")
         val remindLaterTimestamp =
-            intentExtras.getString(PushTemplateConstants.PushPayloadKeys.REMIND_LATER_TIMESTAMP)?.toLongOrNull() ?: 0
+            intentExtras.getString(PushTemplateConstants.PushPayloadKeys.REMIND_LATER_TIMESTAMP)
+                ?.toLongOrNull() ?: 0
         val remindLaterDuration =
-            intentExtras.getString(PushTemplateConstants.PushPayloadKeys.REMIND_LATER_DURATION)?.toLongOrNull() ?: 0
+            intentExtras.getString(PushTemplateConstants.PushPayloadKeys.REMIND_LATER_DURATION)
+                ?.toLongOrNull() ?: 0
 
         // calculate difference in fire date from the current date if timestamp is provided
         val secondsUntilFireDate: Long = if (remindLaterDuration > 0) remindLaterDuration
@@ -65,7 +67,11 @@ object RemindLaterHandler {
             tag?.let { notificationManager.cancel(tag.hashCode()) }
             throw IllegalArgumentException("Remind later timestamp or duration is less than or equal to current timestamp, cannot schedule notification for later.")
         }
-        Log.trace(PushTemplateConstants.LOG_TAG, SELF_TAG, "Remind later pressed, will reschedule the notification to be displayed $secondsUntilFireDate seconds from now")
+        Log.trace(
+            PushTemplateConstants.LOG_TAG,
+            SELF_TAG,
+            "Remind later pressed, will reschedule the notification to be displayed $secondsUntilFireDate seconds from now"
+        )
 
         // calculate the trigger time
         val triggerTimeInSeconds: Long = if (remindLaterDuration > 0) remindLaterDuration + TimeUtils.getUnixTimeInSeconds()
@@ -81,7 +87,8 @@ object RemindLaterHandler {
             tag?.let { notificationManager.cancel(tag.hashCode()) }
             return
         }
-        val scheduledIntent = Intent(PushTemplateConstants.IntentActions.SCHEDULED_NOTIFICATION_BROADCAST)
+        val scheduledIntent =
+            Intent(PushTemplateConstants.IntentActions.SCHEDULED_NOTIFICATION_BROADCAST)
         scheduledIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
         scheduledIntent.putExtras(intentExtras)
         PendingIntentUtils.scheduleNotification(context, scheduledIntent, broadcastReceiverClass, triggerTimeInSeconds)

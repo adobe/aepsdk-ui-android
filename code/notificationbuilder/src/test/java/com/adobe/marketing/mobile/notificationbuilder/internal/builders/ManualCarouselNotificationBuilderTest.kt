@@ -19,10 +19,6 @@ import android.graphics.Bitmap
 import android.widget.RemoteViews
 import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants
 import com.adobe.marketing.mobile.notificationbuilder.internal.PendingIntentUtils
-import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateImageUtils
-import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateImageUtils.cacheImages
-import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateImageUtils.getAssetCacheLocation
-import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateImageUtils.getCachedImage
 import com.adobe.marketing.mobile.notificationbuilder.internal.builders.ManualCarouselNotificationBuilder.downloadCarouselItems
 import com.adobe.marketing.mobile.notificationbuilder.internal.builders.ManualCarouselNotificationBuilder.getCarouselIndices
 import com.adobe.marketing.mobile.notificationbuilder.internal.builders.ManualCarouselNotificationBuilder.populateFilmstripCarouselImages
@@ -34,6 +30,11 @@ import com.adobe.marketing.mobile.notificationbuilder.internal.templates.ManualC
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.MockCarousalTemplateDataProvider
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.provideMockedManualCarousalTemplate
 import com.adobe.marketing.mobile.notificationbuilder.internal.util.IntentData
+import com.adobe.marketing.mobile.utils.AEPUIImageConfig
+import com.adobe.marketing.mobile.utils.AEPUIImageUtils
+import com.adobe.marketing.mobile.utils.AEPUIImageUtils.cacheImages
+import com.adobe.marketing.mobile.utils.AEPUIImageUtils.getAssetCacheLocation
+import com.adobe.marketing.mobile.utils.AEPUIImageUtils.getCachedImage
 import io.mockk.Runs
 import io.mockk.every
 import io.mockk.just
@@ -70,7 +71,7 @@ class ManualCarouselNotificationBuilderTest {
         pushTemplate = provideMockedManualCarousalTemplate(false)
         trackerActivityClass = mockkClass(Activity::class, relaxed = true).javaClass
         broadcastReceiverClass = mockkClass(BroadcastReceiver::class, relaxed = true).javaClass
-        mockkObject(PushTemplateImageUtils)
+        mockkObject(AEPUIImageUtils)
         mockkObject(BasicNotificationBuilder)
         mockkObject(PendingIntentUtils)
         mockkConstructor(RemoteViews::class)
@@ -95,7 +96,7 @@ class ManualCarouselNotificationBuilderTest {
 
     @Test
     fun `construct returns BasicNotificationBuilder if download image count is less than 3`() {
-        every { cacheImages(any()) } answers { 2 }
+        every { cacheImages(any<AEPUIImageConfig>()) } answers { 2 }
         ManualCarouselNotificationBuilder.construct(
             context,
             pushTemplate,
@@ -114,7 +115,7 @@ class ManualCarouselNotificationBuilderTest {
 
     @Test
     fun `construct returns ManualCarouselNotificationBuilder if download image count is equal to 3`() {
-        every { cacheImages(any()) } answers { 3 }
+        every { cacheImages(any<AEPUIImageConfig>()) } answers { 3 }
         ManualCarouselNotificationBuilder.construct(
             context,
             pushTemplate,
@@ -133,7 +134,7 @@ class ManualCarouselNotificationBuilderTest {
 
     @Test
     fun `construct returns ManualCarouselNotificationBuilder if download image count is greater than 3`() {
-        every { cacheImages(any()) } answers { 5 }
+        every { cacheImages(any<AEPUIImageConfig>()) } answers { 5 }
         ManualCarouselNotificationBuilder.construct(
             context,
             pushTemplate,
@@ -153,7 +154,7 @@ class ManualCarouselNotificationBuilderTest {
     @Test
     fun `construct ManualCarouselNotificationBuilder shouldn't be called if downloadCarouselItems failed to download some of the images`() {
         var callCount = 0
-        every { cacheImages(any()) } answers { 5 }
+        every { cacheImages(any<AEPUIImageConfig>()) } answers { 5 }
         every { getCachedImage(any()) } answers { if (callCount++ % 2 == 0) mockkClass(Bitmap::class) else null }
         verify(exactly = 0) {
             ManualCarouselNotificationBuilder.construct(
@@ -224,7 +225,7 @@ class ManualCarouselNotificationBuilderTest {
 
     @Test
     fun `test to verify notification with action name MANUAL_CAROUSEL_LEFT_CLICKED is having correct center image index`() {
-        every { cacheImages(any()) } answers { 5 }
+        every { cacheImages(any<AEPUIImageConfig>()) } answers { 5 }
         every { getCachedImage(any()) } answers { mockkClass(Bitmap::class) }
         val mockBundle = MockCarousalTemplateDataProvider.getMockedBundleWithManualCarouselData()
         val data = IntentData(mockBundle, PushTemplateConstants.IntentActions.MANUAL_CAROUSEL_LEFT_CLICKED)
@@ -240,7 +241,7 @@ class ManualCarouselNotificationBuilderTest {
 
     @Test
     fun `test to verify notification with action name MANUAL_CAROUSEL_RIGHT_CLICKED is having correct center image index`() {
-        every { cacheImages(any()) } answers { 5 }
+        every { cacheImages(any<AEPUIImageConfig>()) } answers { 5 }
         every { getCachedImage(any()) } answers { mockkClass(Bitmap::class) }
         val mockBundle = MockCarousalTemplateDataProvider.getMockedBundleWithManualCarouselData()
         val data = IntentData(mockBundle, PushTemplateConstants.IntentActions.MANUAL_CAROUSEL_RIGHT_CLICKED)
@@ -256,7 +257,7 @@ class ManualCarouselNotificationBuilderTest {
 
     @Test
     fun `test to verify notification with action name FILMSTRIP_LEFT_CLICKED is having correct center image index`() {
-        every { cacheImages(any()) } answers { 5 }
+        every { cacheImages(any<AEPUIImageConfig>()) } answers { 5 }
         every { getCachedImage(any()) } answers { mockkClass(Bitmap::class) }
         val mockBundle = MockCarousalTemplateDataProvider.getMockedBundleWithManualCarouselData()
         mockBundle.putString(PushTemplateConstants.PushPayloadKeys.CAROUSEL_LAYOUT, PushTemplateConstants.DefaultValues.FILMSTRIP_CAROUSEL_MODE)
@@ -274,7 +275,7 @@ class ManualCarouselNotificationBuilderTest {
 
     @Test
     fun `test to verify notification with action name FILMSTRIP_RIGHT_CLICKED is having correct center image index`() {
-        every { cacheImages(any()) } answers { 5 }
+        every { cacheImages(any<AEPUIImageConfig>()) } answers { 5 }
         every { getCachedImage(any()) } answers { mockkClass(Bitmap::class) }
         val mockBundle = MockCarousalTemplateDataProvider.getMockedBundleWithManualCarouselData()
         mockBundle.putString(PushTemplateConstants.PushPayloadKeys.CAROUSEL_LAYOUT, PushTemplateConstants.DefaultValues.FILMSTRIP_CAROUSEL_MODE)

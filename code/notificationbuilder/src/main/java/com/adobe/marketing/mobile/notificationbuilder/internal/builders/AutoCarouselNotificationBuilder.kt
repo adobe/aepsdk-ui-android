@@ -20,14 +20,17 @@ import android.widget.RemoteViews
 import androidx.annotation.VisibleForTesting
 import androidx.core.app.NotificationCompat
 import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants
+import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.DefaultValues.CAROUSEL_MAX_BITMAP_HEIGHT
+import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.DefaultValues.CAROUSEL_MAX_BITMAP_WIDTH
 import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.LOG_TAG
 import com.adobe.marketing.mobile.notificationbuilder.R
-import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateImageUtils
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.createNotificationChannelIfRequired
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setRemoteViewClickAction
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.AutoCarouselPushTemplate
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.CarouselPushTemplate
 import com.adobe.marketing.mobile.services.Log
+import com.adobe.marketing.mobile.utils.AEPUIImageConfig
+import com.adobe.marketing.mobile.utils.AEPUIImageUtils
 
 /**
  * Object responsible for constructing a [NotificationCompat.Builder] object containing a auto carousel push template notification.
@@ -48,9 +51,14 @@ internal object AutoCarouselNotificationBuilder {
         val expandedLayout = RemoteViews(packageName, R.layout.push_template_auto_carousel)
 
         // load images into the carousel
-        val downloadedImageCount = PushTemplateImageUtils.cacheImages(
-            pushTemplate.carouselItems.map { it.imageUri }
+        val config = AEPUIImageConfig.Builder(
+            CAROUSEL_MAX_BITMAP_WIDTH.toFloat(),
+            CAROUSEL_MAX_BITMAP_HEIGHT.toFloat()
         )
+            .urlList(pushTemplate.carouselItems.map { it.imageUri })
+            .build()
+
+        val downloadedImageCount = AEPUIImageUtils.cacheImages(config)
 
         // fallback to a basic push template notification builder if less than 3 images were able to be downloaded
         if (downloadedImageCount < PushTemplateConstants.DefaultValues.CAROUSEL_MINIMUM_IMAGE_COUNT) {
@@ -115,7 +123,7 @@ internal object AutoCarouselNotificationBuilder {
         val downloadedImageUris = mutableListOf<String>()
         for (item: CarouselPushTemplate.CarouselItem in items) {
             val imageUri: String = item.imageUri
-            val pushImage: Bitmap? = PushTemplateImageUtils.getCachedImage(imageUri)
+            val pushImage: Bitmap? = AEPUIImageUtils.getCachedImage(imageUri)
             if (pushImage == null) {
                 Log.trace(
                     LOG_TAG,

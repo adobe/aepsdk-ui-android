@@ -18,12 +18,15 @@ import android.view.View
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import com.adobe.marketing.mobile.notificationbuilder.NotificationConstructionFailedException
+import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.DefaultValues.CAROUSEL_MAX_BITMAP_HEIGHT
+import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.DefaultValues.CAROUSEL_MAX_BITMAP_WIDTH
 import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.LOG_TAG
 import com.adobe.marketing.mobile.notificationbuilder.R
-import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateImageUtils
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.createNotificationChannelIfRequired
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.ZeroBezelPushTemplate
 import com.adobe.marketing.mobile.services.Log
+import com.adobe.marketing.mobile.utils.AEPUIImageConfig
+import com.adobe.marketing.mobile.utils.AEPUIImageUtils
 
 internal object ZeroBezelNotificationBuilder {
     private const val SELF_TAG = "ZeroBezelNotificationBuilder"
@@ -40,14 +43,20 @@ internal object ZeroBezelNotificationBuilder {
         val expandedLayout = RemoteViews(packageName, R.layout.push_template_zero_bezel_expanded)
 
         // download and cache the image used in the notification
-        val downloadedImageCount =
-            PushTemplateImageUtils.cacheImages(listOf(pushTemplate.imageUrl))
+        val config = AEPUIImageConfig.Builder(
+            CAROUSEL_MAX_BITMAP_WIDTH.toFloat(),
+            CAROUSEL_MAX_BITMAP_HEIGHT.toFloat()
+        )
+            .urlList(listOf(pushTemplate.imageUrl))
+            .build()
+
+        val downloadedImageCount = AEPUIImageUtils.cacheImages(config)
 
         // Check if the image was downloaded
         if (downloadedImageCount > 0) {
             // set the image on the notification if it was downloaded
             val pushImage =
-                PushTemplateImageUtils.getCachedImage(pushTemplate.imageUrl)
+                AEPUIImageUtils.getCachedImage(pushTemplate.imageUrl)
             expandedLayout.setImageViewBitmap(R.id.expanded_template_image, pushImage)
 
             // only set image on the collapsed view if the style is "img"

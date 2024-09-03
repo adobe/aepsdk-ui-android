@@ -173,7 +173,10 @@ internal object TimerNotificationBuilder {
      * @return the intent for the timer expiry
      */
     private fun createIntent(template: TimerPushTemplate): Intent {
-        val intent = AEPPushNotificationBuilder.createIntent(PushTemplateConstants.IntentActions.TIMER_EXPIRED, template)
+        val intent = AEPPushNotificationBuilder.createIntent(
+            PushTemplateConstants.IntentActions.TIMER_EXPIRED,
+            template
+        )
 
         // remove timer to prevent countdown from being recreated
         intent.removeExtra(TimerKeys.TIMER_DURATION)

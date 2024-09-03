@@ -22,15 +22,18 @@ import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import com.adobe.marketing.mobile.notificationbuilder.NotificationConstructionFailedException
 import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants
+import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.DefaultValues.CAROUSEL_MAX_BITMAP_HEIGHT
+import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.DefaultValues.CAROUSEL_MAX_BITMAP_WIDTH
 import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.LOG_TAG
 import com.adobe.marketing.mobile.notificationbuilder.R
-import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateImageUtils
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.createNotificationChannelIfRequired
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setNotificationTitleTextColor
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setRemoteViewClickAction
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setRemoteViewImage
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.ProductRatingPushTemplate
 import com.adobe.marketing.mobile.services.Log
+import com.adobe.marketing.mobile.utils.AEPUIImageConfig
+import com.adobe.marketing.mobile.utils.AEPUIImageUtils
 
 internal object ProductRatingNotificationBuilder {
     private const val SELF_TAG = "ProductRatingNotificationBuilder"
@@ -71,7 +74,14 @@ internal object ProductRatingNotificationBuilder {
 
         // set the image on the notification
         val imageUri = pushTemplate.imageUrl
-        val downloadedImageCount = PushTemplateImageUtils.cacheImages(listOf(imageUri))
+        val config = AEPUIImageConfig.Builder(
+            CAROUSEL_MAX_BITMAP_WIDTH.toFloat(),
+            CAROUSEL_MAX_BITMAP_HEIGHT.toFloat()
+        )
+            .urlList(listOf(imageUri))
+            .build()
+
+        val downloadedImageCount = AEPUIImageUtils.cacheImages(config)
 
         if (downloadedImageCount == 0) {
             Log.trace(
@@ -83,7 +93,7 @@ internal object ProductRatingNotificationBuilder {
         } else {
             expandedLayout.setImageViewBitmap(
                 R.id.expanded_template_image,
-                PushTemplateImageUtils.getCachedImage(imageUri)
+                AEPUIImageUtils.getCachedImage(imageUri)
             )
         }
 
@@ -108,7 +118,10 @@ internal object ProductRatingNotificationBuilder {
             // add pending intent for confirm click
             // sticky is set to false as the notification will be dismissed after confirm click
             val ratingConfirmedIntentExtras = Bundle(pushTemplate.data.getBundle()) // copy the bundle
-            ratingConfirmedIntentExtras.putString(PushTemplateConstants.PushPayloadKeys.STICKY, "false")
+            ratingConfirmedIntentExtras.putString(
+                PushTemplateConstants.PushPayloadKeys.STICKY,
+                "false"
+            )
             val selectedRatingAction = pushTemplate.ratingActionList[pushTemplate.ratingSelected]
             expandedLayout.setRemoteViewClickAction(
                 context,
@@ -190,7 +203,10 @@ internal object ProductRatingNotificationBuilder {
         }
         Log.trace(LOG_TAG, SELF_TAG, "Creating a rating click pending intent from a push template object.")
 
-        val ratingButtonClickIntent = AEPPushNotificationBuilder.createIntent(PushTemplateConstants.IntentActions.RATING_ICON_CLICKED, pushTemplate)
+        val ratingButtonClickIntent = AEPPushNotificationBuilder.createIntent(
+            PushTemplateConstants.IntentActions.RATING_ICON_CLICKED,
+            pushTemplate
+        )
         broadcastReceiverClass.let {
             ratingButtonClickIntent.setClass(context.applicationContext, broadcastReceiverClass)
         }

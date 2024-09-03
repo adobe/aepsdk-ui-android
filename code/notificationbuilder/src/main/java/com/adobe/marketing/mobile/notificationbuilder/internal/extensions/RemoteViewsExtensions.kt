@@ -19,12 +19,15 @@ import android.os.Bundle
 import android.view.View
 import android.widget.RemoteViews
 import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants
+import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.DefaultValues.CAROUSEL_MAX_BITMAP_HEIGHT
+import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.DefaultValues.CAROUSEL_MAX_BITMAP_WIDTH
 import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.LOG_TAG
 import com.adobe.marketing.mobile.notificationbuilder.internal.PendingIntentUtils
-import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateImageUtils
 import com.adobe.marketing.mobile.services.Log
 import com.adobe.marketing.mobile.services.ServiceProvider
 import com.adobe.marketing.mobile.util.UrlUtils
+import com.adobe.marketing.mobile.utils.AEPUIImageConfig
+import com.adobe.marketing.mobile.utils.AEPUIImageUtils
 
 private const val SELF_TAG = "RemoteViewExtensions"
 
@@ -222,7 +225,15 @@ internal fun RemoteViews.setRemoteImage(
     if (!UrlUtils.isValidUrl(imageUrl)) {
         return false
     }
-    val downloadedIconCount = PushTemplateImageUtils.cacheImages(listOf(imageUrl))
+    val config = AEPUIImageConfig.Builder(
+        CAROUSEL_MAX_BITMAP_WIDTH.toFloat(),
+        CAROUSEL_MAX_BITMAP_HEIGHT.toFloat()
+    )
+        .urlList(listOf(imageUrl))
+        .build()
+
+    val downloadedIconCount = AEPUIImageUtils.cacheImages(config)
+
     if (downloadedIconCount == 0) {
         Log.warning(
             LOG_TAG,
@@ -234,7 +245,7 @@ internal fun RemoteViews.setRemoteImage(
     }
     setImageViewBitmap(
         containerViewId,
-        PushTemplateImageUtils.getCachedImage(imageUrl)
+        AEPUIImageUtils.getCachedImage(imageUrl)
     )
     return true
 }

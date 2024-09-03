@@ -20,14 +20,17 @@ import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import com.adobe.marketing.mobile.notificationbuilder.NotificationConstructionFailedException
 import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants
+import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.DefaultValues.CAROUSEL_MAX_BITMAP_HEIGHT
+import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.DefaultValues.CAROUSEL_MAX_BITMAP_WIDTH
 import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.LOG_TAG
 import com.adobe.marketing.mobile.notificationbuilder.R
 import com.adobe.marketing.mobile.notificationbuilder.internal.PendingIntentUtils
-import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateImageUtils
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.createNotificationChannelIfRequired
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setElementColor
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.ProductCatalogPushTemplate
 import com.adobe.marketing.mobile.services.Log
+import com.adobe.marketing.mobile.utils.AEPUIImageConfig
+import com.adobe.marketing.mobile.utils.AEPUIImageUtils
 
 /**
  * Object responsible for constructing a [NotificationCompat.Builder] object containing a product catalog template notification.
@@ -51,7 +54,15 @@ internal object ProductCatalogNotificationBuilder {
 
         // fast fail if we can't download a catalog item image
         val catalogImageUris = pushTemplate.catalogItems.map { it.img }
-        downloadedImageCount = PushTemplateImageUtils.cacheImages(catalogImageUris)
+        val config = AEPUIImageConfig.Builder(
+            CAROUSEL_MAX_BITMAP_WIDTH.toFloat(),
+            CAROUSEL_MAX_BITMAP_HEIGHT.toFloat()
+        )
+            .urlList(catalogImageUris)
+            .build()
+
+        downloadedImageCount = AEPUIImageUtils.cacheImages(config)
+
         if (downloadedImageCount != catalogImageUris.size) {
             Log.error(
                 LOG_TAG,
@@ -146,7 +157,7 @@ internal object ProductCatalogNotificationBuilder {
         )
 
         val pushImage =
-            PushTemplateImageUtils.getCachedImage(pushTemplate.catalogItems[pushTemplate.currentIndex].img)
+            AEPUIImageUtils.getCachedImage(pushTemplate.catalogItems[pushTemplate.currentIndex].img)
         expandedLayout.setImageViewBitmap(R.id.product_image, pushImage)
         expandedLayout.setOnClickPendingIntent(
             R.id.product_image,
@@ -190,7 +201,7 @@ internal object ProductCatalogNotificationBuilder {
             R.id.product_thumbnail_3
         )
         for (index in catalogItems.indices) {
-            val thumbImage = PushTemplateImageUtils.getCachedImage(catalogItems[index].img)
+            val thumbImage = AEPUIImageUtils.getCachedImage(catalogItems[index].img)
             if (thumbImage == null) {
                 Log.warning(
                     LOG_TAG,
