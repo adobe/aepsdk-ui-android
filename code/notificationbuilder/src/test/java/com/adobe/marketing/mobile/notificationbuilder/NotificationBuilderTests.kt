@@ -37,6 +37,7 @@ import com.adobe.marketing.mobile.notificationbuilder.internal.templates.MockPro
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.MockTimerTemplateDataProvider
 import com.adobe.marketing.mobile.services.AppContextService
 import com.adobe.marketing.mobile.services.ServiceProvider
+import com.adobe.marketing.mobile.utils.AEPUIImageConfig
 import com.adobe.marketing.mobile.utils.AEPUIImageUtils
 import io.mockk.every
 import io.mockk.mockk
@@ -250,7 +251,7 @@ class NotificationBuilderTests {
 
     @Test
     fun `verify private createNotificationBuilder calls ProductRatingNotificationBuilder construct`() {
-        every { AEPUIImageUtils.cacheImages(any(), any(), any()) } answers { 1 }
+        every { AEPUIImageUtils.cacheImages(any<AEPUIImageConfig>()) } answers { 1 }
         val mapData = MockAEPPushTemplateDataProvider.getMockedAEPDataMapWithAllKeys()
         mapData[PushTemplateConstants.PushPayloadKeys.TEMPLATE_TYPE] = PushTemplateType.PRODUCT_RATING.value
         mapData[PushTemplateConstants.PushPayloadKeys.RATING_UNSELECTED_ICON] = "https://i.imgur.com/unselected.png"
@@ -262,7 +263,7 @@ class NotificationBuilderTests {
 
     @Test
     fun `verify private createNotificationBuilder calls ProductCatalogNotificationBuilder construct`() {
-        every { AEPUIImageUtils.cacheImages(any(), any(), any()) } answers { 3 }
+        every { AEPUIImageUtils.cacheImages(any<AEPUIImageConfig>()) } answers { 3 }
         every { AEPUIImageUtils.getCachedImage(any()) } answers { mockk() }
         val mapData = MockProductCatalogTemplateDataProvider.getMockedMapWithProductCatalogData()
         mapData[PushTemplateConstants.PushPayloadKeys.TEMPLATE_TYPE] = PushTemplateType.PRODUCT_CATALOG.value
@@ -272,7 +273,7 @@ class NotificationBuilderTests {
 
     @Test
     fun `verify private createNotificationBuilder calls MultiIconNotificationBuilder construct`() {
-        every { AEPUIImageUtils.cacheImages(any(), any(), any()) } answers { 3 }
+        every { AEPUIImageUtils.cacheImages(any<AEPUIImageConfig>()) } answers { 3 }
         every { AEPUIImageUtils.getCachedImage(any()) } answers { mockk() }
         val mapData = MockAEPPushTemplateDataProvider.getMockedAEPDataMapWithAllKeys()
         mapData[PushTemplateConstants.PushPayloadKeys.TEMPLATE_TYPE] = PushTemplateType.MULTI_ICON.value

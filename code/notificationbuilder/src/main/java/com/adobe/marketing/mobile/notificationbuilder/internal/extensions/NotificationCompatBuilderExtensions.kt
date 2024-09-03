@@ -21,10 +21,13 @@ import android.os.Bundle
 import androidx.core.app.NotificationCompat
 import com.adobe.marketing.mobile.MobileCore
 import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants
+import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.DefaultValues.CAROUSEL_MAX_BITMAP_HEIGHT
+import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.DefaultValues.CAROUSEL_MAX_BITMAP_WIDTH
 import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.LOG_TAG
 import com.adobe.marketing.mobile.notificationbuilder.internal.PendingIntentUtils
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.BasicPushTemplate
 import com.adobe.marketing.mobile.services.Log
+import com.adobe.marketing.mobile.utils.AEPUIImageConfig
 import com.adobe.marketing.mobile.utils.AEPUIImageUtils
 import java.util.Random
 
@@ -156,11 +159,14 @@ internal fun NotificationCompat.Builder.setLargeIcon(
 ): NotificationCompat.Builder {
     // Quick bail out if there is no image url
     if (imageUrl.isNullOrEmpty()) return this
-    val downloadedIconCount = AEPUIImageUtils.cacheImages(
-        urlList = listOf(imageUrl),
-        bitmapWidth = PushTemplateConstants.DefaultValues.CAROUSEL_MAX_BITMAP_WIDTH.toFloat(),
-        bitmapHeight = PushTemplateConstants.DefaultValues.CAROUSEL_MAX_BITMAP_HEIGHT.toFloat(),
+    val config = AEPUIImageConfig.Builder(
+        CAROUSEL_MAX_BITMAP_WIDTH.toFloat(),
+        CAROUSEL_MAX_BITMAP_HEIGHT.toFloat()
     )
+        .urlList(listOf(imageUrl))
+        .build()
+
+    val downloadedIconCount = AEPUIImageUtils.cacheImages(config)
 
     // Bail out if the download fails
     if (downloadedIconCount == 0) {

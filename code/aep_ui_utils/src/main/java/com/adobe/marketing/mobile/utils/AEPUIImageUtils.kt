@@ -27,8 +27,6 @@ import com.adobe.marketing.mobile.services.caching.CacheService
 import com.adobe.marketing.mobile.util.UrlUtils
 import com.adobe.marketing.mobile.utils.AEPUIImageConstants.AEP_UI_UTIL_LOG_TAG
 import com.adobe.marketing.mobile.utils.AEPUIImageConstants.CACHE_BASE_DIR
-import com.adobe.marketing.mobile.utils.AEPUIImageConstants.DEFAULT_BITMAP_QUALITY
-import com.adobe.marketing.mobile.utils.AEPUIImageConstants.DEFAULT_DOWNLOAD_TIMEOUT_SECS
 import com.adobe.marketing.mobile.utils.AEPUIImageConstants.IMAGE_CACHE_EXPIRY_IN_MILLISECONDS
 import com.adobe.marketing.mobile.utils.AEPUIImageConstants.PUSH_IMAGE_CACHE
 import java.io.ByteArrayInputStream
@@ -62,14 +60,10 @@ object AEPUIImageUtils {
      * @return [Int] number of images that were found in cache or successfully downloaded
      */
     fun cacheImages(
-        urlList: List<String?>,
-        bitmapWidth: Float,
-        bitmapHeight: Float,
-        downloadTimeoutInSeconds: Int = DEFAULT_DOWNLOAD_TIMEOUT_SECS,
-        bitmapQuality: Int = DEFAULT_BITMAP_QUALITY,
-        scaleToFit: Matrix.ScaleToFit = Matrix.ScaleToFit.CENTER
+        config: AEPUIImageConfig
     ): Int {
         val assetCacheLocation = getAssetCacheLocation()
+        val urlList = config.urlList
         if (urlList.isEmpty() || assetCacheLocation.isNullOrEmpty()) {
             return 0
         }
@@ -96,16 +90,24 @@ object AEPUIImageUtils {
                 continue
             }
 
-            downloadImage(url, downloadTimeoutInSeconds) { connection ->
+            downloadImage(url, config.downloadTimeoutInSeconds) { connection ->
                 if (!latchAborted.get()) {
                     val image = handleDownloadResponse(url, connection)
                     // scale down the bitmap to 300dp x 200dp as we don't want to use a full
                     // size image due to memory constraints
                     image?.let {
-                        val scaledImage = scaleBitmap(it, bitmapWidth, bitmapHeight, scaleToFit)
+                        val scaledImage = scaleBitmap(
+                            it,
+                            config.bitmapWidth,
+                            config.bitmapHeight,
+                            config.scaleToFit
+                        )
                         // write bitmap to cache
                         try {
-                            bitmapToInputStream(scaledImage, bitmapQuality).use { bitmapInputStream ->
+                            bitmapToInputStream(
+                                scaledImage,
+                                config.bitmapQuality
+                            ).use { bitmapInputStream ->
                                 cacheBitmapInputStream(
                                     cacheService,
                                     bitmapInputStream,
@@ -127,7 +129,7 @@ object AEPUIImageUtils {
             }
         }
         try {
-            if (latch.await(downloadTimeoutInSeconds.toLong(), TimeUnit.SECONDS)) {
+            if (latch.await(config.downloadTimeoutInSeconds.toLong(), TimeUnit.SECONDS)) {
                 Log.trace(
                     AEP_UI_UTIL_LOG_TAG,
                     SELF_TAG,

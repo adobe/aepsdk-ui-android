@@ -24,6 +24,7 @@ import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants
 import com.adobe.marketing.mobile.notificationbuilder.internal.builders.DummyActivity
 import com.adobe.marketing.mobile.services.Logging
 import com.adobe.marketing.mobile.services.ServiceProvider
+import com.adobe.marketing.mobile.utils.AEPUIImageConfig
 import com.adobe.marketing.mobile.utils.AEPUIImageUtils
 import io.mockk.Runs
 import io.mockk.every
@@ -182,7 +183,7 @@ class RemoteViewsExtensionsTest {
     @Test
     fun `setRemoteViewImage applies image when valid URL provided`() {
         val imageUrl = "http://example.com/image.png"
-        every { AEPUIImageUtils.cacheImages(listOf(imageUrl), any(), any()) } returns 1
+        every { AEPUIImageUtils.cacheImages(any<AEPUIImageConfig>()) } returns 1
         every { AEPUIImageUtils.getCachedImage(imageUrl) } returns mockBitmap
 
         val result = remoteViews.setRemoteViewImage(imageUrl, 1)
@@ -236,7 +237,7 @@ class RemoteViewsExtensionsTest {
     fun `setRemoteViewImage does not apply image when URL is invalid`() {
         val imageUrl = "invalid_url"
         every { remoteViews.setViewVisibility(any(), any()) } just Runs
-        every { AEPUIImageUtils.cacheImages(listOf(imageUrl), any(), any()) } returns 0
+        every { AEPUIImageUtils.cacheImages(any<AEPUIImageConfig>()) } returns 0
 
         val result = remoteViews.setRemoteViewImage(imageUrl, 1)
 
@@ -250,7 +251,7 @@ class RemoteViewsExtensionsTest {
     fun `setRemoteViewImage does not apply image URL could not be downloaded`() {
         val imageUrl = "http://example.com/image.png"
         every { remoteViews.setViewVisibility(any(), any()) } just Runs
-        every { AEPUIImageUtils.cacheImages(listOf(imageUrl), any(), any()) } returns 0
+        every { AEPUIImageUtils.cacheImages(any<AEPUIImageConfig>()) } returns 0
 
         val result = remoteViews.setRemoteViewImage(imageUrl, 1)
 

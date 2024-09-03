@@ -18,12 +18,14 @@ import android.view.View
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import com.adobe.marketing.mobile.notificationbuilder.NotificationConstructionFailedException
-import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants
+import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.DefaultValues.CAROUSEL_MAX_BITMAP_HEIGHT
+import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.DefaultValues.CAROUSEL_MAX_BITMAP_WIDTH
 import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.LOG_TAG
 import com.adobe.marketing.mobile.notificationbuilder.R
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.createNotificationChannelIfRequired
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.ZeroBezelPushTemplate
 import com.adobe.marketing.mobile.services.Log
+import com.adobe.marketing.mobile.utils.AEPUIImageConfig
 import com.adobe.marketing.mobile.utils.AEPUIImageUtils
 
 internal object ZeroBezelNotificationBuilder {
@@ -41,11 +43,14 @@ internal object ZeroBezelNotificationBuilder {
         val expandedLayout = RemoteViews(packageName, R.layout.push_template_zero_bezel_expanded)
 
         // download and cache the image used in the notification
-        val downloadedImageCount = AEPUIImageUtils.cacheImages(
-            urlList = listOf(pushTemplate.imageUrl),
-            bitmapWidth = PushTemplateConstants.DefaultValues.CAROUSEL_MAX_BITMAP_WIDTH.toFloat(),
-            bitmapHeight = PushTemplateConstants.DefaultValues.CAROUSEL_MAX_BITMAP_HEIGHT.toFloat(),
+        val config = AEPUIImageConfig.Builder(
+            CAROUSEL_MAX_BITMAP_WIDTH.toFloat(),
+            CAROUSEL_MAX_BITMAP_HEIGHT.toFloat()
         )
+            .urlList(listOf(pushTemplate.imageUrl))
+            .build()
+
+        val downloadedImageCount = AEPUIImageUtils.cacheImages(config)
 
         // Check if the image was downloaded
         if (downloadedImageCount > 0) {

@@ -22,6 +22,8 @@ import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import com.adobe.marketing.mobile.notificationbuilder.NotificationConstructionFailedException
 import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants
+import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.DefaultValues.CAROUSEL_MAX_BITMAP_HEIGHT
+import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.DefaultValues.CAROUSEL_MAX_BITMAP_WIDTH
 import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.LOG_TAG
 import com.adobe.marketing.mobile.notificationbuilder.R
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.createNotificationChannelIfRequired
@@ -30,6 +32,7 @@ import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setRem
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setRemoteViewImage
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.ProductRatingPushTemplate
 import com.adobe.marketing.mobile.services.Log
+import com.adobe.marketing.mobile.utils.AEPUIImageConfig
 import com.adobe.marketing.mobile.utils.AEPUIImageUtils
 
 internal object ProductRatingNotificationBuilder {
@@ -71,11 +74,15 @@ internal object ProductRatingNotificationBuilder {
 
         // set the image on the notification
         val imageUri = pushTemplate.imageUrl
-        val downloadedImageCount = AEPUIImageUtils.cacheImages(
-            urlList = listOf(imageUri),
-            bitmapWidth = PushTemplateConstants.DefaultValues.CAROUSEL_MAX_BITMAP_WIDTH.toFloat(),
-            bitmapHeight = PushTemplateConstants.DefaultValues.CAROUSEL_MAX_BITMAP_HEIGHT.toFloat(),
+        val config = AEPUIImageConfig.Builder(
+            CAROUSEL_MAX_BITMAP_WIDTH.toFloat(),
+            CAROUSEL_MAX_BITMAP_HEIGHT.toFloat()
         )
+            .urlList(listOf(imageUri))
+            .build()
+
+        val downloadedImageCount = AEPUIImageUtils.cacheImages(config)
+
         if (downloadedImageCount == 0) {
             Log.trace(
                 LOG_TAG,

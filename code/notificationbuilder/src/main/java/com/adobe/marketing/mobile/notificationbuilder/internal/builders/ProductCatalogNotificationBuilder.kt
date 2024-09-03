@@ -20,6 +20,8 @@ import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import com.adobe.marketing.mobile.notificationbuilder.NotificationConstructionFailedException
 import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants
+import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.DefaultValues.CAROUSEL_MAX_BITMAP_HEIGHT
+import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.DefaultValues.CAROUSEL_MAX_BITMAP_WIDTH
 import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.LOG_TAG
 import com.adobe.marketing.mobile.notificationbuilder.R
 import com.adobe.marketing.mobile.notificationbuilder.internal.PendingIntentUtils
@@ -27,6 +29,7 @@ import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.create
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setElementColor
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.ProductCatalogPushTemplate
 import com.adobe.marketing.mobile.services.Log
+import com.adobe.marketing.mobile.utils.AEPUIImageConfig
 import com.adobe.marketing.mobile.utils.AEPUIImageUtils
 
 /**
@@ -51,11 +54,15 @@ internal object ProductCatalogNotificationBuilder {
 
         // fast fail if we can't download a catalog item image
         val catalogImageUris = pushTemplate.catalogItems.map { it.img }
-        downloadedImageCount = AEPUIImageUtils.cacheImages(
-            urlList = catalogImageUris,
-            bitmapWidth = PushTemplateConstants.DefaultValues.CAROUSEL_MAX_BITMAP_WIDTH.toFloat(),
-            bitmapHeight = PushTemplateConstants.DefaultValues.CAROUSEL_MAX_BITMAP_HEIGHT.toFloat(),
+        val config = AEPUIImageConfig.Builder(
+            CAROUSEL_MAX_BITMAP_WIDTH.toFloat(),
+            CAROUSEL_MAX_BITMAP_HEIGHT.toFloat()
         )
+            .urlList(catalogImageUris)
+            .build()
+
+        downloadedImageCount = AEPUIImageUtils.cacheImages(config)
+
         if (downloadedImageCount != catalogImageUris.size) {
             Log.error(
                 LOG_TAG,

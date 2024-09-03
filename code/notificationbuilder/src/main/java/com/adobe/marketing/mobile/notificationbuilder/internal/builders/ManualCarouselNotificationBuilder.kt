@@ -23,6 +23,8 @@ import androidx.annotation.VisibleForTesting
 import androidx.core.app.NotificationCompat
 import com.adobe.marketing.mobile.notificationbuilder.NotificationConstructionFailedException
 import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants
+import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.DefaultValues.CAROUSEL_MAX_BITMAP_HEIGHT
+import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.DefaultValues.CAROUSEL_MAX_BITMAP_WIDTH
 import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.LOG_TAG
 import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.PushPayloadKeys
 import com.adobe.marketing.mobile.notificationbuilder.R
@@ -31,6 +33,7 @@ import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setRem
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.CarouselPushTemplate
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.ManualCarouselPushTemplate
 import com.adobe.marketing.mobile.services.Log
+import com.adobe.marketing.mobile.utils.AEPUIImageConfig
 import com.adobe.marketing.mobile.utils.AEPUIImageUtils
 
 /**
@@ -49,15 +52,18 @@ internal object ManualCarouselNotificationBuilder {
         Log.trace(LOG_TAG, SELF_TAG, "Building a manual carousel template push notification.")
 
         // download carousel images
-        val downloadedImagesCount = AEPUIImageUtils.cacheImages(
-            urlList = pushTemplate.carouselItems.map { it.imageUri },
-            bitmapWidth = PushTemplateConstants.DefaultValues.CAROUSEL_MAX_BITMAP_WIDTH.toFloat(),
-            bitmapHeight = PushTemplateConstants.DefaultValues.CAROUSEL_MAX_BITMAP_HEIGHT.toFloat(),
+        val config = AEPUIImageConfig.Builder(
+            CAROUSEL_MAX_BITMAP_WIDTH.toFloat(),
+            CAROUSEL_MAX_BITMAP_HEIGHT.toFloat()
         )
+            .urlList(pushTemplate.carouselItems.map { it.imageUri })
+            .build()
+
+        val downloadedImageCount = AEPUIImageUtils.cacheImages(config)
 
         // fallback to a basic push template notification builder if less than 3 images were able
         // to be downloaded
-        if (downloadedImagesCount < PushTemplateConstants.DefaultValues.CAROUSEL_MINIMUM_IMAGE_COUNT) {
+        if (downloadedImageCount < PushTemplateConstants.DefaultValues.CAROUSEL_MINIMUM_IMAGE_COUNT) {
             Log.warning(LOG_TAG, SELF_TAG, "Less than 3 images are available for the manual carousel push template, falling back to a basic push template.")
             return BasicNotificationBuilder.fallbackToBasicNotification(
                 context,
