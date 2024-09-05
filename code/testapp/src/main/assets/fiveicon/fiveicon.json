@@ -13,6 +13,6 @@
   "adb_tag" : "multi_icon",
   "customKey": "custom data",
   "adb_channel_id": "2024",
-  "adb_items": "[{\"img\":\"walk\",\"uri\":\"myapp://chooseShoeType/shoe1\",\"type\":\"DEEPLINK\"},{\"img\":\"drive\",\"uri\":\"myapp://chooseShoeType/bus\",\"type\":\"DEEPLINK\"},{\"img\":\"bus\",\"uri\":\"myapp://chooseShoeType/shoe3\",\"type\":\"DEEPLINK\"},{\"img\":\"taxi\",\"uri\":\"myapp://chooseShoeType/shoe4\",\"type\":\"DEEPLINK\"},{\"img\":\"fly\",\"uri\":\"myapp://chooseShoeType/shoe5\",\"type\":\"DEEPLINK\"}]",
+  "adb_items": "[{\"img\":\"walk\",\"uri\":\"https://www.nps.gov/index.htm\",\"type\":\"WEBURL\"},{\"img\":\"drive\",\"uri\":\"myapp://chooseShoeType/bus\",\"type\":\"DEEPLINK\"},{\"img\":\"bus\",\"uri\":\"myapp://chooseShoeType/shoe3\",\"type\":\"DISMISS\"},{\"img\":\"taxi\",\"uri\":\"myapp://chooseShoeType/shoe4\",\"type\":\"OPENAPP\"},{\"img\":\"fly\",\"uri\":\"uitest://deeplink_activity\",\"type\":\"DEEPLINK\"}]",
   "adb_sticky": "true"
 }

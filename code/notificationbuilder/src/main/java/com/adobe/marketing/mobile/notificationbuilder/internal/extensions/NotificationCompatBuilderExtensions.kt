@@ -181,13 +181,15 @@ internal fun NotificationCompat.Builder.setLargeIcon(
  *
  * @param context the application [Context]
  * @param trackerActivityClass the [Class] of the activity to set in the created pending intent for tracking purposes
- * @param actionUri `String` containing the action uri
+ * @param actionUri [String] containing the action uri
+ * @param actionType the [PushTemplateConstants.ActionType] of the action
  * @param intentExtras the [Bundle] containing the extras to be added to the intent
  */
 internal fun NotificationCompat.Builder.setNotificationClickAction(
     context: Context,
     trackerActivityClass: Class<out Activity>?,
     actionUri: String?,
+    actionType: PushTemplateConstants.ActionType?,
     intentExtras: Bundle?
 ): NotificationCompat.Builder {
     val pendingIntent: PendingIntent? = PendingIntentUtils.createPendingIntentForTrackerActivity(
@@ -195,6 +197,7 @@ internal fun NotificationCompat.Builder.setNotificationClickAction(
         trackerActivityClass,
         actionUri,
         null,
+        actionType,
         intentExtras
     )
     setContentIntent(pendingIntent)
@@ -255,6 +258,7 @@ internal fun NotificationCompat.Builder.addActionButtons(
                     trackerActivityClass,
                     eachButton.link,
                     eachButton.label,
+                    eachButton.type,
                     intentExtras
                 )
             } else {
@@ -263,6 +267,7 @@ internal fun NotificationCompat.Builder.addActionButtons(
                     trackerActivityClass,
                     null,
                     eachButton.label,
+                    eachButton.type,
                     intentExtras
                 )
             }

@@ -304,6 +304,7 @@ class ManualCarouselNotificationBuilderTest {
                 any(),
                 any(),
                 null,
+                null,
                 any()
             )
         } just Runs
@@ -337,6 +338,7 @@ class ManualCarouselNotificationBuilderTest {
                 trackerActivityClass,
                 any(),
                 any(),
+                null,
                 null,
                 any()
             )
@@ -373,6 +375,7 @@ class ManualCarouselNotificationBuilderTest {
                 any(),
                 any(),
                 null,
+                null,
                 any()
             )
         }
@@ -395,6 +398,7 @@ class ManualCarouselNotificationBuilderTest {
                 any(),
                 any(),
                 null,
+                null,
                 any()
             )
         } returns Unit
@@ -416,6 +420,7 @@ class ManualCarouselNotificationBuilderTest {
                 any(),
                 any(),
                 null,
+                null,
                 any()
             )
         }
@@ -436,6 +441,7 @@ class ManualCarouselNotificationBuilderTest {
                 any(),
                 any(),
                 null,
+                null,
                 any()
             )
         } returns Unit
@@ -453,6 +459,7 @@ class ManualCarouselNotificationBuilderTest {
                 trackerActivityClass,
                 any(),
                 any(),
+                null,
                 null,
                 any()
             )

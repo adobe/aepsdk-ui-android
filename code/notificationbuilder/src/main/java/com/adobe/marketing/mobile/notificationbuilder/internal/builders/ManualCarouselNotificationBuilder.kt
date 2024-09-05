@@ -303,6 +303,7 @@ internal object ManualCarouselNotificationBuilder {
                     R.id.carousel_item_image_view,
                     interactionUri,
                     null,
+                    null,
                     pushTemplate.data.getBundle()
                 )
             }
@@ -386,6 +387,7 @@ internal object ManualCarouselNotificationBuilder {
             trackerActivityClass,
             R.id.manual_carousel_filmstrip_center,
             interactionUri,
+            null,
             null,
             pushTemplate.data.getBundle()
         )

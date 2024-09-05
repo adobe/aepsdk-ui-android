@@ -249,7 +249,7 @@ class NotificationCompatBuilderExtensionsTest {
         val mockBuilder: NotificationCompat.Builder = mockk<NotificationCompat.Builder>(relaxed = true)
         every { mockBuilder.setContentIntent(any()) } returns mockBuilder
 
-        mockBuilder.setNotificationClickAction(mockContext, trackerActivityClass, testActionUri, testIntentExtras)
+        mockBuilder.setNotificationClickAction(mockContext, trackerActivityClass, testActionUri, PushTemplateConstants.ActionType.WEBURL, testIntentExtras)
 
         val pendingIntentCapture = slot<PendingIntent>()
         verify(exactly = 1) { mockBuilder.setContentIntent(capture(pendingIntentCapture)) }
@@ -271,12 +271,42 @@ class NotificationCompatBuilderExtensionsTest {
     }
 
     @Test
+    fun `setNotificationClickAction sets dismiss content intent when actionType is dismissed`() {
+        val testActionUri = "testActionUri"
+        val testIntentExtras = Bundle()
+        testIntentExtras.putString("testKey", "testValue")
+        every { mockContext.applicationContext } returns mockContext
+        val mockBuilder: NotificationCompat.Builder = mockk<NotificationCompat.Builder>(relaxed = true)
+        every { mockBuilder.setContentIntent(any()) } returns mockBuilder
+
+        mockBuilder.setNotificationClickAction(mockContext, trackerActivityClass, testActionUri, PushTemplateConstants.ActionType.DISMISS, testIntentExtras)
+
+        val pendingIntentCapture = slot<PendingIntent>()
+        verify(exactly = 1) { mockBuilder.setContentIntent(capture(pendingIntentCapture)) }
+        val pendingIntent = pendingIntentCapture.captured
+        assertNotNull(pendingIntent)
+        val shadowPendingIntent = Shadows.shadowOf(pendingIntent)
+        assertTrue(shadowPendingIntent.isActivityIntent)
+        assertEquals(mockContext, shadowPendingIntent.savedContext)
+        assertEquals(PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE, shadowPendingIntent.flags)
+
+        val intent = shadowPendingIntent.savedIntent
+        assertNotNull(intent)
+        assertEquals(PushTemplateConstants.NotificationAction.DISMISSED, intent.action)
+        assertEquals(trackerActivityClass.name, intent.component?.className)
+        assertEquals(Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP, intent.flags)
+        assertEquals("testValue", intent.getStringExtra("testKey"))
+        assertEquals(testActionUri, intent.getStringExtra(PushTemplateConstants.TrackingKeys.ACTION_URI))
+        assertEquals(null, intent.getStringExtra(PushTemplateConstants.TrackingKeys.ACTION_ID))
+    }
+
+    @Test
     fun `setNotificationClickAction sets content intent when trackerActivityClass, actionUri and intentExtras are null`() {
         every { mockContext.applicationContext } returns mockContext
         val mockBuilder: NotificationCompat.Builder = mockk<NotificationCompat.Builder>(relaxed = true)
         every { mockBuilder.setContentIntent(any()) } returns mockBuilder
 
-        mockBuilder.setNotificationClickAction(mockContext, null, null, null)
+        mockBuilder.setNotificationClickAction(mockContext, null, null, null, null)
 
         val pendingIntentCapture = slot<PendingIntent>()
         verify(exactly = 1) { mockBuilder.setContentIntent(capture(pendingIntentCapture)) }

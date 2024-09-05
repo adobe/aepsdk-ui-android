@@ -179,6 +179,7 @@ internal fun RemoteViews.setRemoteViewImage(
  * @param targetViewResourceId [Int] containing the resource id of the view to attach the click action
  * @param actionUri [String] containing the action uri defined for the push template image
  * @param actionId the [String] containing action id for tracking purposes
+ * @param actionType the [PushTemplateConstants.ActionType] of the click action
  * @param intentExtra the [Bundle] containing the extras to be added to the intent
  */
 internal fun RemoteViews.setRemoteViewClickAction(
@@ -187,6 +188,7 @@ internal fun RemoteViews.setRemoteViewClickAction(
     targetViewResourceId: Int,
     actionUri: String?,
     actionId: String?,
+    actionType: PushTemplateConstants.ActionType?,
     intentExtra: Bundle?
 ) {
     Log.trace(
@@ -195,12 +197,21 @@ internal fun RemoteViews.setRemoteViewClickAction(
         "Setting remote view click action uri: $actionUri."
     )
 
+    actionType?.let {
+        Log.trace(
+            LOG_TAG,
+            SELF_TAG,
+            "Setting remote view click action type: ${actionType.name}."
+        )
+    }
+
     val pendingIntent: PendingIntent? =
         PendingIntentUtils.createPendingIntentForTrackerActivity(
             context,
             trackerActivityClass,
             actionUri,
             actionId,
+            actionType,
             intentExtra
         )
     setOnClickPendingIntent(targetViewResourceId, pendingIntent)

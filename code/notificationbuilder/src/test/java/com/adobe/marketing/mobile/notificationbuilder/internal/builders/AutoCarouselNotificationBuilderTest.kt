@@ -125,7 +125,7 @@ class AutoCarouselNotificationBuilderTest {
         every { getCachedImage(any()) } answers { cachedItem }
         every { anyConstructed<RemoteViews>().setImageViewBitmap(any(), any()) } just Runs
         every { anyConstructed<RemoteViews>().setTextViewText(any(), any()) } just Runs
-        every { anyConstructed<RemoteViews>().setRemoteViewClickAction(context, trackerActivityClass, any(), any(), null, any()) } just Runs
+        every { anyConstructed<RemoteViews>().setRemoteViewClickAction(context, trackerActivityClass, any(), any(), null, null, any()) } just Runs
         every { expandedLayout.addView(any(), any<RemoteViews>()) } just Runs
         val imagesList = AutoCarouselNotificationBuilder.populateAutoCarouselImages(
             context,
@@ -138,7 +138,7 @@ class AutoCarouselNotificationBuilderTest {
         assertFalse(imagesList.isEmpty())
         verify(exactly = imagesList.size) { getCachedImage(any()) }
         verify(exactly = imagesList.size) { anyConstructed<RemoteViews>().setImageViewBitmap(any(), any()) }
-        verify(exactly = imagesList.size) { anyConstructed<RemoteViews>().setRemoteViewClickAction(context, trackerActivityClass, any(), any(), null, any()) }
+        verify(exactly = imagesList.size) { anyConstructed<RemoteViews>().setRemoteViewClickAction(context, trackerActivityClass, any(), any(), null, null, any()) }
         verify(exactly = imagesList.size) { anyConstructed<RemoteViews>().setTextViewText(any(), any()) }
     }
 
@@ -148,7 +148,7 @@ class AutoCarouselNotificationBuilderTest {
         every { getCachedImage(any()) } answers { cachedItem }
         every { anyConstructed<RemoteViews>().setImageViewBitmap(any(), any()) } just Runs
         every { anyConstructed<RemoteViews>().setTextViewText(any(), any()) } just Runs
-        every { anyConstructed<RemoteViews>().setRemoteViewClickAction(context, trackerActivityClass, any(), any(), null, any()) } just Runs
+        every { anyConstructed<RemoteViews>().setRemoteViewClickAction(context, trackerActivityClass, any(), any(), null, null, any()) } just Runs
         every { expandedLayout.addView(any(), any<RemoteViews>()) } just Runs
         val imagesList = AutoCarouselNotificationBuilder.populateAutoCarouselImages(
             context,
@@ -161,7 +161,7 @@ class AutoCarouselNotificationBuilderTest {
         assertFalse(imagesList.isEmpty())
         verify(exactly = imagesList.size) { getCachedImage(any()) }
         verify(exactly = imagesList.size) { anyConstructed<RemoteViews>().setImageViewBitmap(any(), any()) }
-        verify(exactly = 0) { anyConstructed<RemoteViews>().setRemoteViewClickAction(context, trackerActivityClass, any(), any(), null, any()) }
+        verify(exactly = 0) { anyConstructed<RemoteViews>().setRemoteViewClickAction(context, trackerActivityClass, any(), any(), null, null, any()) }
         verify(exactly = imagesList.size) { anyConstructed<RemoteViews>().setTextViewText(any(), any()) }
     }
 
@@ -178,7 +178,7 @@ class AutoCarouselNotificationBuilderTest {
         )
         assertTrue(imagesList.isEmpty())
         verify(exactly = 0) { anyConstructed<RemoteViews>().setImageViewBitmap(any(), any()) }
-        verify(exactly = 0) { anyConstructed<RemoteViews>().setRemoteViewClickAction(context, trackerActivityClass, any(), any(), null, any()) }
+        verify(exactly = 0) { anyConstructed<RemoteViews>().setRemoteViewClickAction(context, trackerActivityClass, any(), any(), null, null, any()) }
         verify(exactly = 0) { anyConstructed<RemoteViews>().setTextViewText(any(), any()) }
     }
 
