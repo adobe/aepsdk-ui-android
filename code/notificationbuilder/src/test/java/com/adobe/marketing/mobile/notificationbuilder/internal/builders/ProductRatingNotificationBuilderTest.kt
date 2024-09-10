@@ -134,7 +134,7 @@ class ProductRatingNotificationBuilderTest {
         val notificationBuilder = ProductRatingNotificationBuilder.construct(context, pushTemplate, trackerActivityClass, broadcastReceiverClass)
 
         verify(exactly = 1) { anyConstructed<RemoteViews>().setViewVisibility(R.id.rating_confirm, View.VISIBLE) }
-        verify(exactly = 1) { any<RemoteViews>().setRemoteViewClickAction(any(), trackerActivityClass, R.id.rating_confirm, any(), "3", any()) }
+        verify(exactly = 1) { any<RemoteViews>().setRemoteViewClickAction(any(), trackerActivityClass, R.id.rating_confirm, any(), "3", PushTemplateConstants.ActionType.WEBURL, any()) }
     }
 
     @Test

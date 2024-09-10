@@ -96,6 +96,7 @@ internal object PendingIntentUtils {
      * notification
      * @param actionUri the action uri
      * @param actionID the action ID
+     * @param actionType the type of the action
      * @param intentExtras the [Bundle] containing the extras to be added to the intent
      * @return the created [PendingIntent]
      */
@@ -104,9 +105,13 @@ internal object PendingIntentUtils {
         trackerActivityClass: Class<out Activity>?,
         actionUri: String?,
         actionID: String?,
+        actionType: PushTemplateConstants.ActionType?,
         intentExtras: Bundle?
     ): PendingIntent? {
-        val intent = Intent(PushTemplateConstants.NotificationAction.CLICKED)
+        val intent = if (PushTemplateConstants.ActionType.DISMISS == actionType) {
+            Intent(PushTemplateConstants.NotificationAction.DISMISSED)
+        } else Intent(PushTemplateConstants.NotificationAction.CLICKED)
+
         trackerActivityClass?.let {
             intent.setClass(context.applicationContext, trackerActivityClass)
         }

@@ -155,6 +155,7 @@ internal object ProductCatalogNotificationBuilder {
                 trackerActivityClass,
                 pushTemplate.catalogItems[pushTemplate.currentIndex].uri,
                 PushTemplateConstants.CatalogActionIds.PRODUCT_IMAGE_CLICKED,
+                null,
                 pushTemplate.data.getBundle()
             )
         )
@@ -248,6 +249,7 @@ internal object ProductCatalogNotificationBuilder {
                 trackerActivityClass,
                 pushTemplate.ctaButtonUri,
                 PushTemplateConstants.CatalogActionIds.CTA_BUTTON_CLICKED,
+                null,
                 pushTemplate.data.getBundle()
             )
         )

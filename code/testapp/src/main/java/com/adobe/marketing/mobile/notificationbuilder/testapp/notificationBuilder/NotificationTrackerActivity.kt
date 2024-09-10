@@ -33,11 +33,19 @@ class NotificationTrackerActivity : AppCompatActivity() {
                 Log.debug("MyApp", "NotificationTrackerActivity", "input box quick reply result: $quickReplyResult")
             }
             PushTemplateConstants.NotificationAction.CLICKED -> executePushAction(intent)
+            PushTemplateConstants.NotificationAction.DISMISSED -> removeNotification(intent)
             else -> {}
         }
 
         finish()
         return
+    }
+
+    private fun removeNotification(intent: Intent) {
+        val tag = intent.getStringExtra(PushTemplateConstants.PushPayloadKeys.TAG)
+        val context = ServiceProvider.getInstance().appContextService.applicationContext ?: return
+        val notificationManager = NotificationManagerCompat.from(context)
+        notificationManager.cancel(tag.hashCode())
     }
 
     private fun executePushAction(intent: Intent) {
@@ -54,10 +62,7 @@ class NotificationTrackerActivity : AppCompatActivity() {
         if (isStickyNotification) {
             return
         }
-        val tag = intent.getStringExtra(PushTemplateConstants.PushPayloadKeys.TAG)
-        val context = ServiceProvider.getInstance().appContextService.applicationContext ?: return
-        val notificationManager = NotificationManagerCompat.from(context)
-        notificationManager.cancel(tag.hashCode())
+        removeNotification(intent)
     }
 
     private fun openApplication() {
@@ -90,7 +95,7 @@ class NotificationTrackerActivity : AppCompatActivity() {
             }
             startActivity(deeplinkIntent)
         } catch (e: ActivityNotFoundException) {
-
+            Log.trace("NotificationTrackerActivity", "openUri", "Activity not found for URI: $uri")
         }
     }
 }

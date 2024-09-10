@@ -102,6 +102,7 @@ internal object AEPPushNotificationBuilder {
                 context,
                 trackerActivityClass,
                 pushTemplate.actionUri,
+                pushTemplate.actionType,
                 pushTemplate.data.getBundle()
             )
             .setNotificationDeleteAction(context, trackerActivityClass)

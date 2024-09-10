@@ -290,7 +290,7 @@ class RemoteViewsExtensionsTest {
         val context = RuntimeEnvironment.getApplication()
         every { remoteViews.setOnClickPendingIntent(any(), any()) } just Runs
 
-        remoteViews.setRemoteViewClickAction(context, trackerActivityClass, 1, testActionUri, testActionID, testIntentExtras)
+        remoteViews.setRemoteViewClickAction(context, trackerActivityClass, 1, testActionUri, testActionID, PushTemplateConstants.ActionType.WEBURL, testIntentExtras)
 
         val pendingIntentCapture = slot<PendingIntent>()
         verify(exactly = 1) { remoteViews.setOnClickPendingIntent(1, capture(pendingIntentCapture)) }
@@ -324,10 +324,52 @@ class RemoteViewsExtensionsTest {
     }
 
     @Test
+    fun `setRemoteViewClickAction sets dismiss click action when action type is dismissed`() {
+        val testActionUri = "testActionUri"
+        val testActionID = "testActionID"
+        val testIntentExtras = Bundle()
+        testIntentExtras.putString("testKey", "testValue")
+        val context = RuntimeEnvironment.getApplication()
+        every { remoteViews.setOnClickPendingIntent(any(), any()) } just Runs
+
+        remoteViews.setRemoteViewClickAction(context, trackerActivityClass, 1, testActionUri, testActionID, PushTemplateConstants.ActionType.DISMISS, testIntentExtras)
+
+        val pendingIntentCapture = slot<PendingIntent>()
+        verify(exactly = 1) { remoteViews.setOnClickPendingIntent(1, capture(pendingIntentCapture)) }
+        val pendingIntent = pendingIntentCapture.captured
+        assertNotNull(pendingIntent)
+        val shadowPendingIntent = Shadows.shadowOf(pendingIntent)
+        assertTrue(shadowPendingIntent.isActivityIntent)
+        assertEquals(context, shadowPendingIntent.savedContext)
+        assertEquals(
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+            shadowPendingIntent.flags
+        )
+
+        val intent = shadowPendingIntent.savedIntent
+        assertNotNull(intent)
+        assertEquals(PushTemplateConstants.NotificationAction.DISMISSED, intent.action)
+        assertEquals(trackerActivityClass.name, intent.component?.className)
+        assertEquals(
+            Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP,
+            intent.flags
+        )
+        assertEquals("testValue", intent.getStringExtra("testKey"))
+        assertEquals(
+            testActionUri,
+            intent.getStringExtra(PushTemplateConstants.TrackingKeys.ACTION_URI)
+        )
+        assertEquals(
+            testActionID,
+            intent.getStringExtra(PushTemplateConstants.TrackingKeys.ACTION_ID)
+        )
+    }
+
+    @Test
     fun `setRemoteViewClickAction sets click action when when trackerActivityClass, actionUri, actionID and intentExtras are null`() {
         val context = RuntimeEnvironment.getApplication()
 
-        remoteViews.setRemoteViewClickAction(context, null, 1, null, null, null)
+        remoteViews.setRemoteViewClickAction(context, null, 1, null, null, null, null)
 
         val pendingIntentCapture = slot<PendingIntent>()
         verify(exactly = 1) { remoteViews.setOnClickPendingIntent(1, capture(pendingIntentCapture)) }
