@@ -19,7 +19,7 @@
   "adb_large_icon": "https://cdn-icons-png.flaticon.com/128/864/864639.png",
   "adb_rate_selected_icon":"rating_star_filled",
   "adb_rate_unselected_icon":"rating_star_outline",
-  "adb_rate_act": "[{\"uri\":\"https://www.adobe.com\", \"type\":\"WEBURL\"},{\"type\":\"OPENAPP\"},{\"uri\":\"https://www.adobe.com\", \"type\":\"WEBURL\"},{\"uri\": \"https://www.adobe.com\", \"type\":\"WEBURL\"},{\"uri\":\"https://www.adobe.com\", \"type\":\"WEBURL\"}]",
+  "adb_rate_act": "[{\"uri\":\"https://www.adobe.com\", \"type\":\"WEBURL\"},{\"type\":\"DISMISS\"},{\"uri\":\"https://www.adobe.com\", \"type\":\"WEBURL\"},{\"uri\": \"uitest://deeplink_activity\", \"type\":\"DEEPLINK\"},{\"type\":\"OPENAPP\"}]",
   "adb_tag": "rating",
-  "adb_sticky": "true"
+  "adb_sticky": "false"
 }

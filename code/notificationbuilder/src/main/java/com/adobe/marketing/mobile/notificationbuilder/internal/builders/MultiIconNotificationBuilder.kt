@@ -13,10 +13,7 @@ package com.adobe.marketing.mobile.notificationbuilder.internal.builders
 
 import android.app.Activity
 import android.app.NotificationManager
-import android.app.PendingIntent
 import android.content.Context
-import android.content.Intent
-import android.os.Bundle
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import com.adobe.marketing.mobile.notificationbuilder.NotificationConstructionFailedException
@@ -27,7 +24,6 @@ import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setRem
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setRemoteViewImage
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.MultiIconPushTemplate
 import com.adobe.marketing.mobile.services.Log
-import java.util.Random
 
 internal object MultiIconNotificationBuilder {
     const val SELF_TAG = "MultiIconNotificationBuilder"
@@ -68,23 +64,15 @@ internal object MultiIconNotificationBuilder {
             pushTemplate
         )
 
-        val closeButtonIntentExtra = Bundle(pushTemplate.data.getBundle()) // copy the bundle
-        closeButtonIntentExtra.putString(PushTemplateConstants.PushPayloadKeys.STICKY, "false")
-        val dismissIntent = Intent(PushTemplateConstants.NotificationAction.DISMISSED)
-        trackerActivityClass?.let {
-            dismissIntent.setClass(context.applicationContext, trackerActivityClass)
-        }
-        dismissIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
-        dismissIntent.putExtras(closeButtonIntentExtra)
-        val pendingIntent = PendingIntent.getActivity(
+        // set the click action for the close button
+        notificationLayout.setRemoteViewClickAction(
             context,
-            Random().nextInt(),
-            dismissIntent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        )
-        notificationLayout.setOnClickPendingIntent(
+            trackerActivityClass,
             R.id.five_icon_close_button,
-            pendingIntent
+            null,
+            null,
+            PushTemplateConstants.ActionType.DISMISS,
+            pushTemplate.data.getBundle()
         )
 
         return AEPPushNotificationBuilder.construct(
@@ -122,13 +110,13 @@ internal object MultiIconNotificationBuilder {
             }
 
             trackerActivityClass?.let {
-                val interactionUri = item.actionUri ?: pushTemplate.actionUri
                 iconItem.setRemoteViewClickAction(
                     context,
                     trackerActivityClass,
                     R.id.icon_item_image_view,
-                    interactionUri,
+                    item.actionUri,
                     null,
+                    item.actionType,
                     pushTemplate.data.getBundle()
                 )
             }

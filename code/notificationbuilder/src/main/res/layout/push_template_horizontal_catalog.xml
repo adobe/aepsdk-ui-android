@@ -15,7 +15,7 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/product_catalog_image_height"
         android:layout_alignParentLeft="true"
-        android:contentDescription="@string/big_product_image">
+        android:contentDescription="@string/aep_big_product_image">
     </ImageView>
 
     <LinearLayout
@@ -43,7 +43,7 @@
             android:layout_width="@dimen/product_catalog_horizontal_mid_row_width"
             android:layout_height="wrap_content"
             android:padding="@dimen/standard_title_bottom_margin"
-            android:text="@string/buy_now"
+            android:text="@string/aep_buy_now"
             android:textAlignment="center"
             android:textSize="12sp" />
     </LinearLayout>
@@ -62,7 +62,7 @@
             android:scaleType="center"
             android:layout_height="@dimen/product_catalog_horizontal_bottom_row_height"
             android:layout_width="@dimen/product_catalog_horizontal_bottom_row_width"
-            android:contentDescription="@string/product_thumbnail_1"/>
+            android:contentDescription="@string/aep_product_thumbnail_1"/>
 
         <ImageView
             android:id="@+id/product_thumbnail_2"
@@ -71,7 +71,7 @@
             android:layout_height="@dimen/product_catalog_horizontal_bottom_row_height"
             android:layout_width="@dimen/product_catalog_horizontal_bottom_row_width"
             android:layout_marginLeft="@dimen/product_catalog_horizontal_bottom_row_margin_left"
-            android:contentDescription="@string/product_thumbnail_2"/>
+            android:contentDescription="@string/aep_product_thumbnail_2"/>
 
         <ImageView
             android:id="@+id/product_thumbnail_3"
@@ -80,7 +80,7 @@
             android:layout_height="@dimen/product_catalog_horizontal_bottom_row_height"
             android:layout_width="@dimen/product_catalog_horizontal_bottom_row_width"
             android:layout_marginLeft="@dimen/product_catalog_horizontal_bottom_row_margin_left"
-            android:contentDescription="@string/product_thumbnail_3"/>
+            android:contentDescription="@string/aep_product_thumbnail_3"/>
     </LinearLayout>
 
 </RelativeLayout>

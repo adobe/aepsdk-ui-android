@@ -10,7 +10,7 @@
         android:id="@+id/five_icon_close_button"
         android:layout_width="@dimen/multi_icon_close_button_height"
         android:layout_height="@dimen/multi_icon_close_button_height"
-        android:contentDescription="@string/multi_icon_close_btn_content_description"
+        android:contentDescription="@string/aep_multi_icon_close_btn_content_description"
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
         android:padding="@dimen/multi_icon_item_padding"

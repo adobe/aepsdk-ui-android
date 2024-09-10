@@ -73,6 +73,7 @@ internal object LegacyNotificationBuilder {
                 context,
                 trackerActivityClass,
                 pushTemplate.actionUri,
+                pushTemplate.actionType,
                 pushTemplate.data.getBundle()
             )
             // set notification delete action

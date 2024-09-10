@@ -63,7 +63,7 @@
         android:layout_height="wrap_content"
         android:paddingTop="@dimen/rating_confirm_padding"
         android:paddingBottom="@dimen/rating_confirm_padding"
-        android:text="@string/product_rating_confirm"
+        android:text="@string/aep_product_rating_confirm"
         android:gravity="center"
         style="@style/Title"
         android:visibility="invisible"/>

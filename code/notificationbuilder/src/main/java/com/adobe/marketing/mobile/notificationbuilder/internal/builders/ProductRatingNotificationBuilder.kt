@@ -116,6 +116,7 @@ internal object ProductRatingNotificationBuilder {
                 R.id.rating_confirm,
                 selectedRatingAction.link,
                 pushTemplate.ratingSelected.toString(),
+                pushTemplate.ratingActionList[pushTemplate.ratingSelected].type,
                 ratingConfirmedIntentExtras
             )
         } else {
