@@ -1,6 +1,8 @@
 checkstyle:
 		(./code/gradlew -p code/notificationbuilder checkstyle)
 
+lint: checkstyle
+
 checkformat:
 		(./code/gradlew -p code/notificationbuilder spotlessCheck)
 
@@ -41,5 +43,5 @@ notificationbuilder-publish-maven-local-jitpack: assemble-phone-release
 notificationbuilder-publish-snapshot: assemble-phone-release
 		(./code/gradlew -p code/notificationbuilder publishReleasePublicationToSonatypeRepository)
 
-notificationbuilder-publish: assemble-phone-release
+notificationbuilder-publish-main: assemble-phone-release
 		(./code/gradlew -p code/notificationbuilder  publishReleasePublicationToSonatypeRepository -Prelease)
