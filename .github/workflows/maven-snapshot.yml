@@ -25,7 +25,7 @@ jobs:
   publish:
     permissions:
         contents: write
-    uses: adobe/aepsdk-commons/.github/workflows/android-maven-snapshot.yml@gha-android-3.1.1
+    uses: adobe/aepsdk-commons/.github/workflows/android-maven-snapshot.yml@gha-android-3.2.0
     with:
       release-variant: ${{ github.event.inputs.component }}
     secrets: inherit

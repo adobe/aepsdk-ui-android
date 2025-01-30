@@ -1,10 +1,10 @@
 checkstyle:
 		(./code/gradlew -p code/notificationbuilder checkstyle)
 
-lint: checkstyle
-
 checkformat:
 		(./code/gradlew -p code/notificationbuilder spotlessCheck)
+
+ci-lint: checkformat checkstyle
 
 format:
 		(./code/gradlew -p code/notificationbuilder spotlessApply)
