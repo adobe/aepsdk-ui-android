@@ -4,7 +4,8 @@ checkstyle:
 checkformat:
 		(./code/gradlew -p code/notificationbuilder spotlessCheck)
 
-ci-lint: checkformat checkstyle
+# Used by build and test CI workflow
+lint: checkformat checkstyle
 
 format:
 		(./code/gradlew -p code/notificationbuilder spotlessApply)
