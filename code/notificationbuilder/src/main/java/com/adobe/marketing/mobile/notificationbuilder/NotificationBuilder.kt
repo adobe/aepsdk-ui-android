@@ -17,6 +17,8 @@ import android.content.Context
 import android.content.Intent
 import androidx.core.app.NotificationCompat
 import com.adobe.marketing.mobile.notificationbuilder.NotificationBuilder.constructNotificationBuilder
+import com.adobe.marketing.mobile.notificationbuilder.NotificationBuilderConstants.TAG
+import com.adobe.marketing.mobile.notificationbuilder.NotificationBuilderConstants.VERSION
 import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.LOG_TAG
 import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateType
 import com.adobe.marketing.mobile.notificationbuilder.internal.builders.AutoCarouselNotificationBuilder
@@ -52,8 +54,6 @@ import com.adobe.marketing.mobile.services.ServiceProvider
  * [AEPPushTemplate] or [Intent].
  */
 object NotificationBuilder {
-    private const val SELF_TAG = "NotificationBuilder"
-    private const val VERSION = "3.0.3"
 
     @JvmStatic
     fun version(): String {
@@ -157,7 +157,7 @@ object NotificationBuilder {
                     else -> {
                         Log.warning(
                             LOG_TAG,
-                            SELF_TAG,
+                            TAG,
                             "Unknown carousel push template type, creating a legacy style notification."
                         )
                         return LegacyNotificationBuilder.construct(
