@@ -20,7 +20,7 @@ import androidx.core.app.NotificationCompat
 import com.adobe.marketing.mobile.notificationbuilder.NotificationConstructionFailedException
 import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants
 import com.adobe.marketing.mobile.notificationbuilder.R
-import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setRemoteImage
+import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setRemoteViewImage
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.InputBoxPushTemplate
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.MOCKED_BASIC_TEMPLATE_BODY
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.MOCKED_BASIC_TEMPLATE_BODY_EXPANDED
@@ -41,6 +41,7 @@ import io.mockk.Runs
 import io.mockk.every
 import io.mockk.just
 import io.mockk.mockkConstructor
+import io.mockk.mockkStatic
 import io.mockk.unmockkAll
 import io.mockk.verify
 import org.junit.After
@@ -74,6 +75,7 @@ class InputBoxNotificationBuilderTest {
         trackerActivityClass = DummyActivity::class.java
         broadcastReceiverClass = DummyBroadcastReceiver::class.java
         mockkConstructor(RemoteViews::class)
+        mockkStatic(RemoteViews::setRemoteViewImage)
     }
 
     @After
@@ -93,6 +95,7 @@ class InputBoxNotificationBuilderTest {
 
         assertNotNull(notificationBuilder)
         assertEquals(NotificationCompat.Builder::class.java, notificationBuilder.javaClass)
+        verify(exactly = 0) { any<RemoteViews>().setRemoteViewImage(MOCKED_IMAGE_URI, R.id.expanded_template_image) }
     }
 
     @Test(expected = NotificationConstructionFailedException::class)
@@ -265,7 +268,7 @@ class InputBoxNotificationBuilderTest {
             broadcastReceiverClass
         )
 
-        verify { anyConstructed<RemoteViews>().setRemoteImage(MOCKED_FEEDBACK_IMAGE, R.id.expanded_template_image) }
+        verify(exactly = 1) { any<RemoteViews>().setRemoteViewImage(MOCKED_FEEDBACK_IMAGE, R.id.expanded_template_image) }
         verify { anyConstructed<RemoteViews>().setTextViewText(R.id.notification_body, MOCKED_FEEDBACK_TEXT) }
         verify { anyConstructed<RemoteViews>().setTextViewText(R.id.notification_body_expanded, MOCKED_FEEDBACK_TEXT) }
     }
@@ -282,7 +285,7 @@ class InputBoxNotificationBuilderTest {
             broadcastReceiverClass
         )
 
-        verify { anyConstructed<RemoteViews>().setRemoteImage(MOCKED_IMAGE_URI, R.id.expanded_template_image) }
+        verify(exactly = 1) { any<RemoteViews>().setRemoteViewImage(MOCKED_IMAGE_URI, R.id.expanded_template_image) }
         verify { anyConstructed<RemoteViews>().setTextViewText(R.id.notification_body, MOCKED_BASIC_TEMPLATE_BODY) }
         verify { anyConstructed<RemoteViews>().setTextViewText(R.id.notification_body_expanded, MOCKED_BASIC_TEMPLATE_BODY_EXPANDED) }
     }

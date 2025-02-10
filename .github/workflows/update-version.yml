@@ -11,43 +11,37 @@
 #
 
 name: Update Versions
+
 on:
   workflow_dispatch:
     inputs:
-      notificationbuilder-version: 
-        description: 'New version to use for the NotificationBuilder. Example: 3.0.0'
-        required: false
+      version:
+        description: 'New version to use for the extension (ex: 1.2.3).'
+        type: string
+        required: true
+
+      branch:
+        description: 'The target branch where the version update will be applied and the pull request will be merged into.'
+        type: string
+        required: true
 
       core-dependency:
-        description: '[Optional] Update Core dependency in pom.xml. Example: 3.0.0'
+        description: | 
+          If a version is provided, update Core dependency in gradle.properties (ex: 1.2.3).
+          This is a published dependency in the pom.xml file.
+        type: string
         required: false
+        default: ''
 
 jobs:
-  update-version:
-    runs-on: ubuntu-latest
-
-    steps:    
-    - name: Checkout
-      uses: actions/checkout@v3
-    
-    - if: ${{ github.event.inputs.notificationbuilder-version != '' }}
-      name: Update NotificationBuilder version
-      run: (sh ./scripts/version.sh -u -n NotificationBuilder -v ${{ github.event.inputs.notificationbuilder-version }} -d "Core ${{ github.event.inputs.core-dependency }}")  
-
-    - name: Generate Commit Message
-      shell: bash
-      run: |
-        COMMIT_MSG=""
-        if [ "${{ github.event.inputs.notificationbuilder-version }}" ]; then
-          COMMIT_MSG="[NotificationBuilder-${{ github.event.inputs.notificationbuilder-version }}]"
-        fi
-        echo $COMMIT_MSG
-        echo COMMIT_MSG=$COMMIT_MSG >> $GITHUB_ENV
-
-    - name: Create Pull Request
-      uses: peter-evans/create-pull-request@v5
-      with:
-        delete-branch: true
-        commit-message: Update versions ${{ env.COMMIT_MSG }}
-        title: Update versions ${{ env.COMMIT_MSG }}
-        body: Update versions ${{ env.COMMIT_MSG }}
+  update-versions:
+    permissions:
+      contents: write
+      pull-requests: write
+    uses: adobe/aepsdk-commons/.github/workflows/versions.yml@gha-android-3.3.0
+    with:
+      version: ${{ github.event.inputs.version }}
+      branch: ${{ github.event.inputs.branch }}
+      dependencies: Core ${{ github.event.inputs.core-dependency }}
+      paths: code/gradle.properties, code/notificationbuilder/src/main/java/com/adobe/marketing/mobile/notificationbuilder/NotificationBuilder.kt
+      update: true

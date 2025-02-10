@@ -4,6 +4,9 @@ checkstyle:
 checkformat:
 		(./code/gradlew -p code/notificationbuilder spotlessCheck)
 
+# Used by build and test CI workflow
+lint: checkformat checkstyle
+
 format:
 		(./code/gradlew -p code/notificationbuilder spotlessApply)
 
@@ -41,5 +44,5 @@ notificationbuilder-publish-maven-local-jitpack: assemble-phone-release
 notificationbuilder-publish-snapshot: assemble-phone-release
 		(./code/gradlew -p code/notificationbuilder publishReleasePublicationToSonatypeRepository)
 
-notificationbuilder-publish: assemble-phone-release
+notificationbuilder-publish-main: assemble-phone-release
 		(./code/gradlew -p code/notificationbuilder  publishReleasePublicationToSonatypeRepository -Prelease)
