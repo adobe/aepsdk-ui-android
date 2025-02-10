@@ -101,6 +101,20 @@ class BasicNotificationBuilderTest {
         verify(exactly = 1) { any<RemoteViews>().setRemoteViewImage(MOCKED_IMAGE_URI, R.id.expanded_template_image) }
     }
 
+    @Test
+    fun `construct should return a NotificationCompat Builder when push template has required data only`() {
+        val pushTemplate = provideMockedBasicPushTemplateWithRequiredData()
+        val notificationBuilder = BasicNotificationBuilder.construct(
+            context,
+            pushTemplate,
+            trackerActivityClass,
+            broadcastReceiverClass
+        )
+
+        assertEquals(NotificationCompat.Builder::class.java, notificationBuilder.javaClass)
+        verify(exactly = 0) { any<RemoteViews>().setRemoteViewImage(MOCKED_IMAGE_URI, R.id.expanded_template_image) }
+    }
+
     @Config(sdk = [23])
     @Test
     fun `construct should use the api23 expanded layout for API level below 24`() {
