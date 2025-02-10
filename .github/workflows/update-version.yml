@@ -43,5 +43,5 @@ jobs:
       version: ${{ github.event.inputs.version }}
       branch: ${{ github.event.inputs.branch }}
       dependencies: Core ${{ github.event.inputs.core-dependency }}
-      paths: code/gradle.properties, code/notificationbuilder/src/main/java/com/adobe/marketing/mobile/notificationbuilder/NotificationBuilder.kt
+      paths: code/gradle.properties, code/notificationbuilder/src/main/java/com/adobe/marketing/mobile/notificationbuilder/NotificationBuilderConstants.kt
       update: true
