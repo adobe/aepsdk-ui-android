@@ -118,7 +118,7 @@ class NotificationBuilderTests {
     fun `NotificationBuilder version values matches the expected version`() {
         val version = NotificationBuilder.version()
 
-        assertEquals("3.0.3", version)
+        assertEquals(NotificationBuilderConstants.VERSION, version)
     }
 
     @Test
