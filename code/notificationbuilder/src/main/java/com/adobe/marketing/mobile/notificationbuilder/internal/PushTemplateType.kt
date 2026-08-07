@@ -23,6 +23,8 @@ internal enum class PushTemplateType(val value: String) {
     PRODUCT_CATALOG("cat"),
     MULTI_ICON("icon"),
     TIMER("timer"),
+    AJO_BASIC("ajo_basic"),
+    AJO_BIG_TEXT("ajo_bigtext"),
     UNKNOWN("unknown");
 
     companion object {
@@ -42,6 +44,8 @@ internal enum class PushTemplateType(val value: String) {
                 "rate" -> PRODUCT_RATING
                 "icon" -> MULTI_ICON
                 "timer" -> TIMER
+                "ajo_basic" -> AJO_BASIC
+                "ajo_bigtext" -> AJO_BIG_TEXT
                 else -> UNKNOWN
             }
         }

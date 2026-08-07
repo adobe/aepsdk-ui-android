@@ -92,6 +92,7 @@ object PushTemplateConstants {
 
     object PushPayloadKeys {
         const val TEMPLATE_TYPE = "adb_template_type"
+        const val AJO_TEMPLATE_PROPERTIES = "adb_template_properties"
         const val TITLE = "adb_title"
         const val BODY = "adb_body"
         const val SOUND = "adb_sound"
@@ -196,5 +197,25 @@ object PushTemplateConstants {
         const val IMG = "img"
         const val URI = "uri"
         const val TYPE = "type"
+    }
+
+    // Keys for parsing the adb_template_properties JSON blob for AJO templates.
+    // These are NOT top-level FCM keys — they are flat keys inside the parsed JSON object.
+    // Only template-specific fields live here; general fields (title, body, image, version)
+    // are read from the top-level flat FCM keys in [PushPayloadKeys].
+    internal object AJOTemplatePropertyKeys {
+        // Basic template: scale type applied to the expanded hero image.
+        internal const val IMAGE_SCALE_TYPE = "adb_image_scale_type"
+
+        // BigText template: short text shown in the collapsed state.
+        internal const val COLLAPSED_TEXT = "adb_collapsed_text"
+
+        // BigText template: large side icon url.
+        internal const val LARGE_ICON = "adb_large_icon"
+
+        internal object ScaleType {
+            internal const val CENTER_CROP = "center_crop"
+            internal const val FIT_CENTER = "fit_center"
+        }
     }
 }

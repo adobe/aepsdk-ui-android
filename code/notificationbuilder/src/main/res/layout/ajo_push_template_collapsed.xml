@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/basic_small_layout"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:clipToPadding="false"
+    android:clipChildren="false"
+    android:orientation="vertical"
+    android:theme="@style/DayNightTheme">
+
+    <FrameLayout
+        android:id="@+id/large_icon_container"
+        android:layout_width="@dimen/large_icon_width"
+        android:layout_height="@dimen/large_icon_height"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true">
+
+        <ImageView
+            android:id="@+id/large_icon_center_crop"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:visibility="gone" />
+
+        <ImageView
+            android:id="@+id/large_icon_fit_center"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="fitCenter"
+            android:visibility="gone" />
+
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/notification_title"
+        style="@style/Title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start"
+        android:textAlignment="viewStart"
+        android:layout_toLeftOf="@+id/large_icon_container"/>
+
+    <TextView
+        android:id="@+id/notification_body"
+        style="@style/Body"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/notification_title"
+        android:layout_gravity="start"
+        android:textAlignment="viewStart"
+        android:layout_toLeftOf="@+id/large_icon_container"/>
+</RelativeLayout>
