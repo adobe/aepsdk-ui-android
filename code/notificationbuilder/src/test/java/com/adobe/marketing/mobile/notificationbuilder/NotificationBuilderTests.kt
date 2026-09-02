@@ -22,6 +22,8 @@ import androidx.core.app.NotificationManagerCompat
 import com.adobe.marketing.mobile.notificationbuilder.internal.PendingIntentUtils
 import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateImageUtils
 import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateType
+import com.adobe.marketing.mobile.notificationbuilder.internal.ajo.builders.AJOBasicNotificationBuilder
+import com.adobe.marketing.mobile.notificationbuilder.internal.ajo.builders.AJOBigTextNotificationBuilder
 import com.adobe.marketing.mobile.notificationbuilder.internal.builders.AutoCarouselNotificationBuilder
 import com.adobe.marketing.mobile.notificationbuilder.internal.builders.BasicNotificationBuilder
 import com.adobe.marketing.mobile.notificationbuilder.internal.builders.InputBoxNotificationBuilder
@@ -32,6 +34,10 @@ import com.adobe.marketing.mobile.notificationbuilder.internal.builders.ProductC
 import com.adobe.marketing.mobile.notificationbuilder.internal.builders.ProductRatingNotificationBuilder
 import com.adobe.marketing.mobile.notificationbuilder.internal.builders.TimerNotificationBuilder
 import com.adobe.marketing.mobile.notificationbuilder.internal.builders.ZeroBezelNotificationBuilder
+import com.adobe.marketing.mobile.notificationbuilder.internal.templates.AJO_MOCKED_BIGTEXT_PROPS_FULL
+import com.adobe.marketing.mobile.notificationbuilder.internal.templates.AJO_MOCKED_FLAT_BODY
+import com.adobe.marketing.mobile.notificationbuilder.internal.templates.AJO_MOCKED_FLAT_TITLE
+import com.adobe.marketing.mobile.notificationbuilder.internal.templates.AJO_MOCKED_TEMPLATE_PROPS_FIT_CENTER
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.MockAEPPushTemplateDataProvider
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.MockCarousalTemplateDataProvider
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.MockProductCatalogTemplateDataProvider
@@ -95,6 +101,8 @@ class NotificationBuilderTests {
         mockkObject(MultiIconNotificationBuilder)
         mockkObject(TimerNotificationBuilder)
         mockkObject(LegacyNotificationBuilder)
+        mockkObject(AJOBasicNotificationBuilder)
+        mockkObject(AJOBigTextNotificationBuilder)
     }
 
     private fun setupApplicationMocks() {
@@ -287,6 +295,32 @@ class NotificationBuilderTests {
         mapData[PushTemplateConstants.PushPayloadKeys.TEMPLATE_TYPE] = PushTemplateType.TIMER.value
         NotificationBuilder.constructNotificationBuilder(mapData, trackerActivityClass, broadcastReceiverClass)
         verify(exactly = 1) { TimerNotificationBuilder.construct(any(Context::class), any(), trackerActivityClass, broadcastReceiverClass) }
+    }
+
+    @Test
+    fun `verify private createNotificationBuilder calls AJOBasicNotificationBuilder construct`() {
+        val mapData = mutableMapOf(
+            PushTemplateConstants.PushPayloadKeys.TEMPLATE_TYPE to PushTemplateType.AJO_BASIC.value,
+            PushTemplateConstants.PushPayloadKeys.VERSION to "1",
+            PushTemplateConstants.PushPayloadKeys.TITLE to AJO_MOCKED_FLAT_TITLE,
+            PushTemplateConstants.PushPayloadKeys.BODY to AJO_MOCKED_FLAT_BODY,
+            PushTemplateConstants.PushPayloadKeys.AJO_TEMPLATE_PROPERTIES to AJO_MOCKED_TEMPLATE_PROPS_FIT_CENTER
+        )
+        NotificationBuilder.constructNotificationBuilder(mapData, trackerActivityClass, broadcastReceiverClass)
+        verify(exactly = 1) { AJOBasicNotificationBuilder.construct(any(Context::class), any(), trackerActivityClass, broadcastReceiverClass) }
+    }
+
+    @Test
+    fun `verify private createNotificationBuilder calls AJOBigTextNotificationBuilder construct`() {
+        val mapData = mutableMapOf(
+            PushTemplateConstants.PushPayloadKeys.TEMPLATE_TYPE to PushTemplateType.AJO_BIG_TEXT.value,
+            PushTemplateConstants.PushPayloadKeys.VERSION to "1",
+            PushTemplateConstants.PushPayloadKeys.TITLE to AJO_MOCKED_FLAT_TITLE,
+            PushTemplateConstants.PushPayloadKeys.BODY to AJO_MOCKED_FLAT_BODY,
+            PushTemplateConstants.PushPayloadKeys.AJO_TEMPLATE_PROPERTIES to AJO_MOCKED_BIGTEXT_PROPS_FULL
+        )
+        NotificationBuilder.constructNotificationBuilder(mapData, trackerActivityClass, broadcastReceiverClass)
+        verify(exactly = 1) { AJOBigTextNotificationBuilder.construct(any(Context::class), any(), trackerActivityClass, broadcastReceiverClass) }
     }
 
     private fun setNullContext() {

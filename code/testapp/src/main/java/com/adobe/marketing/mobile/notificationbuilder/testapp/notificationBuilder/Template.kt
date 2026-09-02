@@ -21,5 +21,6 @@ enum class Template(val displayName: String, val directoryName: String) {
     ZeroBezel("Zero Bezel", "zerobezel"),
     InputBox("InputBox", "inputbox"),
     FiveIcon("Five Icon", "fiveicon"),
-    Rating("Rating", "rating")
+    Rating("Rating", "rating"),
+    AJOBasic("AJO Basic", "ajo_basic")
 }
