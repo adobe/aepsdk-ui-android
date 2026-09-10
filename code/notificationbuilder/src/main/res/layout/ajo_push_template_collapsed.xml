@@ -10,8 +10,8 @@
 
     <FrameLayout
         android:id="@+id/large_icon_container"
-        android:layout_width="@dimen/large_icon_width"
-        android:layout_height="@dimen/large_icon_height"
+        android:layout_width="@dimen/ajo_large_icon_size"
+        android:layout_height="@dimen/ajo_large_icon_size"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true">
 
@@ -20,6 +20,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="centerCrop"
+            android:clipToOutline="true"
+            android:background="@drawable/ajo_large_icon_rounded_outline"
             android:visibility="gone" />
 
         <ImageView
@@ -33,7 +35,7 @@
 
     <TextView
         android:id="@+id/notification_title"
-        style="@style/Title"
+        style="@style/AjoTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="start"
@@ -42,11 +44,12 @@
 
     <TextView
         android:id="@+id/notification_body"
-        style="@style/Body"
+        style="@style/AjoBody"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/notification_title"
         android:layout_gravity="start"
         android:textAlignment="viewStart"
+        android:maxLines="1"
         android:layout_toLeftOf="@+id/large_icon_container"/>
 </RelativeLayout>

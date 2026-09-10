@@ -70,8 +70,8 @@ internal object AJOBigTextNotificationBuilder {
         expandedLayout.setTextViewText(R.id.notification_title, pushTemplate.title)
         expandedLayout.setTextViewText(R.id.notification_body_expanded, pushTemplate.body)
 
-        // the large side icon has no scale type option — always render with center crop and
-        // hide the fit center view
+        // Render the large side icon inside the custom layout (next to the text). Always center
+        // crop; hide the fit-center view.
         smallLayout.setViewVisibility(R.id.large_icon_fit_center, View.GONE)
         smallLayout.setViewVisibility(R.id.large_icon_center_crop, View.VISIBLE)
         smallLayout.setRemoteViewImage(pushTemplate.largeIconUrl, R.id.large_icon_center_crop)
@@ -84,6 +84,9 @@ internal object AJOBigTextNotificationBuilder {
             .setNumber(pushTemplate.badgeCount)
             .setAutoCancel(!pushTemplate.isNotificationSticky)
             .setOngoing(pushTemplate.isNotificationSticky)
+            // show the timestamp ("now") in the header, like native
+            .setShowWhen(true)
+            .setWhen(System.currentTimeMillis())
             .setStyle(NotificationCompat.DecoratedCustomViewStyle())
             .setCustomContentView(smallLayout)
             .setCustomBigContentView(expandedLayout)

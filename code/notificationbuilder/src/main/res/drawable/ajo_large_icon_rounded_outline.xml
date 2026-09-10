@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Copyright 2024 Adobe. All rights reserved.
+  Licensed under the Apache License, Version 2.0. Rounded outline for the AJO large icon
+  (slightly less rounded than the hero image), used with android:clipToOutline="true".
+-->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <solid android:color="@android:color/transparent" />
+    <corners android:radius="@dimen/ajo_large_icon_corner_radius" />
+</shape>

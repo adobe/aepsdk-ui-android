@@ -32,7 +32,7 @@
 
     <TextView
         android:id="@+id/notification_title"
-        style="@style/Title"
+        style="@style/AjoTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="start"
@@ -41,7 +41,7 @@
 
     <TextView
         android:id="@+id/notification_body_expanded"
-        style="@style/Body"
+        style="@style/AjoBody"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/notification_title"
@@ -52,9 +52,11 @@
     <ImageView
         android:id="@+id/expanded_image_center_crop"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/basic_expanded_image_height"
+        android:layout_height="@dimen/ajo_center_crop_image_height"
         android:scaleType="centerCrop"
-        android:layout_marginTop="8dp"
+        android:clipToOutline="true"
+        android:background="@drawable/ajo_image_rounded_outline"
+        android:layout_marginTop="@dimen/ajo_image_margin_top"
         android:layout_below="@id/notification_body_expanded"
         android:visibility="gone" />
 
@@ -62,13 +64,13 @@
         android:id="@+id/expanded_image_fit_center"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:maxHeight="256dp"
+        android:maxHeight="@dimen/ajo_expanded_image_max_height"
         android:minHeight="140dp"
         android:adjustViewBounds="true"
         android:scaleType="fitCenter"
-        android:layout_marginTop="8dp"
-        android:layout_marginStart="4dp"
-        android:layout_marginEnd="4dp"
+        android:clipToOutline="true"
+        android:background="@drawable/ajo_image_rounded_outline"
+        android:layout_marginTop="@dimen/ajo_image_margin_top"
         android:layout_below="@id/notification_body_expanded"
         android:visibility="gone" />
 
