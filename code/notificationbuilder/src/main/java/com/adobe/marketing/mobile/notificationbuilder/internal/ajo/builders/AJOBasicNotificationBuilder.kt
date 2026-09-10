@@ -90,6 +90,9 @@ internal object AJOBasicNotificationBuilder {
             .setNumber(pushTemplate.badgeCount)
             .setAutoCancel(!pushTemplate.isNotificationSticky)
             .setOngoing(pushTemplate.isNotificationSticky)
+            // show the timestamp ("now") in the header, like native
+            .setShowWhen(true)
+            .setWhen(System.currentTimeMillis())
             .setStyle(NotificationCompat.DecoratedCustomViewStyle())
             .setCustomContentView(smallLayout)
             .setCustomBigContentView(expandedLayout)

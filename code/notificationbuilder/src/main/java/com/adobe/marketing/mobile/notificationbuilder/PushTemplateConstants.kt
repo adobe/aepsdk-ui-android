@@ -56,8 +56,13 @@ object PushTemplateConstants {
         internal const val SILENT_CHANNEL_NAME = "Silent Notifications"
         internal const val DEFAULT_CHANNEL_ID = "AEPSDKPushChannel"
         internal const val SILENT_NOTIFICATION_CHANNEL_ID = "AEPSDKSilentPushChannel"
-        internal const val CAROUSEL_MAX_BITMAP_WIDTH = 300
-        internal const val CAROUSEL_MAX_BITMAP_HEIGHT = 200
+        // Bounding box the downloaded images are scaled into (aspect preserved). Raised from
+        // 300x200 to 720x720 so notification images stay sharp at the size they are displayed
+        // (expanded images render up to ~256dp ≈ 670px on high-density screens). 720 caps the
+        // longest edge, keeping typical images ~1MB and well within the RemoteViews/texture
+        // limits, so sharpness improves without meaningful OOM risk.
+        internal const val CAROUSEL_MAX_BITMAP_WIDTH = 720
+        internal const val CAROUSEL_MAX_BITMAP_HEIGHT = 720
         internal const val AUTO_CAROUSEL_MODE = "auto"
         internal const val DEFAULT_MANUAL_CAROUSEL_MODE = "default"
         internal const val FILMSTRIP_CAROUSEL_MODE = "filmstrip"
