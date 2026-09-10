@@ -12,7 +12,7 @@
         android:id="@+id/large_icon_container"
         android:layout_width="@dimen/ajo_large_icon_size"
         android:layout_height="@dimen/ajo_large_icon_size"
-        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
         android:layout_centerVertical="true">
 
         <ImageView
@@ -40,7 +40,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="start"
         android:textAlignment="viewStart"
-        android:layout_toLeftOf="@+id/large_icon_container"/>
+        android:layout_toStartOf="@+id/large_icon_container"/>
 
     <TextView
         android:id="@+id/notification_body"
@@ -51,5 +51,5 @@
         android:layout_gravity="start"
         android:textAlignment="viewStart"
         android:maxLines="1"
-        android:layout_toLeftOf="@+id/large_icon_container"/>
+        android:layout_toStartOf="@+id/large_icon_container"/>
 </RelativeLayout>

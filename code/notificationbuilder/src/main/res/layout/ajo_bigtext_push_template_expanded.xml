@@ -12,7 +12,7 @@
         android:id="@+id/large_icon_container"
         android:layout_width="@dimen/ajo_large_icon_size"
         android:layout_height="@dimen/ajo_large_icon_size"
-        android:layout_alignParentRight="true">
+        android:layout_alignParentEnd="true">
 
         <ImageView
             android:id="@+id/large_icon_center_crop"
@@ -39,7 +39,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="start"
         android:textAlignment="viewStart"
-        android:layout_toLeftOf="@+id/large_icon_container" />
+        android:layout_toStartOf="@+id/large_icon_container" />
 
     <TextView
         android:id="@+id/notification_body_expanded"
@@ -49,7 +49,7 @@
         android:layout_below="@id/notification_title"
         android:layout_gravity="start"
         android:textAlignment="viewStart"
-        android:layout_toLeftOf="@+id/large_icon_container"
+        android:layout_toStartOf="@+id/large_icon_container"
         android:maxLines="12"
         android:ellipsize="end" />
 
