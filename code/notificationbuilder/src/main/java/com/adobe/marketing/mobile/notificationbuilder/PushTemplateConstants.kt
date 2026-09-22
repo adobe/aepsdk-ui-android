@@ -63,6 +63,16 @@ object PushTemplateConstants {
         // limits, so sharpness improves without meaningful OOM risk.
         internal const val CAROUSEL_MAX_BITMAP_WIDTH = 720
         internal const val CAROUSEL_MAX_BITMAP_HEIGHT = 720
+        // Absolute pixel caps for AJO template images, which are otherwise sized dynamically from
+        // the device (display width + layout dimens). A symmetric 720x720 bounding box keeps the
+        // produced RemoteViews bitmap memory- and Binder-safe: at full device width (~1080px) the
+        // bitmap (~2-2.6 MB) trips the system "RemoteViews too large" warning ("might be stripped in
+        // a future release"); 720 keeps a typical center_crop bitmap ~1.4 MB and well clear of that
+        // ~2 MB threshold while staying visually sharp. The height cap only engages on very high
+        // density screens (480dpi+, where 256dp exceeds 720px); on normal densities the layout
+        // dimens (190dp / 256dp) drive the height.
+        internal const val AJO_MAX_IMAGE_WIDTH_PX = 720
+        internal const val AJO_MAX_IMAGE_HEIGHT_PX = 720
         internal const val AUTO_CAROUSEL_MODE = "auto"
         internal const val DEFAULT_MANUAL_CAROUSEL_MODE = "default"
         internal const val FILMSTRIP_CAROUSEL_MODE = "filmstrip"

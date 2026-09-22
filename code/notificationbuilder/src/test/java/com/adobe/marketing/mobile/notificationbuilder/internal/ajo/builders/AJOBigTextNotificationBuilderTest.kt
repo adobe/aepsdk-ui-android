@@ -20,6 +20,7 @@ import android.os.Bundle
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.PushPayloadKeys
+import com.adobe.marketing.mobile.notificationbuilder.R
 import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateImageUtils
 import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateType
 import com.adobe.marketing.mobile.notificationbuilder.internal.builders.DummyActivity
@@ -29,14 +30,17 @@ import com.adobe.marketing.mobile.notificationbuilder.internal.templates.AJO_MOC
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.AJO_MOCKED_BIGTEXT_PROPS_NO_COLLAPSED
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.AJO_MOCKED_FLAT_BODY
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.AJO_MOCKED_FLAT_TITLE
+import com.adobe.marketing.mobile.notificationbuilder.internal.templates.AJO_MOCKED_LARGE_ICON_URL
 import com.adobe.marketing.mobile.notificationbuilder.internal.util.IntentData
 import com.adobe.marketing.mobile.notificationbuilder.internal.util.MapData
 import io.mockk.Runs
 import io.mockk.every
 import io.mockk.just
+import io.mockk.mockk
 import io.mockk.mockkConstructor
 import io.mockk.mockkObject
 import io.mockk.unmockkAll
+import io.mockk.verify
 import junit.framework.TestCase.assertNotNull
 import org.junit.After
 import org.junit.Before
@@ -70,6 +74,32 @@ class AJOBigTextNotificationBuilderTest {
     @After
     fun tearDown() {
         unmockkAll()
+    }
+
+    @Test
+    fun `construct sizes bigtext large icon to the icon dimen with cover for both layouts`() {
+        every { PushTemplateImageUtils.getScaledBitmap(any(), any(), any(), any()) } returns mockk(relaxed = true)
+        val pushTemplate = AJOBigTextPushTemplate(
+            MapData(
+                mutableMapOf(
+                    PushPayloadKeys.TEMPLATE_TYPE to PushTemplateType.AJO_BIG_TEXT.value,
+                    PushPayloadKeys.VERSION to "1",
+                    PushPayloadKeys.TITLE to AJO_MOCKED_FLAT_TITLE,
+                    PushPayloadKeys.BODY to AJO_MOCKED_FLAT_BODY,
+                    PushPayloadKeys.AJO_TEMPLATE_PROPERTIES to AJO_MOCKED_BIGTEXT_PROPS_FULL
+                )
+            )
+        )
+
+        AJOBigTextNotificationBuilder.construct(
+            context, pushTemplate, trackerActivityClass, broadcastReceiverClass
+        )
+
+        val iconSize = context.resources.getDimensionPixelSize(R.dimen.ajo_large_icon_size)
+        // the large icon is rendered in both the collapsed and expanded layouts
+        verify(exactly = 2) {
+            PushTemplateImageUtils.getScaledBitmap(AJO_MOCKED_LARGE_ICON_URL, iconSize, iconSize, true)
+        }
     }
 
     @Test

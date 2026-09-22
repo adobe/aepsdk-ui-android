@@ -18,6 +18,7 @@ import android.os.Bundle
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.PushPayloadKeys
+import com.adobe.marketing.mobile.notificationbuilder.R
 import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateImageUtils
 import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateType
 import com.adobe.marketing.mobile.notificationbuilder.internal.builders.DummyActivity
@@ -25,6 +26,7 @@ import com.adobe.marketing.mobile.notificationbuilder.internal.builders.DummyBro
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.AJOBasicPushTemplate
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.AJO_MOCKED_FLAT_BODY
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.AJO_MOCKED_FLAT_TITLE
+import com.adobe.marketing.mobile.notificationbuilder.internal.templates.AJO_MOCKED_IMAGE_URL
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.AJO_MOCKED_TEMPLATE_PROPS_CENTER_CROP
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.AJO_MOCKED_TEMPLATE_PROPS_FIT_CENTER
 import com.adobe.marketing.mobile.notificationbuilder.internal.util.IntentData
@@ -32,9 +34,11 @@ import com.adobe.marketing.mobile.notificationbuilder.internal.util.MapData
 import io.mockk.Runs
 import io.mockk.every
 import io.mockk.just
+import io.mockk.mockk
 import io.mockk.mockkConstructor
 import io.mockk.mockkObject
 import io.mockk.unmockkAll
+import io.mockk.verify
 import junit.framework.TestCase.assertNotNull
 import org.junit.After
 import org.junit.Before
@@ -112,6 +116,70 @@ class AJOBasicNotificationBuilderTest {
 
         assertNotNull(result)
         assert(result is NotificationCompat.Builder)
+    }
+
+    @Test
+    fun `construct sizes center_crop hero image to device width capped at 720 with cover`() {
+        every { PushTemplateImageUtils.getScaledBitmap(any(), any(), any(), any()) } returns mockk(relaxed = true)
+        val pushTemplate = AJOBasicPushTemplate(
+            MapData(
+                mutableMapOf(
+                    PushPayloadKeys.TEMPLATE_TYPE to PushTemplateType.AJO_BASIC.value,
+                    PushPayloadKeys.VERSION to "1",
+                    PushPayloadKeys.TITLE to AJO_MOCKED_FLAT_TITLE,
+                    PushPayloadKeys.BODY to AJO_MOCKED_FLAT_BODY,
+                    PushPayloadKeys.IMAGE_URL to AJO_MOCKED_IMAGE_URL,
+                    PushPayloadKeys.AJO_TEMPLATE_PROPERTIES to AJO_MOCKED_TEMPLATE_PROPS_CENTER_CROP
+                )
+            )
+        )
+
+        AJOBasicNotificationBuilder.construct(
+            context, pushTemplate, trackerActivityClass, broadcastReceiverClass
+        )
+
+        val expectedWidth = minOf(context.resources.displayMetrics.widthPixels, 720)
+        val expectedHeight = minOf(
+            context.resources.getDimensionPixelSize(R.dimen.ajo_center_crop_image_height),
+            720
+        )
+        verify {
+            PushTemplateImageUtils.getScaledBitmap(
+                AJO_MOCKED_IMAGE_URL, expectedWidth, expectedHeight, true
+            )
+        }
+    }
+
+    @Test
+    fun `construct sizes fit_center hero image to expanded max height with fit`() {
+        every { PushTemplateImageUtils.getScaledBitmap(any(), any(), any(), any()) } returns mockk(relaxed = true)
+        val pushTemplate = AJOBasicPushTemplate(
+            MapData(
+                mutableMapOf(
+                    PushPayloadKeys.TEMPLATE_TYPE to PushTemplateType.AJO_BASIC.value,
+                    PushPayloadKeys.VERSION to "1",
+                    PushPayloadKeys.TITLE to AJO_MOCKED_FLAT_TITLE,
+                    PushPayloadKeys.BODY to AJO_MOCKED_FLAT_BODY,
+                    PushPayloadKeys.IMAGE_URL to AJO_MOCKED_IMAGE_URL,
+                    PushPayloadKeys.AJO_TEMPLATE_PROPERTIES to AJO_MOCKED_TEMPLATE_PROPS_FIT_CENTER
+                )
+            )
+        )
+
+        AJOBasicNotificationBuilder.construct(
+            context, pushTemplate, trackerActivityClass, broadcastReceiverClass
+        )
+
+        val expectedWidth = minOf(context.resources.displayMetrics.widthPixels, 720)
+        val expectedHeight = minOf(
+            context.resources.getDimensionPixelSize(R.dimen.ajo_expanded_image_max_height),
+            720
+        )
+        verify {
+            PushTemplateImageUtils.getScaledBitmap(
+                AJO_MOCKED_IMAGE_URL, expectedWidth, expectedHeight, false
+            )
+        }
     }
 
     @Test

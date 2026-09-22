@@ -29,7 +29,7 @@ import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.addAct
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.getSoundUriForResourceName
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setNotificationClickAction
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setNotificationDeleteAction
-import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setRemoteViewImage
+import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setScaledRemoteViewImage
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setSmallIcon
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setSound
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.AJOBigTextPushTemplate
@@ -74,14 +74,30 @@ internal object AJOBigTextNotificationBuilder {
         // crop; hide the fit-center view. If there is no large icon (missing url or failed
         // download), hide the whole container so the text uses the full width instead of leaving
         // an empty gap.
+        // size the large icon bitmap to the icon view (density-correct); always center-crop cover
+        val largeIconSizePx = context.resources.getDimensionPixelSize(R.dimen.ajo_large_icon_size)
         smallLayout.setViewVisibility(R.id.large_icon_fit_center, View.GONE)
         smallLayout.setViewVisibility(R.id.large_icon_center_crop, View.VISIBLE)
-        if (!smallLayout.setRemoteViewImage(pushTemplate.largeIconUrl, R.id.large_icon_center_crop)) {
+        if (!smallLayout.setScaledRemoteViewImage(
+                pushTemplate.largeIconUrl,
+                R.id.large_icon_center_crop,
+                largeIconSizePx,
+                largeIconSizePx,
+                true
+            )
+        ) {
             smallLayout.setViewVisibility(R.id.large_icon_container, View.GONE)
         }
         expandedLayout.setViewVisibility(R.id.large_icon_fit_center, View.GONE)
         expandedLayout.setViewVisibility(R.id.large_icon_center_crop, View.VISIBLE)
-        if (!expandedLayout.setRemoteViewImage(pushTemplate.largeIconUrl, R.id.large_icon_center_crop)) {
+        if (!expandedLayout.setScaledRemoteViewImage(
+                pushTemplate.largeIconUrl,
+                R.id.large_icon_center_crop,
+                largeIconSizePx,
+                largeIconSizePx,
+                true
+            )
+        ) {
             expandedLayout.setViewVisibility(R.id.large_icon_container, View.GONE)
         }
 

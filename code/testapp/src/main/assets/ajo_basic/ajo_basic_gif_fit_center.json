@@ -1,0 +1,9 @@
+{
+  "adb_template_type": "ajo_basic",
+  "adb_version": "1",
+  "adb_title": "AJO Basic - GIF Fit Center",
+  "adb_body": "GIF source (fit_center). Current expected: static first frame.",
+  "adb_image": "https://upload.wikimedia.org/wikipedia/commons/d/d3/Newtons_cradle_animation_book_2.gif",
+  "adb_icon": "ic_launcher_background","adb_sound": "bells","adb_channel_id": "ajo_basic_channel","adb_n_count": "1","adb_n_priority": "PRIORITY_HIGH","adb_n_visibility": "PUBLIC","adb_a_type": "WEBURL","adb_uri": "https://www.adobe.com","adb_act": "[{\"label\":\"Learn More\",\"uri\":\"https://www.adobe.com\",\"type\":\"WEBURL\"},{\"label\":\"Open App\",\"uri\":\"\",\"type\":\"OPENAPP\"}]",
+  "adb_template_properties": "{\"adb_image_scale_type\":\"fit_center\"}"
+}
