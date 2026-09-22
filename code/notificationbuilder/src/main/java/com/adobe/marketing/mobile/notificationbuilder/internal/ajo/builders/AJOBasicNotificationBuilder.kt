@@ -30,7 +30,7 @@ import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.addAct
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.getSoundUriForResourceName
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setNotificationClickAction
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setNotificationDeleteAction
-import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setRemoteViewImage
+import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setScaledRemoteViewImage
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setSmallIcon
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setSound
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.AJOBasicPushTemplate
@@ -75,15 +75,40 @@ internal object AJOBasicNotificationBuilder {
         expandedLayout.setViewVisibility(R.id.large_icon_container, View.GONE)
 
         // set the expanded image with the correct scale type view, hide the other
+        val isFitCenter =
+            pushTemplate.imgScaleType == AJOTemplatePropertyKeys.ScaleType.FIT_CENTER
         val (expandedImageVisibleId, expandedImageGoneId) =
-            if (pushTemplate.imgScaleType == AJOTemplatePropertyKeys.ScaleType.FIT_CENTER) {
+            if (isFitCenter) {
                 R.id.expanded_image_fit_center to R.id.expanded_image_center_crop
             } else {
                 R.id.expanded_image_center_crop to R.id.expanded_image_fit_center
             }
         expandedLayout.setViewVisibility(expandedImageGoneId, View.GONE)
         expandedLayout.setViewVisibility(expandedImageVisibleId, View.VISIBLE)
-        expandedLayout.setRemoteViewImage(pushTemplate.imageUrl, expandedImageVisibleId)
+        // Size the decoded/scaled bitmap to what the device actually displays: the notification
+        // width (capped) x the image view height from dimens (density-correct, capped). center_crop
+        // covers the box; fit_center aspect-fits within it.
+        val imageWidthPx = minOf(
+            context.resources.displayMetrics.widthPixels,
+            PushTemplateConstants.DefaultValues.AJO_MAX_IMAGE_WIDTH_PX
+        )
+        val imageHeightPx = minOf(
+            context.resources.getDimensionPixelSize(
+                if (isFitCenter) {
+                    R.dimen.ajo_expanded_image_max_height
+                } else {
+                    R.dimen.ajo_center_crop_image_height
+                }
+            ),
+            PushTemplateConstants.DefaultValues.AJO_MAX_IMAGE_HEIGHT_PX
+        )
+        expandedLayout.setScaledRemoteViewImage(
+            pushTemplate.imageUrl,
+            expandedImageVisibleId,
+            imageWidthPx,
+            imageHeightPx,
+            !isFitCenter
+        )
 
         val builder = NotificationCompat.Builder(context, channelIdToUse)
             .setTicker(pushTemplate.ticker)

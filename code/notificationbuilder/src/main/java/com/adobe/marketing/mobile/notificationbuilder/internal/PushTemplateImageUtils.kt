@@ -13,7 +13,9 @@ package com.adobe.marketing.mobile.notificationbuilder.internal
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Canvas
 import android.graphics.Matrix
+import android.graphics.Paint
 import android.graphics.RectF
 import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants
 import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.LOG_TAG
@@ -37,6 +39,9 @@ import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicInteger
+import java.util.concurrent.atomic.AtomicReference
+import kotlin.math.max
+import androidx.core.graphics.createBitmap
 
 /**
  * Utility functions to assist in downloading and caching images for push template notifications.
@@ -90,33 +95,46 @@ internal object PushTemplateImageUtils {
             }
 
             downloadImage(url) { connection ->
-                if (!latchAborted.get()) {
-                    val image = handleDownloadResponse(url, connection)
-                    // scale down the bitmap to 300dp x 200dp as we don't want to use a full
-                    // size image due to memory constraints
-                    image?.let {
-                        val pushImage = scaleBitmap(it)
-                        // write bitmap to cache
-                        try {
-                            bitmapToInputStream(pushImage).use { bitmapInputStream ->
-                                cacheBitmapInputStream(
-                                    cacheService,
-                                    bitmapInputStream,
-                                    url
+                try {
+                    if (!latchAborted.get()) {
+                        val image = handleDownloadResponse(url, connection)
+                        // scale the decoded bitmap into the bounding box (see scaleBitmap) as we
+                        // don't want to keep a full size image in memory
+                        image?.let {
+                            val pushImage = scaleBitmap(it)
+                            // write bitmap to cache
+                            try {
+                                bitmapToInputStream(pushImage).use { bitmapInputStream ->
+                                    cacheBitmapInputStream(
+                                        cacheService,
+                                        bitmapInputStream,
+                                        url
+                                    )
+                                }
+                                downloadedImageCount.incrementAndGet()
+                            } catch (exception: IOException) {
+                                Log.warning(
+                                    LOG_TAG,
+                                    SELF_TAG,
+                                    "Exception occurred creating an input stream from a bitmap for {$url}: ${exception.localizedMessage}."
                                 )
                             }
-                            downloadedImageCount.incrementAndGet()
-                        } catch (exception: IOException) {
-                            Log.warning(
-                                LOG_TAG,
-                                SELF_TAG,
-                                "Exception occurred creating an input stream from a bitmap for {$url}: ${exception.localizedMessage}."
-                            )
                         }
                     }
+                } catch (throwable: Throwable) {
+                    // Guard against any unexpected failure (including OutOfMemoryError from image
+                    // decoding/scaling). This callback runs on a network thread, so an uncaught
+                    // error here would otherwise skip the latch countdown (blocking the caller
+                    // until timeout) and leak the connection.
+                    Log.warning(
+                        LOG_TAG,
+                        SELF_TAG,
+                        "Unexpected error while processing the downloaded image for {$url}: ${throwable.localizedMessage}."
+                    )
+                } finally {
                     latch.countDown()
+                    connection?.close()
                 }
-                connection?.close()
             }
         }
         try {
@@ -211,15 +229,96 @@ internal object PushTemplateImageUtils {
             )
             return null
         }
-        val bitmap = BitmapFactory.decodeStream(connection.inputStream)
-        bitmap?.let {
-            Log.trace(
+        return try {
+            // Read the compressed bytes once, then decode with a sample size so a very large
+            // source image is never fully decoded into memory (avoids OutOfMemoryError).
+            val imageBytes = connection.inputStream?.readBytes()
+            if (imageBytes == null || imageBytes.isEmpty()) {
+                Log.warning(
+                    LOG_TAG,
+                    SELF_TAG,
+                    "Failed to read image bytes from url ($url)."
+                )
+                return null
+            }
+            decodeSampledBitmap(
+                imageBytes,
+                PushTemplateConstants.DefaultValues.CAROUSEL_MAX_BITMAP_WIDTH,
+                PushTemplateConstants.DefaultValues.CAROUSEL_MAX_BITMAP_HEIGHT
+            )?.also {
+                Log.trace(
+                    LOG_TAG,
+                    SELF_TAG,
+                    "Downloaded push notification image from url ($url)"
+                )
+            }
+        } catch (throwable: Throwable) {
+            Log.warning(
                 LOG_TAG,
                 SELF_TAG,
-                "Downloaded push notification image from url ($url)"
+                "Failed to decode push notification image from url ($url): ${throwable.localizedMessage}."
+            )
+            null
+        }
+    }
+
+    /**
+     * Decodes the provided encoded image bytes into a [Bitmap], downsampling large source images so
+     * the fully decoded bitmap stays at least as large as the requested [reqWidth] x [reqHeight]
+     * bounding box. This keeps peak decode memory bounded regardless of the source resolution.
+     *
+     * @param imageBytes [ByteArray] containing the encoded image
+     * @param reqWidth the target bounding-box width in pixels
+     * @param reqHeight the target bounding-box height in pixels
+     * @return the decoded [Bitmap], or `null` if the bytes could not be decoded
+     */
+    private fun decodeSampledBitmap(imageBytes: ByteArray, reqWidth: Int, reqHeight: Int): Bitmap? {
+        // First pass: read only the image bounds without allocating pixel memory.
+        val boundsOptions = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+        BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size, boundsOptions)
+
+        // Second pass: decode the pixels using the computed sample size.
+        val decodeOptions = BitmapFactory.Options().apply {
+            inSampleSize = calculateInSampleSize(
+                boundsOptions.outWidth,
+                boundsOptions.outHeight,
+                reqWidth,
+                reqHeight
             )
         }
-        return bitmap
+        return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size, decodeOptions)
+    }
+
+    /**
+     * Computes the largest power-of-two `inSampleSize` that keeps the decoded image at least as
+     * large as the requested bounding box, so the subsequent exact scaling in [scaleBitmap] has
+     * enough resolution to stay sharp while peak decode memory stays bounded.
+     *
+     * @param srcWidth the source image width in pixels
+     * @param srcHeight the source image height in pixels
+     * @param reqWidth the target bounding-box width in pixels
+     * @param reqHeight the target bounding-box height in pixels
+     * @return the sample size (a power of two, minimum 1)
+     */
+    internal fun calculateInSampleSize(
+        srcWidth: Int,
+        srcHeight: Int,
+        reqWidth: Int,
+        reqHeight: Int
+    ): Int {
+        if (srcWidth <= 0 || srcHeight <= 0 || reqWidth <= 0 || reqHeight <= 0) {
+            return 1
+        }
+        var inSampleSize = 1
+        if (srcHeight > reqHeight || srcWidth > reqWidth) {
+            val halfHeight = srcHeight / 2
+            val halfWidth = srcWidth / 2
+            // keep halving while both dimensions stay at or above the requested box
+            while (halfHeight / inSampleSize >= reqHeight && halfWidth / inSampleSize >= reqWidth) {
+                inSampleSize *= 2
+            }
+        }
+        return inSampleSize
     }
 
     /**
@@ -267,9 +366,12 @@ internal object PushTemplateImageUtils {
     }
 
     /**
-     * Scales a downloaded [Bitmap] to a maximum width and height of 300dp x 200dp.
+     * Scales a downloaded [Bitmap] to fit within the
+     * [PushTemplateConstants.DefaultValues.CAROUSEL_MAX_BITMAP_WIDTH] x
+     * [PushTemplateConstants.DefaultValues.CAROUSEL_MAX_BITMAP_HEIGHT] bounding box.
      * The scaling is done using a [Matrix] object to maintain the aspect ratio of the original
-     * image.
+     * image. The source bitmap is recycled when a new, scaled bitmap is produced so the larger
+     * intermediate is released promptly.
      *
      * @param downloadedBitmap [Bitmap] to be scaled
      * @return [Bitmap] containing the scaled image
@@ -286,7 +388,7 @@ internal object PushTemplateImageUtils {
             ),
             Matrix.ScaleToFit.CENTER
         )
-        return Bitmap.createBitmap(
+        val scaledBitmap = Bitmap.createBitmap(
             downloadedBitmap,
             0,
             0,
@@ -295,6 +397,12 @@ internal object PushTemplateImageUtils {
             matrix,
             true
         )
+        // createBitmap may return the same instance when no scaling is needed; only recycle the
+        // source when a distinct scaled bitmap was actually allocated.
+        if (scaledBitmap != downloadedBitmap) {
+            downloadedBitmap.recycle()
+        }
+        return scaledBitmap
     }
 
     /**
@@ -314,5 +422,204 @@ internal object PushTemplateImageUtils {
                 ) + File.separator +
                 PushTemplateConstants.PUSH_IMAGE_CACHE
             )
+    }
+
+    /**
+     * Returns a device/target-aware scaled [Bitmap] for the given [url], suitable for setting on a
+     * notification `RemoteViews` image. The bitmap is downsampled at decode time and scaled to the
+     * requested [reqWidth] x [reqHeight] box (center-cropped to cover when [coverCrop] is true,
+     * otherwise aspect-fit), keeping both peak decode memory and the marshaled bitmap size bounded
+     * to what the notification actually displays.
+     *
+     * Results are cached keyed by url + target size + scale mode, so the same url requested at a
+     * different display size does not collide. This path is AJO-scoped and independent of the
+     * carousel [cacheImages] / [getCachedImage] flow.
+     *
+     * @param url the image url
+     * @param reqWidth the target width in pixels
+     * @param reqHeight the target height in pixels
+     * @param coverCrop true to center-crop to cover the box, false to aspect-fit within it
+     * @return the scaled [Bitmap], or `null` if it could not be produced
+     */
+    internal fun getScaledBitmap(
+        url: String?,
+        reqWidth: Int,
+        reqHeight: Int,
+        coverCrop: Boolean
+    ): Bitmap? {
+        if (url.isNullOrEmpty() || !UrlUtils.isValidUrl(url) || reqWidth <= 0 || reqHeight <= 0) {
+            return null
+        }
+        val assetCacheLocation = getAssetCacheLocation()
+        val cacheKey = scaledCacheKey(url, reqWidth, reqHeight, coverCrop)
+        val cacheService = ServiceProvider.getInstance().cacheService
+
+        // return a previously scaled + cached bitmap if present
+        if (!assetCacheLocation.isNullOrEmpty()) {
+            cacheService[assetCacheLocation, cacheKey]?.let {
+                Log.trace(
+                    LOG_TAG,
+                    SELF_TAG,
+                    "Found cached scaled image for $url ($reqWidth x $reqHeight)."
+                )
+                return try {
+                    BitmapFactory.decodeStream(it.data)
+                } catch (throwable: Throwable) {
+                    Log.warning(
+                        LOG_TAG,
+                        SELF_TAG,
+                        "Failed to decode cached scaled image for $url: ${throwable.localizedMessage}."
+                    )
+                    null
+                }
+            }
+        }
+
+        val imageBytes = downloadImageBytes(url) ?: return null
+        val scaled = try {
+            val decoded = decodeSampledBitmap(imageBytes, reqWidth, reqHeight) ?: return null
+            scaleToTarget(decoded, reqWidth, reqHeight, coverCrop)
+        } catch (throwable: Throwable) {
+            Log.warning(
+                LOG_TAG,
+                SELF_TAG,
+                "Failed to scale image for $url: ${throwable.localizedMessage}."
+            )
+            return null
+        }
+
+        // cache the scaled bitmap for reuse on re-posts
+        if (!assetCacheLocation.isNullOrEmpty()) {
+            try {
+                bitmapToInputStream(scaled).use { stream ->
+                    cacheService[assetCacheLocation, cacheKey] = CacheEntry(
+                        stream,
+                        CacheExpiry.after(
+                            PushTemplateConstants.DefaultValues.PUSH_NOTIFICATION_IMAGE_CACHE_EXPIRY_IN_MILLISECONDS
+                        ),
+                        null
+                    )
+                }
+            } catch (exception: IOException) {
+                Log.warning(
+                    LOG_TAG,
+                    SELF_TAG,
+                    "Failed to cache scaled image for $url: ${exception.localizedMessage}."
+                )
+            }
+        }
+        return scaled
+    }
+
+    /**
+     * Builds a cache key qualified by the requested target size and scale mode so the same source
+     * url cached at different display sizes does not collide.
+     */
+    private fun scaledCacheKey(
+        url: String,
+        reqWidth: Int,
+        reqHeight: Int,
+        coverCrop: Boolean
+    ): String = "$url#${reqWidth}x$reqHeight#${if (coverCrop) "cover" else "fit"}"
+
+    /**
+     * Synchronously downloads the raw (encoded) image bytes for [url], blocking up to
+     * [DOWNLOAD_TIMEOUT_SECS] seconds. The connection is always closed and the latch always
+     * released, even if the callback throws.
+     *
+     * @param url the image url
+     * @return the encoded image bytes, or `null` on failure/timeout
+     */
+    private fun downloadImageBytes(url: String): ByteArray? {
+        val latch = CountDownLatch(1)
+        val holder = AtomicReference<ByteArray?>(null)
+        downloadImage(url) { connection ->
+            try {
+                if (connection != null && connection.responseCode == HttpURLConnection.HTTP_OK) {
+                    holder.set(connection.inputStream?.readBytes())
+                } else {
+                    Log.debug(
+                        LOG_TAG,
+                        SELF_TAG,
+                        "Failed to download image from url ($url). Response code was: ${connection?.responseCode}."
+                    )
+                }
+            } catch (throwable: Throwable) {
+                Log.warning(
+                    LOG_TAG,
+                    SELF_TAG,
+                    "Error reading image bytes from url ($url): ${throwable.localizedMessage}."
+                )
+            } finally {
+                latch.countDown()
+                connection?.close()
+            }
+        }
+        return try {
+            if (latch.await(DOWNLOAD_TIMEOUT_SECS.toLong(), TimeUnit.SECONDS)) {
+                holder.get()
+            } else {
+                Log.warning(
+                    LOG_TAG,
+                    SELF_TAG,
+                    "Timed out downloading image from url ($url)."
+                )
+                null
+            }
+        } catch (e: InterruptedException) {
+            Log.warning(
+                LOG_TAG,
+                SELF_TAG,
+                "Interrupted while downloading image from url ($url): ${e.localizedMessage}"
+            )
+            null
+        }
+    }
+
+    /**
+     * Scales [src] into the [reqWidth] x [reqHeight] box. When [coverCrop] is true the image is
+     * scaled to cover the box and center-cropped (matching an ImageView `centerCrop`); otherwise it
+     * is aspect-fit within the box. Intermediate bitmaps are recycled.
+     *
+     * @param src the decoded source [Bitmap]
+     * @param reqWidth target width in pixels
+     * @param reqHeight target height in pixels
+     * @param coverCrop true to cover + crop, false to aspect-fit
+     * @return the scaled [Bitmap]
+     */
+    private fun scaleToTarget(
+        src: Bitmap,
+        reqWidth: Int,
+        reqHeight: Int,
+        coverCrop: Boolean
+    ): Bitmap {
+        if (!coverCrop) {
+            val matrix = Matrix()
+            matrix.setRectToRect(
+                RectF(0f, 0f, src.width.toFloat(), src.height.toFloat()),
+                RectF(0f, 0f, reqWidth.toFloat(), reqHeight.toFloat()),
+                Matrix.ScaleToFit.CENTER
+            )
+            val fitted = Bitmap.createBitmap(src, 0, 0, src.width, src.height, matrix, true)
+            if (fitted != src) src.recycle()
+            return fitted
+        }
+
+        // cover: draw the source scaled-to-cover and centered directly into a reqWidth x reqHeight
+        // bitmap. Drawing into the final-sized canvas avoids allocating a large intermediate when
+        // the source aspect differs a lot from the box (e.g. a wide banner into a tall box).
+        val output = createBitmap(reqWidth, reqHeight, src.config ?: Bitmap.Config.ARGB_8888)
+        val scale = max(reqWidth.toFloat() / src.width, reqHeight.toFloat() / src.height)
+        val matrix = Matrix().apply {
+            setScale(scale, scale)
+            // center the scaled source within the box
+            postTranslate(
+                (reqWidth - src.width * scale) / 2f,
+                (reqHeight - src.height * scale) / 2f
+            )
+        }
+        Canvas(output).drawBitmap(src, matrix, Paint(Paint.FILTER_BITMAP_FLAG))
+        src.recycle()
+        return output
     }
 }
