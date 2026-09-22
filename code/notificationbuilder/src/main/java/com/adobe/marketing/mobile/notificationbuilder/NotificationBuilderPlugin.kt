@@ -8,12 +8,13 @@
   OF ANY KIND, either express or implied. See the License for the specific language
   governing permissions and limitations under the License.
 */
+
 package com.adobe.marketing.mobile.notificationbuilder
 
 // NOTE: This IUiTemplatePlugin implementation is temporarily commented out because the plugin API
 // (com.adobe.marketing.mobile.plugin.IUiTemplatePlugin) is not present in the currently resolved
 // Core dependency, so it would not compile. Restore it once Core exposes the plugin API.
-/*
+
 import android.app.Activity
 import android.app.Notification
 import android.content.BroadcastReceiver
@@ -56,4 +57,3 @@ class NotificationBuilderPlugin : IUiTemplatePlugin {
         }
     }
 }
-*/

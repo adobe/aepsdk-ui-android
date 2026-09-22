@@ -106,7 +106,7 @@ internal object AJOBigTextNotificationBuilder {
                 pushTemplate.actionType,
                 pushTemplate.data.getBundle()
             )
-            .setNotificationDeleteAction(context, trackerActivityClass)
+            .setNotificationDeleteAction(context, broadcastReceiverClass)
 
         // if not from intent, set custom sound. applies to API 25 and lower only as
         // API 26 and up set the sound on the notification channel.

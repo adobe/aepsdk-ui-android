@@ -13,6 +13,7 @@ package com.adobe.marketing.mobile.notificationbuilder.internal.extensions
 
 import android.app.Activity
 import android.app.PendingIntent
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
@@ -205,7 +206,7 @@ internal fun NotificationCompat.Builder.setNotificationClickAction(
 }
 
 /**
- * Sets the delete action for the notification.
+ * Sets the delete action for the notification using the provided tracker activity.
  *
  * @param context the application [Context]
  * @param trackerActivityClass the [Class] of the activity to set in the created pending intent for tracking purposes
@@ -221,6 +222,36 @@ internal fun NotificationCompat.Builder.setNotificationDeleteAction(
     }
     deleteIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
     val intent = PendingIntent.getActivity(
+        context,
+        Random().nextInt(),
+        deleteIntent,
+        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+    )
+    setDeleteIntent(intent)
+    return this
+}
+
+/**
+ * Sets the delete action for the notification using a [BroadcastReceiver].
+ *
+ * Delivering the delete [PendingIntent] as a broadcast (rather than launching an activity) is more
+ * robust when the application is in the background: the dismiss can be tracked without bringing an
+ * activity to the foreground, so tracking is not lost when the app process is backgrounded.
+ *
+ * @param context the application [Context]
+ * @param broadcastReceiverClass the [Class] of the [BroadcastReceiver] to set in the created pending
+ * intent for tracking the notification dismissal
+ */
+@JvmName("setNotificationDeleteActionForBroadcastReceiver")
+internal fun NotificationCompat.Builder.setNotificationDeleteAction(
+    context: Context,
+    broadcastReceiverClass: Class<out BroadcastReceiver>?
+): NotificationCompat.Builder {
+    val deleteIntent = Intent(PushTemplateConstants.NotificationAction.DISMISSED)
+    broadcastReceiverClass?.let {
+        deleteIntent.setClass(context.applicationContext, broadcastReceiverClass)
+    }
+    val intent = PendingIntent.getBroadcast(
         context,
         Random().nextInt(),
         deleteIntent,

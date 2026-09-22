@@ -13,6 +13,7 @@ package com.adobe.marketing.mobile.notificationbuilder.internal.extensions
 
 import android.app.Activity
 import android.app.PendingIntent
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
@@ -24,6 +25,7 @@ import com.adobe.marketing.mobile.MobileCore
 import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants
 import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateImageUtils
 import com.adobe.marketing.mobile.notificationbuilder.internal.builders.DummyActivity
+import com.adobe.marketing.mobile.notificationbuilder.internal.builders.DummyBroadcastReceiver
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.BasicPushTemplate
 import io.mockk.every
 import io.mockk.mockk
@@ -356,7 +358,7 @@ class NotificationCompatBuilderExtensionsTest {
         val mockBuilder: NotificationCompat.Builder = mockk<NotificationCompat.Builder>(relaxed = true)
         every { mockBuilder.setDeleteIntent(any()) } returns mockBuilder
 
-        mockBuilder.setNotificationDeleteAction(mockContext, null)
+        mockBuilder.setNotificationDeleteAction(mockContext, null as Class<out Activity>?)
 
         val pendingIntentCapture = slot<PendingIntent>()
         verify(exactly = 1) { mockBuilder.setDeleteIntent(capture(pendingIntentCapture)) }
@@ -372,6 +374,55 @@ class NotificationCompatBuilderExtensionsTest {
         assertEquals(PushTemplateConstants.NotificationAction.DISMISSED, intent.action)
         assertNull(intent.component?.className)
         assertEquals(Intent.FLAG_ACTIVITY_SINGLE_TOP, intent.flags)
+        assertNull(intent.extras)
+    }
+
+    @Test
+    fun `setNotificationDeleteAction sets broadcast delete intent when broadcastReceiverClass is not null`() {
+        every { mockContext.applicationContext } returns mockContext
+        val mockBuilder: NotificationCompat.Builder = mockk<NotificationCompat.Builder>(relaxed = true)
+        every { mockBuilder.setDeleteIntent(any()) } returns mockBuilder
+        val broadcastReceiverClass: Class<out BroadcastReceiver> = DummyBroadcastReceiver::class.java
+
+        mockBuilder.setNotificationDeleteAction(mockContext, broadcastReceiverClass)
+
+        val pendingIntentCapture = slot<PendingIntent>()
+        verify(exactly = 1) { mockBuilder.setDeleteIntent(capture(pendingIntentCapture)) }
+        val pendingIntent = pendingIntentCapture.captured
+        assertNotNull(pendingIntent)
+        val shadowPendingIntent = Shadows.shadowOf(pendingIntent)
+        assertTrue(shadowPendingIntent.isBroadcastIntent)
+        assertEquals(mockContext, shadowPendingIntent.savedContext)
+        assertEquals(PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE, shadowPendingIntent.flags)
+
+        val intent = shadowPendingIntent.savedIntent
+        assertNotNull(intent)
+        assertEquals(PushTemplateConstants.NotificationAction.DISMISSED, intent.action)
+        assertEquals(broadcastReceiverClass.name, intent.component?.className)
+        assertNull(intent.extras)
+    }
+
+    @Test
+    fun `setNotificationDeleteAction sets broadcast delete intent when broadcastReceiverClass is null`() {
+        every { mockContext.applicationContext } returns mockContext
+        val mockBuilder: NotificationCompat.Builder = mockk<NotificationCompat.Builder>(relaxed = true)
+        every { mockBuilder.setDeleteIntent(any()) } returns mockBuilder
+
+        mockBuilder.setNotificationDeleteAction(mockContext, null as Class<out BroadcastReceiver>?)
+
+        val pendingIntentCapture = slot<PendingIntent>()
+        verify(exactly = 1) { mockBuilder.setDeleteIntent(capture(pendingIntentCapture)) }
+        val pendingIntent = pendingIntentCapture.captured
+        assertNotNull(pendingIntent)
+        val shadowPendingIntent = Shadows.shadowOf(pendingIntent)
+        assertTrue(shadowPendingIntent.isBroadcastIntent)
+        assertEquals(mockContext, shadowPendingIntent.savedContext)
+        assertEquals(PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE, shadowPendingIntent.flags)
+
+        val intent = shadowPendingIntent.savedIntent
+        assertNotNull(intent)
+        assertEquals(PushTemplateConstants.NotificationAction.DISMISSED, intent.action)
+        assertNull(intent.component?.className)
         assertNull(intent.extras)
     }
 
