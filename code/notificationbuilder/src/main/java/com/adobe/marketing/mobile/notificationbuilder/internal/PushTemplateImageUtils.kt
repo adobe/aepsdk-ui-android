@@ -17,6 +17,7 @@ import android.graphics.Canvas
 import android.graphics.Matrix
 import android.graphics.Paint
 import android.graphics.RectF
+import androidx.core.graphics.createBitmap
 import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants
 import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.LOG_TAG
 import com.adobe.marketing.mobile.services.HttpConnecting
@@ -41,7 +42,6 @@ import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicReference
 import kotlin.math.max
-import androidx.core.graphics.createBitmap
 
 /**
  * Utility functions to assist in downloading and caching images for push template notifications.
@@ -515,7 +515,7 @@ internal object PushTemplateImageUtils {
      * Builds a cache key qualified by the requested target size and scale mode so the same source
      * url cached at different display sizes does not collide.
      */
-    private fun scaledCacheKey(
+    internal fun scaledCacheKey(
         url: String,
         reqWidth: Int,
         reqHeight: Int,
@@ -587,7 +587,7 @@ internal object PushTemplateImageUtils {
      * @param coverCrop true to cover + crop, false to aspect-fit
      * @return the scaled [Bitmap]
      */
-    private fun scaleToTarget(
+    internal fun scaleToTarget(
         src: Bitmap,
         reqWidth: Int,
         reqHeight: Int,
