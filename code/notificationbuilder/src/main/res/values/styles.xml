@@ -39,4 +39,21 @@
         <item name="android:maxLines">1</item>
     </style>
     <style name="DayNightTheme" parent="Theme.AppCompat.DayNight"/>
+
+    <!-- AJO templates parent the PUBLIC native notification text appearances so text size, weight
+         and light/dark color match the platform and track OS changes automatically. Reference:
+         AOSP notification_template_material_big_text/part_line1 use
+         Widget.DeviceDefault.Notification.Title/Text (Apache-2.0). -->
+    <style name="AjoTitle" parent="@android:style/TextAppearance.Material.Notification.Title">
+        <!-- Native notification titles are regular weight; override any bold from the parent. -->
+        <item name="android:textStyle">normal</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:layout_marginBottom">@dimen/standard_title_bottom_margin</item>
+    </style>
+    <style name="AjoBody" parent="@android:style/TextAppearance.Material.Notification">
+        <item name="android:maxLines">3</item>
+        <item name="android:ellipsize">end</item>
+    </style>
 </resources>
