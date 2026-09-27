@@ -11,10 +11,8 @@
 
 package com.adobe.marketing.mobile.notificationbuilder
 
-import android.app.Activity
 import android.app.Notification
-import android.content.BroadcastReceiver
-import android.content.Context
+import com.adobe.marketing.mobile.plugin.IPushTemplateTrackingProvider
 import com.adobe.marketing.mobile.plugin.IUiTemplatePlugin
 import com.adobe.marketing.mobile.services.Log
 
@@ -24,29 +22,35 @@ import com.adobe.marketing.mobile.services.Log
  * resolves it via `MobileCore.getPlugin(IUiTemplatePlugin::class.java)` and asks it to build the
  * template notification.
  *
- * This add-on depends only on Core - it does not depend on the host SDK. It builds and returns the
- * [Notification]; the host owns posting and tracking.
+ * This add-on depends only on Core - it does not depend on the host SDK. It **renders** the
+ * [Notification] and obtains every tracking [android.app.PendingIntent] from the host-supplied
+ * [IPushTemplateTrackingProvider], so the host keeps ownership of tracking and intent handling.
  */
 class NotificationBuilderPlugin : IUiTemplatePlugin {
 
+    private companion object {
+        const val SELF_TAG = "NotificationBuilderPlugin"
+    }
+
+    /**
+     * Builds an AJO push-template notification (AJO Basic / AJO Big Text). Any other template type
+     * returns `null` so the host falls back to a basic notification.
+     *
+     * The host also calls this for re-render with the template state merged into [messageData]. AJO
+     * Basic / Big Text never request a re-render, so they are only ever built for the first render.
+     */
     override fun buildPushTemplateNotification(
-        context: Context,
         messageData: Map<String, String>,
-        trackerActivityClass: Class<out Activity>?,
-        broadcastReceiverClass: Class<out BroadcastReceiver>?
+        trackingProvider: IPushTemplateTrackingProvider
     ): Notification? {
         return try {
-            NotificationBuilder.constructNotificationBuilder(
-                messageData,
-                trackerActivityClass,
-                broadcastReceiverClass
-            ).build()
+            NotificationBuilder.buildAJOTemplateNotification(messageData, trackingProvider)?.build()
         } catch (t: Throwable) {
             // Failure isolation: never crash the host's FCM callback. Returning null lets the host
             // fall back to a basic notification.
             Log.warning(
-                "NotificationBuilder",
-                "NotificationBuilderPlugin",
+                PushTemplateConstants.LOG_TAG,
+                SELF_TAG,
                 "Failed to build push-template notification: ${t.message}. Host will fall back."
             )
             null

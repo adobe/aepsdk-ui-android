@@ -214,6 +214,22 @@ object PushTemplateConstants {
         const val TYPE = "type"
     }
 
+    // Plugin contract with the host (see Core IUiTemplatePlugin / PushInteraction). These values must
+    // match the host's constants exactly; PluginContractTest pins them.
+    internal object PushInteractionType {
+        const val CONTENT_CLICK = "content_click"
+        const val BUTTON_CLICK = "button_click"
+        const val DISMISS = "dismiss"
+        const val INPUT_SUBMIT = "input_submit"
+        const val RERENDER = "rerender"
+    }
+
+    // Reserved message-data keys added by the host.
+    internal object HostDataKeys {
+        const val MESSAGE_ID = "messageId"
+        const val NOTIFICATION_ID = "notificationId"
+    }
+
     // Keys for parsing the adb_template_properties JSON blob for AJO templates.
     // These are NOT top-level FCM keys — they are flat keys inside the parsed JSON object.
     // Only template-specific fields live here; general fields (title, body, image, version)

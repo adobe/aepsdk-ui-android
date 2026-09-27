@@ -47,9 +47,9 @@ class AJOBasicPushTemplateTest {
         assertEquals("1", template.payloadVersion)
     }
 
-    @Test(expected = IllegalArgumentException::class)
-    fun `throws when required adb_version is absent`() {
-        AJOBasicPushTemplate(
+    @Test
+    fun `defaults payloadVersion to 1 when adb_version is absent`() {
+        val template = AJOBasicPushTemplate(
             MapData(
                 mutableMapOf(
                     PushPayloadKeys.TEMPLATE_TYPE to PushTemplateType.AJO_BASIC.value,
@@ -58,6 +58,7 @@ class AJOBasicPushTemplateTest {
                 )
             )
         )
+        assertEquals("1", template.payloadVersion)
     }
 
     @Test

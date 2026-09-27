@@ -11,10 +11,8 @@
 
 package com.adobe.marketing.mobile.notificationbuilder.internal.ajo.builders
 
-import android.app.Activity
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.content.BroadcastReceiver
 import android.content.Context
 import android.os.Bundle
 import android.widget.RemoteViews
@@ -23,8 +21,6 @@ import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.Push
 import com.adobe.marketing.mobile.notificationbuilder.R
 import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateImageUtils
 import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateType
-import com.adobe.marketing.mobile.notificationbuilder.internal.builders.DummyActivity
-import com.adobe.marketing.mobile.notificationbuilder.internal.builders.DummyBroadcastReceiver
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.AJOBigTextPushTemplate
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.AJO_MOCKED_BIGTEXT_PROPS_FULL
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.AJO_MOCKED_BIGTEXT_PROPS_NO_COLLAPSED
@@ -33,6 +29,7 @@ import com.adobe.marketing.mobile.notificationbuilder.internal.templates.AJO_MOC
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.AJO_MOCKED_LARGE_ICON_URL
 import com.adobe.marketing.mobile.notificationbuilder.internal.util.IntentData
 import com.adobe.marketing.mobile.notificationbuilder.internal.util.MapData
+import com.adobe.marketing.mobile.plugin.IPushTemplateTrackingProvider
 import io.mockk.Runs
 import io.mockk.every
 import io.mockk.just
@@ -55,14 +52,12 @@ import org.robolectric.annotation.Config
 class AJOBigTextNotificationBuilderTest {
 
     private lateinit var context: Context
-    private lateinit var trackerActivityClass: Class<out Activity>
-    private lateinit var broadcastReceiverClass: Class<out BroadcastReceiver>
+    private lateinit var trackingProvider: IPushTemplateTrackingProvider
 
     @Before
     fun setUp() {
         context = RuntimeEnvironment.getApplication()
-        trackerActivityClass = DummyActivity::class.java
-        broadcastReceiverClass = DummyBroadcastReceiver::class.java
+        trackingProvider = mockk(relaxed = true)
         mockkObject(PushTemplateImageUtils)
         mockkConstructor(RemoteViews::class)
         every { anyConstructed<RemoteViews>().setTextViewText(any(), any()) } just Runs
@@ -92,7 +87,7 @@ class AJOBigTextNotificationBuilderTest {
         )
 
         AJOBigTextNotificationBuilder.construct(
-            context, pushTemplate, trackerActivityClass, broadcastReceiverClass
+            context, pushTemplate, trackingProvider
         )
 
         val iconSize = context.resources.getDimensionPixelSize(R.dimen.ajo_large_icon_size)
@@ -117,7 +112,7 @@ class AJOBigTextNotificationBuilderTest {
         )
 
         val result = AJOBigTextNotificationBuilder.construct(
-            context, pushTemplate, trackerActivityClass, broadcastReceiverClass
+            context, pushTemplate, trackingProvider
         )
 
         assertNotNull(result)
@@ -139,7 +134,7 @@ class AJOBigTextNotificationBuilderTest {
         )
 
         val result = AJOBigTextNotificationBuilder.construct(
-            context, pushTemplate, trackerActivityClass, broadcastReceiverClass
+            context, pushTemplate, trackingProvider
         )
 
         assertNotNull(result)
@@ -161,7 +156,7 @@ class AJOBigTextNotificationBuilderTest {
         )
 
         val result = AJOBigTextNotificationBuilder.construct(
-            context, pushTemplate, trackerActivityClass, broadcastReceiverClass
+            context, pushTemplate, trackingProvider
         )
 
         assertNotNull(result)
@@ -182,7 +177,7 @@ class AJOBigTextNotificationBuilderTest {
         )
 
         val result = AJOBigTextNotificationBuilder.construct(
-            context, pushTemplate, trackerActivityClass, broadcastReceiverClass
+            context, pushTemplate, trackingProvider
         )
 
         assertNotNull(result)
@@ -201,7 +196,7 @@ class AJOBigTextNotificationBuilderTest {
         val pushTemplate = AJOBigTextPushTemplate(IntentData(bundle, null))
 
         val result = AJOBigTextNotificationBuilder.construct(
-            context, pushTemplate, trackerActivityClass, broadcastReceiverClass
+            context, pushTemplate, trackingProvider
         )
 
         assertNotNull(result)
@@ -224,7 +219,7 @@ class AJOBigTextNotificationBuilderTest {
         )
 
         val result = AJOBigTextNotificationBuilder.construct(
-            context, pushTemplate, trackerActivityClass, broadcastReceiverClass
+            context, pushTemplate, trackingProvider
         )
 
         assertNotNull(result)
@@ -247,7 +242,7 @@ class AJOBigTextNotificationBuilderTest {
         )
 
         val result = AJOBigTextNotificationBuilder.construct(
-            context, pushTemplate, trackerActivityClass, broadcastReceiverClass
+            context, pushTemplate, trackingProvider
         )
 
         assertNotNull(result)
@@ -279,7 +274,7 @@ class AJOBigTextNotificationBuilderTest {
         )
 
         val result = AJOBigTextNotificationBuilder.construct(
-            context, pushTemplate, trackerActivityClass, broadcastReceiverClass
+            context, pushTemplate, trackingProvider
         )
 
         assertNotNull(result)

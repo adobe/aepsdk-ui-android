@@ -11,10 +11,8 @@
 
 package com.adobe.marketing.mobile.notificationbuilder.internal.ajo.builders
 
-import android.app.Activity
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.content.BroadcastReceiver
 import android.content.Context
 import android.media.RingtoneManager
 import android.os.Build
@@ -25,14 +23,15 @@ import com.adobe.marketing.mobile.notificationbuilder.NotificationConstructionFa
 import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants
 import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.LOG_TAG
 import com.adobe.marketing.mobile.notificationbuilder.R
-import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.addActionButtons
+import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.addAJOActionButtons
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.getSoundUriForResourceName
-import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setNotificationClickAction
-import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setNotificationDeleteAction
+import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setAJONotificationClickAction
+import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setAJONotificationDeleteAction
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setScaledRemoteViewImage
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setSmallIcon
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setSound
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.AJOBigTextPushTemplate
+import com.adobe.marketing.mobile.plugin.IPushTemplateTrackingProvider
 import com.adobe.marketing.mobile.services.Log
 
 /**
@@ -51,8 +50,7 @@ internal object AJOBigTextNotificationBuilder {
     fun construct(
         context: Context,
         pushTemplate: AJOBigTextPushTemplate,
-        trackerActivityClass: Class<out Activity>?,
-        broadcastReceiverClass: Class<out BroadcastReceiver>?
+        trackingProvider: IPushTemplateTrackingProvider
     ): NotificationCompat.Builder {
         Log.trace(LOG_TAG, SELF_TAG, "Building an AJO big text template push notification.")
         val packageName = context.packageName
@@ -115,14 +113,12 @@ internal object AJOBigTextNotificationBuilder {
             // small icon must be present, otherwise the notification will not be displayed.
             .setSmallIcon(context, pushTemplate.smallIcon, null)
             .setVisibility(pushTemplate.visibility.value)
-            .setNotificationClickAction(
-                context,
-                trackerActivityClass,
+            .setAJONotificationClickAction(
+                trackingProvider,
                 pushTemplate.actionUri,
-                pushTemplate.actionType,
-                pushTemplate.data.getBundle()
+                pushTemplate.actionType
             )
-            .setNotificationDeleteAction(context, broadcastReceiverClass)
+            .setAJONotificationDeleteAction(trackingProvider)
 
         // if not from intent, set custom sound. applies to API 25 and lower only as
         // API 26 and up set the sound on the notification channel.
@@ -137,11 +133,9 @@ internal object AJOBigTextNotificationBuilder {
         }
 
         // add any action buttons defined for the notification
-        builder.addActionButtons(
-            context,
-            trackerActivityClass,
-            pushTemplate.actionButtonsList,
-            pushTemplate.data.getBundle()
+        builder.addAJOActionButtons(
+            trackingProvider,
+            pushTemplate.actionButtonsList
         )
 
         return builder

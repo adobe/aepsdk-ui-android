@@ -42,6 +42,7 @@ import com.adobe.marketing.mobile.notificationbuilder.internal.templates.MockAEP
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.MockCarousalTemplateDataProvider
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.MockProductCatalogTemplateDataProvider
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.MockTimerTemplateDataProvider
+import com.adobe.marketing.mobile.plugin.IPushTemplateTrackingProvider
 import com.adobe.marketing.mobile.services.AppContextService
 import com.adobe.marketing.mobile.services.ServiceProvider
 import io.mockk.every
@@ -298,7 +299,35 @@ class NotificationBuilderTests {
     }
 
     @Test
-    fun `verify private createNotificationBuilder calls AJOBasicNotificationBuilder construct`() {
+    fun `verify buildAJOTemplateNotification calls AJOBasicNotificationBuilder construct`() {
+        val trackingProvider = mockk<IPushTemplateTrackingProvider>(relaxed = true)
+        val mapData = mutableMapOf(
+            PushTemplateConstants.PushPayloadKeys.TEMPLATE_TYPE to PushTemplateType.AJO_BASIC.value,
+            PushTemplateConstants.PushPayloadKeys.VERSION to "1",
+            PushTemplateConstants.PushPayloadKeys.TITLE to AJO_MOCKED_FLAT_TITLE,
+            PushTemplateConstants.PushPayloadKeys.BODY to AJO_MOCKED_FLAT_BODY,
+            PushTemplateConstants.PushPayloadKeys.AJO_TEMPLATE_PROPERTIES to AJO_MOCKED_TEMPLATE_PROPS_FIT_CENTER
+        )
+        NotificationBuilder.buildAJOTemplateNotification(mapData, trackingProvider)
+        verify(exactly = 1) { AJOBasicNotificationBuilder.construct(any(Context::class), any(), trackingProvider) }
+    }
+
+    @Test
+    fun `verify buildAJOTemplateNotification calls AJOBigTextNotificationBuilder construct`() {
+        val trackingProvider = mockk<IPushTemplateTrackingProvider>(relaxed = true)
+        val mapData = mutableMapOf(
+            PushTemplateConstants.PushPayloadKeys.TEMPLATE_TYPE to PushTemplateType.AJO_BIG_TEXT.value,
+            PushTemplateConstants.PushPayloadKeys.VERSION to "1",
+            PushTemplateConstants.PushPayloadKeys.TITLE to AJO_MOCKED_FLAT_TITLE,
+            PushTemplateConstants.PushPayloadKeys.BODY to AJO_MOCKED_FLAT_BODY,
+            PushTemplateConstants.PushPayloadKeys.AJO_TEMPLATE_PROPERTIES to AJO_MOCKED_BIGTEXT_PROPS_FULL
+        )
+        NotificationBuilder.buildAJOTemplateNotification(mapData, trackingProvider)
+        verify(exactly = 1) { AJOBigTextNotificationBuilder.construct(any(Context::class), any(), trackingProvider) }
+    }
+
+    @Test
+    fun `verify createNotificationBuilder routes AJO_BASIC to legacy for the direct-dependency API`() {
         val mapData = mutableMapOf(
             PushTemplateConstants.PushPayloadKeys.TEMPLATE_TYPE to PushTemplateType.AJO_BASIC.value,
             PushTemplateConstants.PushPayloadKeys.VERSION to "1",
@@ -307,11 +336,12 @@ class NotificationBuilderTests {
             PushTemplateConstants.PushPayloadKeys.AJO_TEMPLATE_PROPERTIES to AJO_MOCKED_TEMPLATE_PROPS_FIT_CENTER
         )
         NotificationBuilder.constructNotificationBuilder(mapData, trackerActivityClass, broadcastReceiverClass)
-        verify(exactly = 1) { AJOBasicNotificationBuilder.construct(any(Context::class), any(), trackerActivityClass, broadcastReceiverClass) }
+        verify(exactly = 1) { LegacyNotificationBuilder.construct(any(Context::class), any(), trackerActivityClass) }
+        verify(exactly = 0) { AJOBasicNotificationBuilder.construct(any(Context::class), any(), any()) }
     }
 
     @Test
-    fun `verify private createNotificationBuilder calls AJOBigTextNotificationBuilder construct`() {
+    fun `verify createNotificationBuilder routes AJO_BIG_TEXT to legacy for the direct-dependency API`() {
         val mapData = mutableMapOf(
             PushTemplateConstants.PushPayloadKeys.TEMPLATE_TYPE to PushTemplateType.AJO_BIG_TEXT.value,
             PushTemplateConstants.PushPayloadKeys.VERSION to "1",
@@ -320,7 +350,42 @@ class NotificationBuilderTests {
             PushTemplateConstants.PushPayloadKeys.AJO_TEMPLATE_PROPERTIES to AJO_MOCKED_BIGTEXT_PROPS_FULL
         )
         NotificationBuilder.constructNotificationBuilder(mapData, trackerActivityClass, broadcastReceiverClass)
-        verify(exactly = 1) { AJOBigTextNotificationBuilder.construct(any(Context::class), any(), trackerActivityClass, broadcastReceiverClass) }
+        verify(exactly = 1) { LegacyNotificationBuilder.construct(any(Context::class), any(), trackerActivityClass) }
+        verify(exactly = 0) { AJOBigTextNotificationBuilder.construct(any(Context::class), any(), any()) }
+    }
+
+    @Test
+    fun `verify buildAJOTemplateNotification returns null for non AJO template types`() {
+        val trackingProvider = mockk<IPushTemplateTrackingProvider>(relaxed = true)
+        listOf(PushTemplateType.BASIC.value, PushTemplateType.CAROUSEL.value, "unknown_type").forEach { type ->
+            val mapData = mutableMapOf(
+                PushTemplateConstants.PushPayloadKeys.TEMPLATE_TYPE to type,
+                PushTemplateConstants.PushPayloadKeys.VERSION to "1",
+                PushTemplateConstants.PushPayloadKeys.TITLE to AJO_MOCKED_FLAT_TITLE,
+                PushTemplateConstants.PushPayloadKeys.BODY to AJO_MOCKED_FLAT_BODY
+            )
+            assertNull(NotificationBuilder.buildAJOTemplateNotification(mapData, trackingProvider))
+        }
+        verify(exactly = 0) { AJOBasicNotificationBuilder.construct(any(Context::class), any(), any()) }
+        verify(exactly = 0) { AJOBigTextNotificationBuilder.construct(any(Context::class), any(), any()) }
+        verify(exactly = 0) { BasicNotificationBuilder.construct(any(Context::class), any(), any(), any()) }
+        verify(exactly = 0) { trackingProvider.getPendingIntent(any()) }
+    }
+
+    @Test(expected = NotificationConstructionFailedException::class)
+    fun `buildAJOTemplateNotification given empty data should throw an exception`() {
+        NotificationBuilder.buildAJOTemplateNotification(emptyMap(), mockk(relaxed = true))
+    }
+
+    @Test(expected = NotificationConstructionFailedException::class)
+    fun `buildAJOTemplateNotification given no context should throw an exception`() {
+        setNullContext()
+        val mapData = mutableMapOf(
+            PushTemplateConstants.PushPayloadKeys.TEMPLATE_TYPE to PushTemplateType.AJO_BASIC.value,
+            PushTemplateConstants.PushPayloadKeys.TITLE to AJO_MOCKED_FLAT_TITLE,
+            PushTemplateConstants.PushPayloadKeys.BODY to AJO_MOCKED_FLAT_BODY
+        )
+        NotificationBuilder.buildAJOTemplateNotification(mapData, mockk(relaxed = true))
     }
 
     private fun setNullContext() {

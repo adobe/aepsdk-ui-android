@@ -11,8 +11,6 @@
 
 package com.adobe.marketing.mobile.notificationbuilder.internal.ajo.builders
 
-import android.app.Activity
-import android.content.BroadcastReceiver
 import android.content.Context
 import android.os.Bundle
 import android.widget.RemoteViews
@@ -21,8 +19,6 @@ import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.Push
 import com.adobe.marketing.mobile.notificationbuilder.R
 import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateImageUtils
 import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateType
-import com.adobe.marketing.mobile.notificationbuilder.internal.builders.DummyActivity
-import com.adobe.marketing.mobile.notificationbuilder.internal.builders.DummyBroadcastReceiver
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.AJOBasicPushTemplate
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.AJO_MOCKED_FLAT_BODY
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.AJO_MOCKED_FLAT_TITLE
@@ -31,6 +27,7 @@ import com.adobe.marketing.mobile.notificationbuilder.internal.templates.AJO_MOC
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.AJO_MOCKED_TEMPLATE_PROPS_FIT_CENTER
 import com.adobe.marketing.mobile.notificationbuilder.internal.util.IntentData
 import com.adobe.marketing.mobile.notificationbuilder.internal.util.MapData
+import com.adobe.marketing.mobile.plugin.IPushTemplateTrackingProvider
 import io.mockk.Runs
 import io.mockk.every
 import io.mockk.just
@@ -53,14 +50,12 @@ import org.robolectric.annotation.Config
 class AJOBasicNotificationBuilderTest {
 
     private lateinit var context: Context
-    private lateinit var trackerActivityClass: Class<out Activity>
-    private lateinit var broadcastReceiverClass: Class<out BroadcastReceiver>
+    private lateinit var trackingProvider: IPushTemplateTrackingProvider
 
     @Before
     fun setUp() {
         context = RuntimeEnvironment.getApplication()
-        trackerActivityClass = DummyActivity::class.java
-        broadcastReceiverClass = DummyBroadcastReceiver::class.java
+        trackingProvider = mockk(relaxed = true)
         mockkObject(PushTemplateImageUtils)
         mockkConstructor(RemoteViews::class)
         every { anyConstructed<RemoteViews>().setTextViewText(any(), any()) } just Runs
@@ -89,7 +84,7 @@ class AJOBasicNotificationBuilderTest {
         )
 
         val result = AJOBasicNotificationBuilder.construct(
-            context, pushTemplate, trackerActivityClass, broadcastReceiverClass
+            context, pushTemplate, trackingProvider
         )
 
         assertNotNull(result)
@@ -111,7 +106,7 @@ class AJOBasicNotificationBuilderTest {
         )
 
         val result = AJOBasicNotificationBuilder.construct(
-            context, pushTemplate, trackerActivityClass, broadcastReceiverClass
+            context, pushTemplate, trackingProvider
         )
 
         assertNotNull(result)
@@ -135,7 +130,7 @@ class AJOBasicNotificationBuilderTest {
         )
 
         AJOBasicNotificationBuilder.construct(
-            context, pushTemplate, trackerActivityClass, broadcastReceiverClass
+            context, pushTemplate, trackingProvider
         )
 
         val expectedWidth = minOf(context.resources.displayMetrics.widthPixels, 720)
@@ -167,7 +162,7 @@ class AJOBasicNotificationBuilderTest {
         )
 
         AJOBasicNotificationBuilder.construct(
-            context, pushTemplate, trackerActivityClass, broadcastReceiverClass
+            context, pushTemplate, trackingProvider
         )
 
         val expectedWidth = minOf(context.resources.displayMetrics.widthPixels, 720)
@@ -196,7 +191,7 @@ class AJOBasicNotificationBuilderTest {
         )
 
         val result = AJOBasicNotificationBuilder.construct(
-            context, pushTemplate, trackerActivityClass, broadcastReceiverClass
+            context, pushTemplate, trackingProvider
         )
 
         assertNotNull(result)
@@ -215,7 +210,7 @@ class AJOBasicNotificationBuilderTest {
         val pushTemplate = AJOBasicPushTemplate(IntentData(bundle, null))
 
         val result = AJOBasicNotificationBuilder.construct(
-            context, pushTemplate, trackerActivityClass, broadcastReceiverClass
+            context, pushTemplate, trackingProvider
         )
 
         assertNotNull(result)
@@ -238,7 +233,7 @@ class AJOBasicNotificationBuilderTest {
         )
 
         val result = AJOBasicNotificationBuilder.construct(
-            context, pushTemplate, trackerActivityClass, broadcastReceiverClass
+            context, pushTemplate, trackingProvider
         )
 
         assertNotNull(result)
@@ -261,7 +256,7 @@ class AJOBasicNotificationBuilderTest {
         )
 
         val result = AJOBasicNotificationBuilder.construct(
-            context, pushTemplate, trackerActivityClass, broadcastReceiverClass
+            context, pushTemplate, trackingProvider
         )
 
         assertNotNull(result)
