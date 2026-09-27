@@ -16,5 +16,5 @@ package com.adobe.marketing.mobile.notificationbuilder
  */
 internal object NotificationBuilderConstants {
     internal const val TAG = "NotificationBuilder"
-    internal const val VERSION = "3.0.3"
+    internal const val VERSION = "3.1.0"
 }
