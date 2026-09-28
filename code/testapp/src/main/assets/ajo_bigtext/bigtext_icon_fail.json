@@ -1,0 +1,16 @@
+{
+  "adb_template_type": "ajo_bigtext",
+  "adb_version": "1",
+  "adb_title": "AJO Big Text - Icon Fail",
+  "adb_body": "This big text payload references a large icon whose host does not resolve. The download should fail gracefully and the layout should hide the icon container so the text uses the full width with no empty gap.",
+  "adb_icon": "ic_launcher_background",
+  "adb_sound": "bells",
+  "adb_channel_id": "ajo_bigtext_channel",
+  "adb_n_count": "1",
+  "adb_n_priority": "PRIORITY_HIGH",
+  "adb_n_visibility": "PUBLIC",
+  "adb_a_type": "WEBURL",
+  "adb_uri": "https://www.adobe.com",
+  "adb_act": "[{\"label\":\"Learn More\",\"uri\":\"https://www.adobe.com\",\"type\":\"WEBURL\"},{\"label\":\"Open App\",\"uri\":\"\",\"type\":\"OPENAPP\"}]",
+  "adb_template_properties": "{\"adb_collapsed_text\":\"Short collapsed body, icon should fail.\",\"adb_large_icon\":\"https://no-such-host-ajotest-xyz.invalid/icon.png\"}"
+}

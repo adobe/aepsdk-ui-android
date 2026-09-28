@@ -171,6 +171,50 @@ internal fun RemoteViews.setRemoteViewImage(
 }
 
 /**
+ * Sets a device/target-aware scaled image for the provided [RemoteViews]. If [image] is a valid URL
+ * it is downloaded, downsampled at decode time and scaled to the [reqWidth] x [reqHeight] box
+ * (center-cropped to cover when [coverCrop] is true, otherwise aspect-fit) before being applied.
+ * This keeps peak decode memory and the marshaled bitmap size bounded to what the notification
+ * actually renders. If [image] is a bundled resource name it is applied as-is. On any failure the
+ * view is hidden ([View.GONE]).
+ *
+ * @param image `String` containing the image URL (or bundled resource name) to use
+ * @param containerViewId [Int] resource id of the image view to attach the image to
+ * @param reqWidth target width in pixels
+ * @param reqHeight target height in pixels
+ * @param coverCrop true to center-crop to cover the box, false to aspect-fit within it
+ * @return `Boolean` true if the image was set, false otherwise
+ */
+internal fun RemoteViews.setScaledRemoteViewImage(
+    image: String?,
+    containerViewId: Int,
+    reqWidth: Int,
+    reqHeight: Int,
+    coverCrop: Boolean
+): Boolean {
+    if (image.isNullOrEmpty()) {
+        Log.warning(
+            LOG_TAG,
+            SELF_TAG,
+            "Null or empty image string found, image will not be applied."
+        )
+        setViewVisibility(containerViewId, View.GONE)
+        return false
+    }
+    if (UrlUtils.isValidUrl(image)) {
+        val bitmap = PushTemplateImageUtils.getScaledBitmap(image, reqWidth, reqHeight, coverCrop)
+        if (bitmap == null) {
+            setViewVisibility(containerViewId, View.GONE)
+            return false
+        }
+        setImageViewBitmap(containerViewId, bitmap)
+        return true
+    }
+    // not a URL - fall back to a bundled image resource
+    return setBundledImage(image, containerViewId)
+}
+
+/**
  * Sets the click action for the specified view in the custom push template [RemoteViews].
  *
  * @param context the application [Context]

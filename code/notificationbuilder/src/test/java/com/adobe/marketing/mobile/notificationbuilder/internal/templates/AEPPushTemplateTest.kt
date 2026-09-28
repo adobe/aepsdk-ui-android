@@ -61,16 +61,11 @@ class AEPPushTemplateTest {
     }
 
     @Test
-    fun `Test AEPPushTemplate initialization with missing version`() {
+    fun `Test AEPPushTemplate initialization with missing version defaults to 1`() {
         val aepPushData = MockAEPPushTemplateDataProvider.getMockedDataMapWithRequiredData()
         aepPushData.remove(PushTemplateConstants.PushPayloadKeys.VERSION)
-        val exception = assertFailsWith<IllegalArgumentException> {
-            BasicPushTemplate(MapData(aepPushData))
-        }
-        assertEquals(
-            "Required push template key ${PushTemplateConstants.PushPayloadKeys.VERSION} not found or null",
-            exception.message
-        )
+        val aepPushTemplate = BasicPushTemplate(MapData(aepPushData))
+        assertEquals("1", aepPushTemplate.payloadVersion)
     }
 
     @Test

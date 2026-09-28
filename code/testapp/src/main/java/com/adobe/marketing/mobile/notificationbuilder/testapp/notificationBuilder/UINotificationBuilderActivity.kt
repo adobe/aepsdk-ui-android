@@ -101,9 +101,12 @@ fun NotificationJSONSelector(activity: Activity) {
     val PLACEHOLDER_SELECT_FILE = "Select JSON ▼"
     val sharedPreferences = activity.getSharedPreferences(SharedPreferenceKeys.NAME, Context.MODE_PRIVATE)
     val selectedTemplate = remember { mutableStateOf(
-        Template.valueOf(
-        sharedPreferences.getString(SharedPreferenceKeys.SELECTED_TEMPLATE, Template.Timer.displayName) ?: Template.Timer.displayName
-    )) }
+        runCatching {
+            Template.valueOf(
+                sharedPreferences.getString(SharedPreferenceKeys.SELECTED_TEMPLATE, Template.Timer.name) ?: Template.Timer.name
+            )
+        }.getOrDefault(Template.Timer)
+    ) }
     val expanded = remember { mutableStateOf(false) }
     val selectedFile = remember { mutableStateOf(sharedPreferences.getString(SharedPreferenceKeys.SELECTED_FILE, PLACEHOLDER_SELECT_FILE) ?: PLACEHOLDER_SELECT_FILE) }
     var files = FileUtil.getFilesInPath(activity, selectedTemplate.value.directoryName)

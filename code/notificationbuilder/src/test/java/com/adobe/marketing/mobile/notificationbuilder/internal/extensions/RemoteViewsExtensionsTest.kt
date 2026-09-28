@@ -282,6 +282,72 @@ class RemoteViewsExtensionsTest {
     }
 
     @Test
+    fun `setScaledRemoteViewImage applies scaled bitmap when valid URL provided`() {
+        val imageUrl = "http://example.com/image.png"
+        every { PushTemplateImageUtils.getScaledBitmap(imageUrl, 720, 500, true) } returns mockBitmap
+
+        val result = remoteViews.setScaledRemoteViewImage(imageUrl, 1, 720, 500, true)
+
+        assertTrue(result)
+        verify { remoteViews.setImageViewBitmap(1, mockBitmap) }
+        verify(exactly = 0) { remoteViews.setViewVisibility(1, View.GONE) }
+    }
+
+    @Test
+    fun `setScaledRemoteViewImage hides view when scaled bitmap could not be produced`() {
+        val imageUrl = "http://example.com/image.png"
+        every { remoteViews.setViewVisibility(any(), any()) } just Runs
+        every { PushTemplateImageUtils.getScaledBitmap(imageUrl, 720, 500, false) } returns null
+
+        val result = remoteViews.setScaledRemoteViewImage(imageUrl, 1, 720, 500, false)
+
+        assertFalse(result)
+        verify(exactly = 0) { remoteViews.setImageViewBitmap(any(), any()) }
+        verify(exactly = 1) { remoteViews.setViewVisibility(1, View.GONE) }
+    }
+
+    @Test
+    fun `setScaledRemoteViewImage hides view when image string is null`() {
+        every { remoteViews.setViewVisibility(any(), any()) } just Runs
+
+        val result = remoteViews.setScaledRemoteViewImage(null, 1, 720, 500, true)
+
+        assertFalse(result)
+        verify(exactly = 0) { PushTemplateImageUtils.getScaledBitmap(any(), any(), any(), any()) }
+        verify(exactly = 0) { remoteViews.setImageViewBitmap(any(), any()) }
+        verify(exactly = 1) { remoteViews.setViewVisibility(1, View.GONE) }
+    }
+
+    @Test
+    fun `setScaledRemoteViewImage hides view when image string is empty`() {
+        every { remoteViews.setViewVisibility(any(), any()) } just Runs
+
+        val result = remoteViews.setScaledRemoteViewImage("", 1, 720, 500, true)
+
+        assertFalse(result)
+        verify(exactly = 0) { remoteViews.setImageViewBitmap(any(), any()) }
+        verify(exactly = 1) { remoteViews.setViewVisibility(1, View.GONE) }
+    }
+
+    @Test
+    fun `setScaledRemoteViewImage falls back to bundled resource for non-URL name`() {
+        val imageName = "valid_image"
+        mockkStatic(ServiceProvider::class)
+        mockkStatic(Context::getIconWithResourceName)
+        every {
+            ServiceProvider.getInstance().appContextService.applicationContext?.getIconWithResourceName(
+                imageName
+            )
+        } returns 1234
+
+        val result = remoteViews.setScaledRemoteViewImage(imageName, 1, 720, 500, true)
+
+        assertTrue(result)
+        verify(exactly = 0) { PushTemplateImageUtils.getScaledBitmap(any(), any(), any(), any()) }
+        verify { remoteViews.setImageViewResource(1, 1234) }
+    }
+
+    @Test
     fun `setRemoteViewClickAction sets click action when all parameter values are provided`() {
         val testActionUri = "testActionUri"
         val testActionID = "testActionID"

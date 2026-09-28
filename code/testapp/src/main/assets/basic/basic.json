@@ -6,7 +6,7 @@
   "adb_body_ex": "Basic push template with action buttons.",
   "adb_a_type": "WEBURL",
   "adb_uri": "https://chess.com/games",
-  "adb_image": "https://images.pexels.com/photos/260024/pexels-photo-260024.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
+  "adb_image": "https://slimages.macysassets.com/is/image/MCY/products/9/optimized/27433493_fpx.tif?wid=1200&fmt=jpeg&qlt=100",
   "adb_act": "[{\"label\":\"Go to chess.com\",\"uri\":\"https:\/\/chess.com\/games\/552\",\"type\":\"DEEPLINK\"},{\"label\":\"Open the app\",\"uri\":\"\",\"type\":\"OPENAPP\"}]",
   "adb_sound": "bells",
   "adb_channel_id": "2024",
@@ -15,3 +15,4 @@
   "adb_n_visibility": "PRIVATE",
   "adb_sticky": "true"
 }
+

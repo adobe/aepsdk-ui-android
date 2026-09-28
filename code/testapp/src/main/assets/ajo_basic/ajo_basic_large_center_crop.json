@@ -1,0 +1,9 @@
+{
+  "adb_template_type": "ajo_basic",
+  "adb_version": "1",
+  "adb_title": "AJO Basic - Large Center Crop",
+  "adb_body": "Large (4000x2250) source, center_crop. Should be sharp and downsampled (no OOM).",
+  "adb_image": "https://picsum.photos/seed/ajolargeL/4000/2250",
+  "adb_icon": "ic_launcher_background","adb_sound": "bells","adb_channel_id": "ajo_basic_channel","adb_n_count": "1","adb_n_priority": "PRIORITY_HIGH","adb_n_visibility": "PUBLIC","adb_a_type": "WEBURL","adb_uri": "https://www.adobe.com","adb_act": "[{\"label\":\"Learn More\",\"uri\":\"https://www.adobe.com\",\"type\":\"WEBURL\"},{\"label\":\"Open App\",\"uri\":\"\",\"type\":\"OPENAPP\"}]",
+  "adb_template_properties": "{\"adb_image_scale_type\":\"center_crop\"}"
+}

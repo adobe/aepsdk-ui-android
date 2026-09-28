@@ -1,0 +1,150 @@
+/*
+  Copyright 2024 Adobe. All rights reserved.
+  This file is licensed to you under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License. You may obtain a copy
+  of the License at http://www.apache.org/licenses/LICENSE-2.0
+  Unless required by applicable law or agreed to in writing, software distributed under
+  the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
+  OF ANY KIND, either express or implied. See the License for the specific language
+  governing permissions and limitations under the License.
+*/
+
+package com.adobe.marketing.mobile.notificationbuilder.internal.ajo.builders
+
+import android.app.NotificationManager
+import android.content.Context
+import android.os.Build
+import android.view.View
+import android.widget.RemoteViews
+import androidx.core.app.NotificationCompat
+import com.adobe.marketing.mobile.notificationbuilder.NotificationConstructionFailedException
+import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants
+import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.AJOTemplatePropertyKeys
+import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.LOG_TAG
+import com.adobe.marketing.mobile.notificationbuilder.R
+import com.adobe.marketing.mobile.notificationbuilder.internal.ajo.NotificationChannelUtils
+import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.addAJOActionButtons
+import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setAJONotificationClickAction
+import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setAJONotificationDeleteAction
+import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setScaledRemoteViewImage
+import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setSmallIcon
+import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setSound
+import com.adobe.marketing.mobile.notificationbuilder.internal.templates.AJOBasicPushTemplate
+import com.adobe.marketing.mobile.plugin.IPushTemplateTrackingProvider
+import com.adobe.marketing.mobile.services.Log
+
+/**
+ * Object responsible for constructing a [NotificationCompat.Builder] object containing an
+ * AJO basic ("ajo_basic") push template notification.
+ *
+ * This builder is segregated from the out-of-the-box (ACC) builders. It reuses the shared
+ * primitive RemoteViews / NotificationCompat.Builder extension functions for rendering, but
+ * keeps its own orchestration and channel creation so AJO concerns evolve independently and no
+ * existing code is modified.
+ */
+internal object AJOBasicNotificationBuilder {
+    private const val SELF_TAG = "AJOBasicNotificationBuilder"
+
+    @Throws(NotificationConstructionFailedException::class)
+    fun construct(
+        context: Context,
+        pushTemplate: AJOBasicPushTemplate,
+        trackingProvider: IPushTemplateTrackingProvider
+    ): NotificationCompat.Builder {
+        Log.trace(LOG_TAG, SELF_TAG, "Building an AJO basic template push notification.")
+        val packageName = context.packageName
+        val smallLayout = RemoteViews(packageName, R.layout.ajo_push_template_collapsed)
+        val expandedLayout = RemoteViews(packageName, R.layout.ajo_basic_push_template_expanded)
+
+        val notificationManager =
+            context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val channelIdToUse = NotificationChannelUtils.createChannelIfRequired(context, notificationManager, pushTemplate)
+
+        // set the title and body text
+        smallLayout.setTextViewText(R.id.notification_title, pushTemplate.title)
+        smallLayout.setTextViewText(R.id.notification_body, pushTemplate.body)
+        expandedLayout.setTextViewText(R.id.notification_title, pushTemplate.title)
+        expandedLayout.setTextViewText(R.id.notification_body_expanded, pushTemplate.body)
+
+        // the basic template has no large side icon — hide the container in both layouts
+        smallLayout.setViewVisibility(R.id.large_icon_container, View.GONE)
+        expandedLayout.setViewVisibility(R.id.large_icon_container, View.GONE)
+
+        // set the expanded image with the correct scale type view, hide the other
+        val isFitCenter =
+            pushTemplate.imgScaleType == AJOTemplatePropertyKeys.ScaleType.FIT_CENTER
+        val (expandedImageVisibleId, expandedImageGoneId) =
+            if (isFitCenter) {
+                R.id.expanded_image_fit_center to R.id.expanded_image_center_crop
+            } else {
+                R.id.expanded_image_center_crop to R.id.expanded_image_fit_center
+            }
+        expandedLayout.setViewVisibility(expandedImageGoneId, View.GONE)
+        expandedLayout.setViewVisibility(expandedImageVisibleId, View.VISIBLE)
+        // Size the decoded/scaled bitmap to what the device actually displays: the notification
+        // width (capped) x the image view height from dimens (density-correct, capped). center_crop
+        // covers the box; fit_center aspect-fits within it.
+        val imageWidthPx = minOf(
+            context.resources.displayMetrics.widthPixels,
+            PushTemplateConstants.DefaultValues.AJO_MAX_IMAGE_WIDTH_PX
+        )
+        val imageHeightPx = minOf(
+            context.resources.getDimensionPixelSize(
+                if (isFitCenter) {
+                    R.dimen.ajo_expanded_image_max_height
+                } else {
+                    R.dimen.ajo_center_crop_image_height
+                }
+            ),
+            PushTemplateConstants.DefaultValues.AJO_MAX_IMAGE_HEIGHT_PX
+        )
+        expandedLayout.setScaledRemoteViewImage(
+            pushTemplate.imageUrl,
+            expandedImageVisibleId,
+            imageWidthPx,
+            imageHeightPx,
+            !isFitCenter
+        )
+
+        val builder = NotificationCompat.Builder(context, channelIdToUse)
+            .setTicker(pushTemplate.ticker)
+            .setNumber(pushTemplate.badgeCount)
+            .setAutoCancel(!pushTemplate.isNotificationSticky)
+            .setOngoing(pushTemplate.isNotificationSticky)
+            // show the timestamp ("now") in the header, like native
+            .setShowWhen(true)
+            .setWhen(System.currentTimeMillis())
+            .setStyle(NotificationCompat.DecoratedCustomViewStyle())
+            .setCustomContentView(smallLayout)
+            .setCustomBigContentView(expandedLayout)
+            // small icon must be present, otherwise the notification will not be displayed.
+            .setSmallIcon(context, pushTemplate.smallIcon, null)
+            .setVisibility(pushTemplate.visibility.value)
+            .setAJONotificationClickAction(
+                trackingProvider,
+                pushTemplate.actionUri,
+                pushTemplate.actionType
+            )
+            .setAJONotificationDeleteAction(trackingProvider)
+
+        // if not from intent, set custom sound. applies to API 25 and lower only as
+        // API 26 and up set the sound on the notification channel.
+        if (!pushTemplate.isFromIntent) {
+            builder.setSound(context, pushTemplate.sound)
+        }
+
+        // below API 26 (no notification channels) priority is set on the builder
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+            builder.setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setVibrate(LongArray(0))
+        }
+
+        // add any action buttons defined for the notification
+        builder.addAJOActionButtons(
+            trackingProvider,
+            pushTemplate.actionButtonsList
+        )
+
+        return builder
+    }
+}

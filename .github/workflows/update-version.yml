@@ -15,8 +15,14 @@ name: Update Versions
 on:
   workflow_dispatch:
     inputs:
+      component:
+        type: choice
+        description: UI component for which the version should be updated.
+        options: 
+        - notificationbuilder
+
       version:
-        description: 'New version to use for the extension (ex: 1.2.3).'
+        description: 'New version to use for the component (ex: 1.2.3).'
         type: string
         required: true
 
@@ -29,6 +35,7 @@ on:
         description: | 
           If a version is provided, update Core dependency in gradle.properties (ex: 1.2.3).
           This is a published dependency in the pom.xml file.
+          Only the x.y.z portion is replaced; any existing suffix (ex: -SNAPSHOT) is kept.
         type: string
         required: false
         default: ''
@@ -38,8 +45,9 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
-    uses: adobe/aepsdk-commons/.github/workflows/versions.yml@gha-android-3.3.0
+    uses: adobe/aepsdk-commons/.github/workflows/versions.yml@gha-android-3.4.2
     with:
+      name: ${{ github.event.inputs.component }}
       version: ${{ github.event.inputs.version }}
       branch: ${{ github.event.inputs.branch }}
       dependencies: Core ${{ github.event.inputs.core-dependency }}
