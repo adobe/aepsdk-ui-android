@@ -220,8 +220,6 @@ object PushTemplateConstants {
         const val CONTENT_CLICK = "content_click"
         const val BUTTON_CLICK = "button_click"
         const val DISMISS = "dismiss"
-        const val INPUT_SUBMIT = "input_submit"
-        const val RERENDER = "rerender"
     }
 
     // Reserved message-data keys added by the host.

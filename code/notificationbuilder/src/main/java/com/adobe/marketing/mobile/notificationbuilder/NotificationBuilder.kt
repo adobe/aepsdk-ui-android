@@ -116,12 +116,12 @@ object NotificationBuilder {
     }
 
     /**
-     * Constructs a [NotificationCompat.Builder] for an AJO push template (AJO Basic / AJO Big Text)
-     * using the host-supplied [trackingProvider] for all terminal tracking [android.app.PendingIntent]s.
+     * Constructs a [NotificationCompat.Builder] for a push template built through the plugin, using
+     * the host-supplied [trackingProvider] for all tracking [android.app.PendingIntent]s.
      *
-     * This is the provider-based entry used by the plugin ([NotificationBuilderPlugin]); it is
-     * restricted to AJO templates and returns `null` for any other template type so the host can fall
-     * back to a basic notification.
+     * This is the provider-based entry used by [NotificationBuilderPlugin]. It currently supports the
+     * AJO templates (AJO Basic / AJO Big Text) and returns `null` for any other template type so the
+     * host can fall back to a basic notification.
      *
      * @param messageData [Map] containing the data needed for the notification construction
      * @param trackingProvider the host's [IPushTemplateTrackingProvider]
@@ -130,7 +130,7 @@ object NotificationBuilder {
      * @throws [IllegalArgumentException] if the provided message data has invalid data
      */
     @Throws(NotificationConstructionFailedException::class, IllegalArgumentException::class)
-    internal fun buildAJOTemplateNotification(
+    internal fun buildTemplateNotification(
         messageData: Map<String, String>,
         trackingProvider: IPushTemplateTrackingProvider
     ): NotificationCompat.Builder? {
@@ -280,7 +280,7 @@ object NotificationBuilder {
 
             PushTemplateType.AJO_BASIC -> {
                 // AJO templates are host-tracked and must be built through the plugin's
-                // provider-based path ([buildAJOTemplateNotification]). The direct-dependency public
+                // provider-based path ([buildTemplateNotification]). The direct-dependency public
                 // API cannot supply a tracking provider, so fall back to a legacy notification here.
                 Log.warning(
                     LOG_TAG,
@@ -296,7 +296,7 @@ object NotificationBuilder {
 
             PushTemplateType.AJO_BIG_TEXT -> {
                 // AJO templates are host-tracked and must be built through the plugin's
-                // provider-based path ([buildAJOTemplateNotification]). The direct-dependency public
+                // provider-based path ([buildTemplateNotification]). The direct-dependency public
                 // API cannot supply a tracking provider, so fall back to a legacy notification here.
                 Log.warning(
                     LOG_TAG,

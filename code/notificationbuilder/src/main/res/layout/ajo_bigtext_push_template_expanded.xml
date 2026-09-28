@@ -23,13 +23,6 @@
             android:background="@drawable/ajo_large_icon_rounded_outline"
             android:visibility="gone" />
 
-        <ImageView
-            android:id="@+id/large_icon_fit_center"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:scaleType="fitCenter"
-            android:visibility="gone" />
-
     </FrameLayout>
 
     <TextView

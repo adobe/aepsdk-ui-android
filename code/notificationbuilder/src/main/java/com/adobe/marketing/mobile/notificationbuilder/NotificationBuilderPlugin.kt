@@ -35,16 +35,13 @@ class NotificationBuilderPlugin : IUiTemplatePlugin {
     /**
      * Builds an AJO push-template notification (AJO Basic / AJO Big Text). Any other template type
      * returns `null` so the host falls back to a basic notification.
-     *
-     * The host also calls this for re-render with the template state merged into [messageData]. AJO
-     * Basic / Big Text never request a re-render, so they are only ever built for the first render.
      */
     override fun buildPushTemplateNotification(
         messageData: Map<String, String>,
         trackingProvider: IPushTemplateTrackingProvider
     ): Notification? {
         return try {
-            NotificationBuilder.buildAJOTemplateNotification(messageData, trackingProvider)?.build()
+            NotificationBuilder.buildTemplateNotification(messageData, trackingProvider)?.build()
         } catch (t: Throwable) {
             // Failure isolation: never crash the host's FCM callback. Returning null lets the host
             // fall back to a basic notification.

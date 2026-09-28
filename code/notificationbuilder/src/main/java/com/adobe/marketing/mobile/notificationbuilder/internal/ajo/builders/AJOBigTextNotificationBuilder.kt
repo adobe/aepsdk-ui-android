@@ -11,20 +11,17 @@
 
 package com.adobe.marketing.mobile.notificationbuilder.internal.ajo.builders
 
-import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
-import android.media.RingtoneManager
 import android.os.Build
 import android.view.View
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import com.adobe.marketing.mobile.notificationbuilder.NotificationConstructionFailedException
-import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants
 import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.LOG_TAG
 import com.adobe.marketing.mobile.notificationbuilder.R
+import com.adobe.marketing.mobile.notificationbuilder.internal.ajo.NotificationChannelUtils
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.addAJOActionButtons
-import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.getSoundUriForResourceName
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setAJONotificationClickAction
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setAJONotificationDeleteAction
 import com.adobe.marketing.mobile.notificationbuilder.internal.extensions.setScaledRemoteViewImage
@@ -59,7 +56,7 @@ internal object AJOBigTextNotificationBuilder {
 
         val notificationManager =
             context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        val channelIdToUse = createChannelIfRequired(context, notificationManager, pushTemplate)
+        val channelIdToUse = NotificationChannelUtils.createChannelIfRequired(context, notificationManager, pushTemplate)
 
         // set the title and body text. The collapsed state shows the short collapsed text while
         // the expanded state shows the full long body text (the flat adb_body key).
@@ -86,7 +83,6 @@ internal object AJOBigTextNotificationBuilder {
         ) {
             smallLayout.setViewVisibility(R.id.large_icon_container, View.GONE)
         }
-        expandedLayout.setViewVisibility(R.id.large_icon_fit_center, View.GONE)
         expandedLayout.setViewVisibility(R.id.large_icon_center_crop, View.VISIBLE)
         if (!expandedLayout.setScaledRemoteViewImage(
                 pushTemplate.largeIconUrl,
@@ -139,72 +135,5 @@ internal object AJOBigTextNotificationBuilder {
         )
 
         return builder
-    }
-
-    /**
-     * Creates a notification channel if required. Logic mirrors the shared
-     * `NotificationManager.createNotificationChannelIfRequired` extension but is kept local so
-     * the AJO builder does not depend on or modify the AEPPushTemplate-typed shared extension.
-     *
-     * @param context the application [Context]
-     * @param notificationManager the [NotificationManager] used to create / look up channels
-     * @param pushTemplate the [AJOBigTextPushTemplate] providing channel id, sound and importance
-     * @return the channel ID to use for the notification
-     */
-    private fun createChannelIfRequired(
-        context: Context,
-        notificationManager: NotificationManager,
-        pushTemplate: AJOBigTextPushTemplate
-    ): String {
-        val channelIdToUse =
-            if (pushTemplate.isFromIntent) {
-                PushTemplateConstants.DefaultValues.SILENT_NOTIFICATION_CHANNEL_ID
-            } else {
-                pushTemplate.channelId ?: PushTemplateConstants.DefaultValues.DEFAULT_CHANNEL_ID
-            }
-
-        // no channel creation required below API 26
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-            return channelIdToUse
-        }
-
-        // don't create a channel if it already exists
-        if (notificationManager.getNotificationChannel(channelIdToUse) != null) {
-            Log.trace(
-                LOG_TAG,
-                SELF_TAG,
-                "Using previously created notification channel: $channelIdToUse."
-            )
-            return channelIdToUse
-        }
-
-        val channel = NotificationChannel(
-            channelIdToUse,
-            if (pushTemplate.isFromIntent) {
-                PushTemplateConstants.DefaultValues.SILENT_CHANNEL_NAME
-            } else {
-                PushTemplateConstants.DefaultValues.DEFAULT_CHANNEL_NAME
-            },
-            pushTemplate.getNotificationImportance()
-        )
-
-        if (pushTemplate.isFromIntent) {
-            channel.setSound(null, null)
-        } else {
-            val soundUri = if (pushTemplate.sound.isNullOrEmpty()) {
-                RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
-            } else {
-                context.getSoundUriForResourceName(pushTemplate.sound)
-            }
-            channel.setSound(soundUri, null)
-        }
-
-        Log.trace(
-            LOG_TAG,
-            SELF_TAG,
-            "Creating a new notification channel with ID: $channelIdToUse."
-        )
-        notificationManager.createNotificationChannel(channel)
-        return channelIdToUse
     }
 }
