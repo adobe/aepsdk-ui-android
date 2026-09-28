@@ -109,6 +109,7 @@ internal sealed class AEPPushTemplate(val data: NotificationData) {
     init {
 
         templateType = PushTemplateType.fromString(data.getString(PushPayloadKeys.TEMPLATE_TYPE))
+        payloadVersion = data.getString(PushPayloadKeys.VERSION) ?: "1"
         initRequiredValues()
         // extract the payload version
         expandedBodyText = data.getString(PushPayloadKeys.EXPANDED_BODY_TEXT)
@@ -149,8 +150,6 @@ internal sealed class AEPPushTemplate(val data: NotificationData) {
     }
 
     private fun initRequiredValues() {
-
-        payloadVersion = data.getRequiredString(PushPayloadKeys.VERSION)
 
         // extract the remaining text information
         if (templateType == PushTemplateType.MULTI_ICON) {

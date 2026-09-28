@@ -41,11 +41,13 @@ jobs:
   publish:
     permissions:
         contents: write
-    uses: adobe/aepsdk-commons/.github/workflows/android-maven-release.yml@gha-android-3.3.0
+    uses: adobe/aepsdk-commons/.github/workflows/android-maven-release.yml@gha-android-3.4.2
     with:
       tag: ${{ github.event.inputs.tag }}
       create-github-release: ${{ github.event.inputs.create-github-release == 'true' }}
       release-variant: ${{ github.event.inputs.component }}
+      version-validation-name: ${{ github.event.inputs.component }}
       version-validation-paths: code/gradle.properties, code/notificationbuilder/src/main/java/com/adobe/marketing/mobile/notificationbuilder/NotificationBuilderConstants.kt
       version-validation-dependencies: Core ${{ github.event.inputs.core-dependency }}
+      staging-dir: code/${{ github.event.inputs.component }}/build/staging-deploy
     secrets: inherit

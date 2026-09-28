@@ -1,3 +1,6 @@
+clean:
+		(./code/gradlew -p code clean)
+
 checkstyle:
 		(./code/gradlew -p code/notificationbuilder checkstyle)
 
@@ -39,10 +42,10 @@ assemble-app:
 		(./code/gradlew -p code/testapp  assemble)
 
 notificationbuilder-publish-maven-local-jitpack: assemble-phone-release
-		(./code/gradlew -p code/notificationbuilder publishReleasePublicationToMavenLocal -Pjitpack  -x signReleasePublication)
+		(./code/gradlew -p code/notificationbuilder publishReleasePublicationToMavenLocal -Pjitpack)
 
-notificationbuilder-publish-snapshot: assemble-phone-release
-		(./code/gradlew -p code/notificationbuilder publishReleasePublicationToSonatypeRepository)
+notificationbuilder-publish-snapshot: clean
+		(./code/gradlew -p code/notificationbuilder publish --stacktrace)
 
-notificationbuilder-publish-main: assemble-phone-release
-		(./code/gradlew -p code/notificationbuilder  publishReleasePublicationToSonatypeRepository -Prelease)
+notificationbuilder-publish-main: clean
+		(./code/gradlew -p code/notificationbuilder publish -Prelease)

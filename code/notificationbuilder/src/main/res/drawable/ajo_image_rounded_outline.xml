@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Copyright 2024 Adobe. All rights reserved.
+  Licensed under the Apache License, Version 2.0. Used with android:clipToOutline="true" to round
+  the AJO hero image corners, matching the native big-picture treatment
+  (AOSP notification_big_picture_outline).
+-->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <solid android:color="@android:color/transparent" />
+    <corners android:radius="@dimen/ajo_image_corner_radius" />
+</shape>

@@ -56,8 +56,23 @@ object PushTemplateConstants {
         internal const val SILENT_CHANNEL_NAME = "Silent Notifications"
         internal const val DEFAULT_CHANNEL_ID = "AEPSDKPushChannel"
         internal const val SILENT_NOTIFICATION_CHANNEL_ID = "AEPSDKSilentPushChannel"
-        internal const val CAROUSEL_MAX_BITMAP_WIDTH = 300
-        internal const val CAROUSEL_MAX_BITMAP_HEIGHT = 200
+        // Bounding box the downloaded images are scaled into (aspect preserved). Raised from
+        // 300x200 to 720x720 so notification images stay sharp at the size they are displayed
+        // (expanded images render up to ~256dp ≈ 670px on high-density screens). 720 caps the
+        // longest edge, keeping typical images ~1MB and well within the RemoteViews/texture
+        // limits, so sharpness improves without meaningful OOM risk.
+        internal const val CAROUSEL_MAX_BITMAP_WIDTH = 720
+        internal const val CAROUSEL_MAX_BITMAP_HEIGHT = 720
+        // Absolute pixel caps for AJO template images, which are otherwise sized dynamically from
+        // the device (display width + layout dimens). A symmetric 720x720 bounding box keeps the
+        // produced RemoteViews bitmap memory- and Binder-safe: at full device width (~1080px) the
+        // bitmap (~2-2.6 MB) trips the system "RemoteViews too large" warning ("might be stripped in
+        // a future release"); 720 keeps a typical center_crop bitmap ~1.4 MB and well clear of that
+        // ~2 MB threshold while staying visually sharp. The height cap only engages on very high
+        // density screens (480dpi+, where 256dp exceeds 720px); on normal densities the layout
+        // dimens (190dp / 256dp) drive the height.
+        internal const val AJO_MAX_IMAGE_WIDTH_PX = 720
+        internal const val AJO_MAX_IMAGE_HEIGHT_PX = 720
         internal const val AUTO_CAROUSEL_MODE = "auto"
         internal const val DEFAULT_MANUAL_CAROUSEL_MODE = "default"
         internal const val FILMSTRIP_CAROUSEL_MODE = "filmstrip"
@@ -92,6 +107,7 @@ object PushTemplateConstants {
 
     object PushPayloadKeys {
         const val TEMPLATE_TYPE = "adb_template_type"
+        const val AJO_TEMPLATE_PROPERTIES = "adb_template_properties"
         const val TITLE = "adb_title"
         const val BODY = "adb_body"
         const val SOUND = "adb_sound"
@@ -196,5 +212,39 @@ object PushTemplateConstants {
         const val IMG = "img"
         const val URI = "uri"
         const val TYPE = "type"
+    }
+
+    // Plugin contract with the host (see Core IUiTemplatePlugin / PushInteraction). These values must
+    // match the host's constants exactly; PluginContractTest pins them.
+    internal object PushInteractionType {
+        const val CONTENT_CLICK = "content_click"
+        const val BUTTON_CLICK = "button_click"
+        const val DISMISS = "dismiss"
+    }
+
+    // Reserved message-data keys added by the host.
+    internal object HostDataKeys {
+        const val MESSAGE_ID = "messageId"
+        const val NOTIFICATION_ID = "notificationId"
+    }
+
+    // Keys for parsing the adb_template_properties JSON blob for AJO templates.
+    // These are NOT top-level FCM keys — they are flat keys inside the parsed JSON object.
+    // Only template-specific fields live here; general fields (title, body, image, version)
+    // are read from the top-level flat FCM keys in [PushPayloadKeys].
+    internal object AJOTemplatePropertyKeys {
+        // Basic template: scale type applied to the expanded hero image.
+        internal const val IMAGE_SCALE_TYPE = "adb_image_scale_type"
+
+        // BigText template: short text shown in the collapsed state.
+        internal const val COLLAPSED_TEXT = "adb_collapsed_text"
+
+        // BigText template: large side icon url.
+        internal const val LARGE_ICON = "adb_large_icon"
+
+        internal object ScaleType {
+            internal const val CENTER_CROP = "center_crop"
+            internal const val FIT_CENTER = "fit_center"
+        }
     }
 }

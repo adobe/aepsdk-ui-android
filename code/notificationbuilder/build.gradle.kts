@@ -15,7 +15,6 @@ plugins {
 
 val mavenCoreVersion: String by project
 val notificationbuilderModuleName: String by project
-val notificationbuilderVersion: String by project
 val notificationbuilderMavenRepoName: String by project
 val notificationbuilderMavenRepoDescription: String by project
 
@@ -23,7 +22,6 @@ val notificationbuilderMavenRepoDescription: String by project
 aepLibrary {
     namespace = "com.adobe.marketing.mobile.notificationbuilder"
     moduleName = notificationbuilderModuleName
-    moduleVersion = notificationbuilderVersion
     enableSpotless = true
     enableCheckStyle = true
     enableDokkaDoc = true
@@ -38,6 +36,6 @@ aepLibrary {
 
 dependencies {
     implementation("com.adobe.marketing.mobile:core:$mavenCoreVersion")
-    testImplementation("org.robolectric:robolectric:4.7")
+    testImplementation("org.robolectric:robolectric:4.11.1")
     testImplementation("io.mockk:mockk:1.13.11")
 }

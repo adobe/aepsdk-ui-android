@@ -21,6 +21,8 @@ import com.adobe.marketing.mobile.notificationbuilder.NotificationBuilderConstan
 import com.adobe.marketing.mobile.notificationbuilder.NotificationBuilderConstants.VERSION
 import com.adobe.marketing.mobile.notificationbuilder.PushTemplateConstants.LOG_TAG
 import com.adobe.marketing.mobile.notificationbuilder.internal.PushTemplateType
+import com.adobe.marketing.mobile.notificationbuilder.internal.ajo.builders.AJOBasicNotificationBuilder
+import com.adobe.marketing.mobile.notificationbuilder.internal.ajo.builders.AJOBigTextNotificationBuilder
 import com.adobe.marketing.mobile.notificationbuilder.internal.builders.AutoCarouselNotificationBuilder
 import com.adobe.marketing.mobile.notificationbuilder.internal.builders.BasicNotificationBuilder
 import com.adobe.marketing.mobile.notificationbuilder.internal.builders.InputBoxNotificationBuilder
@@ -32,6 +34,8 @@ import com.adobe.marketing.mobile.notificationbuilder.internal.builders.ProductR
 import com.adobe.marketing.mobile.notificationbuilder.internal.builders.TimerNotificationBuilder
 import com.adobe.marketing.mobile.notificationbuilder.internal.builders.ZeroBezelNotificationBuilder
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.AEPPushTemplate
+import com.adobe.marketing.mobile.notificationbuilder.internal.templates.AJOBasicPushTemplate
+import com.adobe.marketing.mobile.notificationbuilder.internal.templates.AJOBigTextPushTemplate
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.AutoCarouselPushTemplate
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.BasicPushTemplate
 import com.adobe.marketing.mobile.notificationbuilder.internal.templates.CarouselPushTemplate
@@ -45,6 +49,7 @@ import com.adobe.marketing.mobile.notificationbuilder.internal.templates.ZeroBez
 import com.adobe.marketing.mobile.notificationbuilder.internal.util.IntentData
 import com.adobe.marketing.mobile.notificationbuilder.internal.util.MapData
 import com.adobe.marketing.mobile.notificationbuilder.internal.util.NotificationData
+import com.adobe.marketing.mobile.plugin.IPushTemplateTrackingProvider
 import com.adobe.marketing.mobile.services.Log
 import com.adobe.marketing.mobile.services.ServiceProvider
 
@@ -110,13 +115,64 @@ object NotificationBuilder {
         return createNotificationBuilder(context, intentData, trackerActivityClass, broadcastReceiverClass)
     }
 
+    /**
+     * Constructs a [NotificationCompat.Builder] for a push template built through the plugin, using
+     * the host-supplied [trackingProvider] for all tracking [android.app.PendingIntent]s.
+     *
+     * This is the provider-based entry used by [NotificationBuilderPlugin]. It currently supports the
+     * AJO templates (AJO Basic / AJO Big Text) and returns `null` for any other template type so the
+     * host can fall back to a basic notification.
+     *
+     * @param messageData [Map] containing the data needed for the notification construction
+     * @param trackingProvider the host's [IPushTemplateTrackingProvider]
+     * @return a [NotificationCompat.Builder], or `null` if the payload is not an AJO template
+     * @throws [NotificationConstructionFailedException] if the application context is null or the data is empty
+     * @throws [IllegalArgumentException] if the provided message data has invalid data
+     */
+    @Throws(NotificationConstructionFailedException::class, IllegalArgumentException::class)
+    internal fun buildTemplateNotification(
+        messageData: Map<String, String>,
+        trackingProvider: IPushTemplateTrackingProvider
+    ): NotificationCompat.Builder? {
+        val context = ServiceProvider.getInstance().appContextService.applicationContext
+            ?: throw NotificationConstructionFailedException("Application context is null, cannot build a notification.")
+        if (messageData.isEmpty()) {
+            throw NotificationConstructionFailedException("Message data is empty, cannot build a notification.")
+        }
+        val notificationData = MapData(messageData)
+        val pushTemplateType =
+            PushTemplateType.fromString(notificationData.getString(PushTemplateConstants.PushPayloadKeys.TEMPLATE_TYPE))
+
+        return when (pushTemplateType) {
+            PushTemplateType.AJO_BASIC -> AJOBasicNotificationBuilder.construct(
+                context,
+                AJOBasicPushTemplate(notificationData),
+                trackingProvider
+            )
+
+            PushTemplateType.AJO_BIG_TEXT -> AJOBigTextNotificationBuilder.construct(
+                context,
+                AJOBigTextPushTemplate(notificationData),
+                trackingProvider
+            )
+
+            else -> {
+                Log.warning(
+                    LOG_TAG,
+                    TAG,
+                    "Template type '$pushTemplateType' is not a supported AJO template; returning null."
+                )
+                null
+            }
+        }
+    }
+
     private fun createNotificationBuilder(
         context: Context,
         notificationData: NotificationData,
         trackerActivityClass: Class<out Activity>?,
         broadcastReceiverClass: Class<out BroadcastReceiver>?
     ): NotificationCompat.Builder {
-
         val pushTemplateType =
             PushTemplateType.fromString(notificationData.getString(PushTemplateConstants.PushPayloadKeys.TEMPLATE_TYPE))
 
@@ -219,6 +275,38 @@ object NotificationBuilder {
                     context,
                     MultiIconPushTemplate(notificationData),
                     trackerActivityClass,
+                )
+            }
+
+            PushTemplateType.AJO_BASIC -> {
+                // AJO templates are host-tracked and must be built through the plugin's
+                // provider-based path ([buildTemplateNotification]). The direct-dependency public
+                // API cannot supply a tracking provider, so fall back to a legacy notification here.
+                Log.warning(
+                    LOG_TAG,
+                    TAG,
+                    "AJO templates must be built via the IUiTemplatePlugin; creating a legacy style notification."
+                )
+                return LegacyNotificationBuilder.construct(
+                    context,
+                    BasicPushTemplate(notificationData),
+                    trackerActivityClass
+                )
+            }
+
+            PushTemplateType.AJO_BIG_TEXT -> {
+                // AJO templates are host-tracked and must be built through the plugin's
+                // provider-based path ([buildTemplateNotification]). The direct-dependency public
+                // API cannot supply a tracking provider, so fall back to a legacy notification here.
+                Log.warning(
+                    LOG_TAG,
+                    TAG,
+                    "AJO templates must be built via the IUiTemplatePlugin; creating a legacy style notification."
+                )
+                return LegacyNotificationBuilder.construct(
+                    context,
+                    BasicPushTemplate(notificationData),
+                    trackerActivityClass
                 )
             }
 

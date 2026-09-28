@@ -62,4 +62,11 @@
     <dimen name="multi_icon_layout_height">56dp</dimen>
     <dimen name="multi_icon_item_padding">4dp</dimen>
     <dimen name="standard_title_bottom_margin">4dp</dimen>
+    <dimen name="ajo_content_margin_horizontal">16dp</dimen>
+    <dimen name="ajo_image_margin_top">12dp</dimen>
+    <dimen name="ajo_image_corner_radius">12dp</dimen>
+    <dimen name="ajo_expanded_image_max_height">256dp</dimen>
+    <dimen name="ajo_large_icon_size">48dp</dimen>
+    <dimen name="ajo_center_crop_image_height">190dp</dimen>
+    <dimen name="ajo_large_icon_corner_radius">8dp</dimen>
 </resources>
