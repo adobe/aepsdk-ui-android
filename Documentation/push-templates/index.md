@@ -2,6 +2,8 @@
 title: Adobe Experience Platform SDK push templates
 description: Learn about the push templates provided and supported by the Adobe Campaign Classic Mobile SDK extension.
 keywords:
+- Adobe Journey Optimizer
+- Adobe Campaign Classic
 - Push
 - Push Template
 - Push Templates
@@ -13,17 +15,24 @@ keywords:
 
 Default push template functionality is available for use with the **Adobe Campaign Classic** extension. <br />
 
+The UI extension also provides a Mobile Core plugin for Adobe Journey Optimizer (AJO) push templates. This plugin adds support for the **Basic** and **Big text** templates; the Campaign Classic templates documented below remain available through their existing integration.
+
 ## Getting started
 
 * [Android setup](./android/index.md)
+* [Register the Notification Builder plugin for AJO](./android/plugin.md)
 
 ## Templates
 
 View the [list of supported templates](./templates/index.md).
+* [AJO Basic](./templates/ajo-basic.md)
+* [AJO Big text](./templates/ajo-big-text.md)
 
 ## Image specifications
 
 The tables below contain guidelines for your push notification content. **These recommendations help your images display reliably across multiple devices.** These values are guidelines only - you should still test a notification prior to sending it.
+
+For AJO-specific requirements, see the [AJO push templates documentation](https://developer.adobe.com/client-sdks/edge/adobe-journey-optimizer/push-notification/push-templates/).
 
 **Android**
 

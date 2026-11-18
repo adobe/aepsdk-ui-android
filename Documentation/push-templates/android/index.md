@@ -12,6 +12,8 @@ keywords:
 
 This document outlines the steps required to configure your app to use default push templates provided by Adobe.
 
+For Adobe Journey Optimizer (AJO) push templates, see [Register the Notification Builder plugin](./plugin.md). This plugin setup is additional to the Campaign Classic setup below.
+
 <InlineAlert variant="info" slots="text"/>
 
 Default push template functionality is available for use with the **Adobe Campaign Classic** extension. <br /><br />This is supported by **Android SDK version 3.1.0+**.
