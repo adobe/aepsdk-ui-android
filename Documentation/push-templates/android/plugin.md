@@ -11,9 +11,9 @@ keywords:
 
 # Set up AJO push templates on Android
 
-The UI extension provides `NotificationBuilderPlugin`, which implements the Mobile Core `IUiTemplatePlugin` contract. The Adobe Journey Optimizer extension uses this plugin to render supported push templates. The app registers the plugin with Mobile Core; the app does not call the plugin to build each notification.
+The UI extension provides `NotificationBuilderPlugin`, which implements the Mobile Core `IUiTemplatePlugin` contract. The Adobe Journey Optimizer extension uses this plugin to render supported push templates. The app registers the plugin with Mobile Core; the app does not call the plugin to build each notification. This adds AJO template rendering alongside the existing Campaign Classic template integration.
 
-The plugin is Android-only and currently supports the [AJO Basic and Big text templates](../templates/index.md#adobe-journey-optimizer-templates). It requires Mobile Core 3.10.0 or later.
+The plugin is Android-only and supports the [AJO Basic and Big text templates](../templates/index.md#adobe-journey-optimizer-templates). It requires Mobile Core 3.10.0 or later. This plugin does not replace or change the Campaign Classic templates described in the [existing Android setup guide](./index.md).
 
 ## Add the dependency
 

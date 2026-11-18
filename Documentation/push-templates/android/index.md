@@ -1,6 +1,6 @@
 ---
 title: Adobe Experience Platform SDK push templates
-description: Set up Android push templates for the Adobe Campaign Classic Mobile SDK extension.
+description: Learn about the push templates provided and supported by the Adobe Campaign Classic Mobile SDK extension.
 keywords:
 - Adobe Campaign Classic
 - Push
@@ -10,11 +10,13 @@ keywords:
 
 # Push templates setup - Android
 
-This page describes the Campaign Classic integration. For Adobe Journey Optimizer (AJO) push templates, see [Register the Notification Builder plugin](./plugin.md).
+This document outlines the steps required to configure your app to use default push templates provided by Adobe.
+
+For Adobe Journey Optimizer (AJO) push templates, see [Register the Notification Builder plugin](./plugin.md). This plugin setup is additional to the Campaign Classic setup below.
 
 <InlineAlert variant="info" slots="text"/>
 
-Campaign Classic template handling is available through the **Adobe Campaign Classic** extension. This setup is supported by **Android SDK version 3.1.0+**.
+Default push template functionality is available for use with the **Adobe Campaign Classic** extension. <br /><br />This is supported by **Android SDK version 3.1.0+**.
 
 ## Setup
 
